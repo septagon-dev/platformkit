@@ -1,0 +1,14 @@
+.DS_Store
+.idea/
+.vscode/
+*.log
+.env
+.env.*
+!*.env.example
+bin/
+build/
+dist/
+tmp/
+node_modules/
+coverage/
+.coverage
