@@ -1,0 +1,63 @@
+name: Flagship Surface
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "REPO_CHARTER.md"
+      - "ROADMAP.md"
+      - "docs/**/*.md"
+      - ".github/workflows/flagship-surface.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "README.md"
+      - "REPO_CHARTER.md"
+      - "ROADMAP.md"
+      - "docs/**/*.md"
+      - ".github/workflows/flagship-surface.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flagship-surface-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Lint markdown
+        uses: DavidAnson/markdownlint-cli2-action@v20
+        with:
+          globs: |
+            README.md
+            REPO_CHARTER.md
+            ROADMAP.md
+            docs/**/*.md
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Check local documentation links
+        uses: lycheeverse/lychee-action@v2
+        with:
+          args: >-
+            --offline
+            --no-progress
+            README.md
+            REPO_CHARTER.md
+            ROADMAP.md
+            docs/MIGRATION_BOUNDARY.md
