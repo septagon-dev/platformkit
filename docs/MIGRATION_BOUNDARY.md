@@ -1,6 +1,7 @@
 # Migration Boundary
 
-This repository is a clean Septagon bootstrap. It does not preserve the legacy `comumcowork` git history.
+This repository is a clean Septagon bootstrap. It does not preserve the
+legacy `comumcowork` git history.
 
 ## Planned Source Paths
 

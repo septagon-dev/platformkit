@@ -1,0 +1,100 @@
+name: Flagship Surface
+
+on:
+  pull_request:
+    paths:
+      - "README.md"
+      - "REPO_CHARTER.md"
+      - "ROADMAP.md"
+      - "docs/**/*.md"
+      - ".github/workflows/flagship-surface.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "README.md"
+      - "REPO_CHARTER.md"
+      - "ROADMAP.md"
+      - "docs/**/*.md"
+      - ".github/workflows/flagship-surface.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: flagship-surface-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  markdown:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Lint markdown
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --yes markdownlint-cli2 \
+            README.md \
+            REPO_CHARTER.md \
+            ROADMAP.md \
+            docs/**/*.md
+
+  links:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Check local documentation links
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 <<'PY'
+          import pathlib
+          import re
+          import sys
+          from urllib.parse import urlparse
+
+          root = pathlib.Path(".").resolve()
+          docs = [
+              pathlib.Path("README.md"),
+              pathlib.Path("REPO_CHARTER.md"),
+              pathlib.Path("ROADMAP.md"),
+              pathlib.Path("docs/MIGRATION_BOUNDARY.md"),
+          ]
+          pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
+          failures = []
+
+          for doc in docs:
+              content = doc.read_text(encoding="utf-8")
+              for target in pattern.findall(content):
+                  target = target.strip()
+                  if not target or target.startswith("#"):
+                      continue
+                  parsed = urlparse(target)
+                  if parsed.scheme or parsed.netloc:
+                      continue
+                  local_target = target.split("#", 1)[0]
+                  if not local_target:
+                      continue
+                  resolved = (doc.parent / local_target).resolve()
+                  if not resolved.exists() or (resolved != root and root not in resolved.parents):
+                      failures.append(f"{doc}: broken local link -> {target}")
+
+          if failures:
+              for failure in failures:
+                  print(failure)
+              sys.exit(1)
+          PY
