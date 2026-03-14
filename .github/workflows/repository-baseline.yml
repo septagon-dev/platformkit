@@ -10,4 +10,4 @@ permissions:
 
 jobs:
   baseline:
-    uses: septagon-dev/.github/.github/workflows/reusable-repository-baseline.yml@main
+    uses: septagon-dev/actions/.github/workflows/reusable-repository-baseline.yml@main
