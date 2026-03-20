@@ -217,6 +217,26 @@ Goal: make the subsystem shippable.
 5. Client override schema
 6. Release test coverage
 
+## Flagship Runtime Pattern
+
+Flagship modules must document both halves of the invalidation contract:
+
+1. which browser-side records should call
+   `window.PWA.registerStorageRecord(...)`
+2. which module or UX events should trigger
+   `window.dispatchEvent(new CustomEvent("platformkit:pwa.invalidate", ...))`
+
+Reference examples live in
+`platformkit-business-modules/docs/pwa-invalidation-reference.md` and the
+flagship module `pwa_invalidation.go` files.
+
+Each flagship module should provide:
+
+- stable invalidation tags
+- stable event names
+- documented scope expectations
+- at least one concrete browser-state example
+
 ## Exit Criteria
 
 - Every PWA-capable module uses shared policy contracts.
