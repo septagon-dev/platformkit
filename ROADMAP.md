@@ -9,6 +9,8 @@ Bootstrap.
 1. Bootstrap the Septagon-native public repository with clean history.
 2. Cut the first tagged release with release notes and artifacts.
 3. Reintroduce product code in curated batches with explicit boundaries.
+4. Lock the first commercial wedge and execute the revenue engine program:
+   `docs/programs/revenue-engine-program.md`.
 
 ## Definition of Ready for Code Migration
 
