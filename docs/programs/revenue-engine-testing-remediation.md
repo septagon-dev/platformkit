@@ -62,6 +62,15 @@ Completed:
    - the repo README now documents the combined Go plus JS test contract
    - the existing Node-based JS runner remains in place because the tests still
      require `--experimental-vm-modules` with the current controller harness
+4. `TEST-004` completed on `2026-03-21`
+   Result:
+   - `admin_management/tests/run_e2e.sh` now resolves the tagged E2E suites
+     before executing them
+   - the runner now invokes `go test -tags e2e` against the resolved package
+     list instead of issuing package globs that match nothing
+   - the script now fails clearly if no tagged E2E packages are found
+   - the runner prints the suite patterns, resolved packages, and exact `go`
+     command it is about to execute
 
 ## Ordered Ticket Board
 
