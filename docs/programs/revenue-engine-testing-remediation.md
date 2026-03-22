@@ -71,6 +71,16 @@ Completed:
    - the script now fails clearly if no tagged E2E packages are found
    - the runner prints the suite patterns, resolved packages, and exact `go`
      command it is about to execute
+5. `TEST-005` completed on `2026-03-22`
+   Result:
+   - `check-tags` now runs through a dedicated repo-owned scanner that covers
+     `tests/e2e`, `tests/bdd`, and feature-level `e2e.go` files
+   - `verify-modules` now includes both `check-tags` and the interoperability
+     contract check, so the repo has one truthful module-verification path
+   - CI now calls `make verify-modules` directly instead of stitching together
+     side commands around it
+   - a broken `//go:build e2e` header now fails the checker against a fixture
+     root instead of silently disappearing from the build
 
 ## Ordered Ticket Board
 
