@@ -11,6 +11,8 @@ Bootstrap.
 3. Reintroduce product code in curated batches with explicit boundaries.
 4. Lock the first commercial wedge and execute the revenue engine program:
    `docs/programs/revenue-engine-program.md`.
+5. Execute the UI APG and islands hardening program:
+   `docs/programs/ui-apg-and-islands-program.md`.
 
 ## Definition of Ready for Code Migration
 
