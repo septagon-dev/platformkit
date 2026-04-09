@@ -36,6 +36,12 @@ To validate the current curated product surface:
 make verify-product
 ```
 
+To validate the broader federated platform contract across the sibling repos:
+
+```bash
+make verify-federated-platform
+```
+
 ## First Milestones
 
 1. Bootstrap the Septagon-native public repository with clean history.
