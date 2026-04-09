@@ -67,6 +67,22 @@ This command validates:
 4. agent runtime governance surface health
 5. flagship app lean bootstrap and composed deployment contracts
 
+## Complementary Workspace Guard
+
+The curated product contract is intentionally narrower than the whole platform.
+
+For a broader workspace-level ratchet around federated modular contracts, run
+the complementary guard from this repo:
+
+```bash
+make verify-federated-platform
+```
+
+That guard checks the cross-repo contract floor for build orchestration,
+runtime boundaries, admin surfaces, authz, i18n, UI composition,
+observability, and docs governance without claiming the entire workspace is one
+fully integrated product surface.
+
 ## Maturity Rules
 
 A new surface should not be called part of the product until it satisfies all of
