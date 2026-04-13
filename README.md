@@ -1,50 +1,70 @@
 # platformkit
 
-Flagship platformkit product surface and integrated release distribution.
+The public flagship repository for the platformkit product.
 
-## Purpose
+This is the repo we use to present the product to the community, publish the
+curated cross-repo contract we are willing to stand behind, and ship the
+integrated release surface of the platform.
 
-Act as the public flagship for platformkit releases, launch
-documentation, integrated developer experience, and curated code brought
-over intentionally from the legacy monorepo.
+## Start here
 
-This repo now also owns the curated product contract for the split-repo
-workspace: the smallest cross-repo surface we are willing to stand behind as
-one product.
+- Product contract: [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md)
+- Roadmap: [ROADMAP.md](ROADMAP.md)
+- Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
+- Support paths: [SUPPORT.md](SUPPORT.md)
+- Security reporting: [SECURITY.md](SECURITY.md)
+- Community discussions: [septagon-dev/platformkit-community](https://github.com/septagon-dev/platformkit-community)
 
-## Current Status
+## What belongs in this repository
 
-This repository starts with a clean Septagon-native history. Code and
-assets will be introduced intentionally rather than ported with the
-legacy monorepo history.
+- The public flagship product contract
+- Launch-facing documentation and release guidance
+- Cross-repo verification for the curated product surface
+- The smallest integrated surface we are willing to support as one product
 
-## Boundaries
+## What does not belong here
 
-- Ownership contract: [REPO_CHARTER.md](REPO_CHARTER.md)
-- Migration boundary: [docs/MIGRATION_BOUNDARY.md](docs/MIGRATION_BOUNDARY.md)
-- Execution sequence: [ROADMAP.md](ROADMAP.md)
+- Module-local implementation work that should live in the owning repo
+- Broad workspace experiments that are not part of the flagship product surface
+- Internal-only agent instructions or contributor metadata that do not help the community
 
-## Dependencies
+## Repository map
+
+- [README.md](README.md): public entry point
+- [REPO_CHARTER.md](REPO_CHARTER.md): ownership and scope
+- [ROADMAP.md](ROADMAP.md): execution sequence and launch priorities
+- [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md): curated cross-repo contract
+- [docs/FEDERATED_PLATFORM_AUDIT.md](docs/FEDERATED_PLATFORM_AUDIT.md): federated platform checks
+- [docs/MIGRATION_BOUNDARY.md](docs/MIGRATION_BOUNDARY.md): migration rules
+
+## Verification
 
 For integrated flagship verification in the Septagon workspace, this repo expects
-the sibling repositories referenced by [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md)
-to exist next to it.
+the sibling repositories referenced by
+[docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md) to exist next to it.
 
-To validate the current curated product surface:
+Validate the curated product surface:
 
 ```bash
 make verify-product
 ```
 
-To validate the broader federated platform contract across the sibling repos:
+Validate the broader federated platform contract:
 
 ```bash
 make verify-federated-platform
 ```
 
-## First Milestones
+## Community workflow
 
-1. Bootstrap the Septagon-native public repository with clean history.
-2. Define and enforce a curated flagship product contract across the split repos.
-3. Cut the first tagged release with release notes and artifacts.
-4. Reintroduce product code in curated batches with explicit boundaries.
+- Questions, launch feedback, and roadmap discussion belong in
+  [platformkit-community](https://github.com/septagon-dev/platformkit-community).
+- Bugs and product-surface gaps belong in this repository.
+- Security issues must not be reported publicly. Use the process in
+  [SECURITY.md](SECURITY.md).
+
+## Current status
+
+This repository keeps a clean Septagon-native history. Code and assets are only
+introduced intentionally, with explicit repository boundaries and launch-facing
+documentation.

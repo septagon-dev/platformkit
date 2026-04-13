@@ -1,0 +1,43 @@
+name: Bug report
+description: Report a defect in the public flagship product surface
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for bugs in the flagship platformkit surface. For questions or launch feedback, use the community discussions repo instead.
+  - type: textarea
+    id: summary
+    attributes:
+      label: Summary
+      description: What is broken?
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Affected surface
+      description: Which user-facing area, document, or release surface is affected?
+      placeholder: README, product contract, release artifact, verification flow, integration docs
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction
+      description: How can we reproduce the problem?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+  - type: textarea
+    id: validation
+    attributes:
+      label: Validation or evidence
+      description: Logs, screenshots, or command output that supports the report

@@ -1,0 +1,36 @@
+name: Product request
+description: Propose an improvement to the flagship product surface
+title: "[Request]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Use this form for product-surface improvements. For early discussion or roadmap shaping, start in platformkit-community first.
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What user or launch problem should this solve?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed improvement
+      description: What should change?
+    validations:
+      required: true
+  - type: textarea
+    id: boundaries
+    attributes:
+      label: Repository boundary
+      description: Why does this belong in the flagship repo instead of an owning split repo?
+    validations:
+      required: true
+  - type: textarea
+    id: impact
+    attributes:
+      label: Launch impact
+      description: How would this improve adoption, clarity, or release readiness?

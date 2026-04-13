@@ -4,18 +4,30 @@ on:
   pull_request:
     paths:
       - "README.md"
+      - "CONTRIBUTING.md"
+      - "CODE_OF_CONDUCT.md"
+      - "SECURITY.md"
+      - "SUPPORT.md"
       - "REPO_CHARTER.md"
       - "ROADMAP.md"
       - "docs/**/*.md"
+      - ".github/ISSUE_TEMPLATE/*.yml"
+      - ".github/pull_request_template.md"
       - ".github/workflows/flagship-surface.yml"
   push:
     branches:
       - main
     paths:
       - "README.md"
+      - "CONTRIBUTING.md"
+      - "CODE_OF_CONDUCT.md"
+      - "SECURITY.md"
+      - "SUPPORT.md"
       - "REPO_CHARTER.md"
       - "ROADMAP.md"
       - "docs/**/*.md"
+      - ".github/ISSUE_TEMPLATE/*.yml"
+      - ".github/pull_request_template.md"
       - ".github/workflows/flagship-surface.yml"
 
 permissions:
@@ -45,6 +57,10 @@ jobs:
           set -euo pipefail
           npx --yes markdownlint-cli2 \
             README.md \
+            CONTRIBUTING.md \
+            CODE_OF_CONDUCT.md \
+            SECURITY.md \
+            SUPPORT.md \
             REPO_CHARTER.md \
             ROADMAP.md \
             docs/**/*.md
@@ -70,9 +86,16 @@ jobs:
           root = pathlib.Path(".").resolve()
           docs = [
               pathlib.Path("README.md"),
+              pathlib.Path("CONTRIBUTING.md"),
+              pathlib.Path("CODE_OF_CONDUCT.md"),
+              pathlib.Path("SECURITY.md"),
+              pathlib.Path("SUPPORT.md"),
               pathlib.Path("REPO_CHARTER.md"),
               pathlib.Path("ROADMAP.md"),
               pathlib.Path("docs/MIGRATION_BOUNDARY.md"),
+              pathlib.Path("docs/PRODUCT_CONTRACT.md"),
+              pathlib.Path("docs/FEDERATED_DOCS_CONTRACT.md"),
+              pathlib.Path("docs/FEDERATED_PLATFORM_AUDIT.md"),
           ]
           pattern = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
           failures = []
