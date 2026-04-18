@@ -59,6 +59,12 @@ Run the curated product contract from the flagship repo:
 make verify-product
 ```
 
+Or run the typed checker directly from the standalone devtools CLI:
+
+```bash
+platformkit verify contract product --dir <workspace-root>
+```
+
 This command validates:
 
 1. backend runtime boundary and release policy enforcement
@@ -76,6 +82,12 @@ the complementary guard from this repo:
 
 ```bash
 make verify-federated-platform
+```
+
+Or run the typed checker directly:
+
+```bash
+platformkit verify contract federated --dir <workspace-root>
 ```
 
 That guard checks the cross-repo contract floor for build orchestration,
