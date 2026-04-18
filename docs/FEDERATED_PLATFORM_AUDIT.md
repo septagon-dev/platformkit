@@ -54,6 +54,12 @@ Run the workspace-level federated contract guard from the flagship repo:
 make verify-federated-platform
 ```
 
+Or invoke the typed devtools checker directly:
+
+```bash
+platformkit verify contract federated --dir <workspace-root>
+```
+
 This guard verifies the current ratcheted floor across sibling repos:
 
 1. devtools workspace Go environment and dependency orchestration
