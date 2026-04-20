@@ -9,6 +9,7 @@ integrated release surface of the platform.
 ## Start here
 
 - Product contract: [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md)
+- Workspace authoring contract: [docs/WORKSPACE_AUTHORING_CONTRACT.md](docs/WORKSPACE_AUTHORING_CONTRACT.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
 - Support paths: [SUPPORT.md](SUPPORT.md)
@@ -34,6 +35,7 @@ integrated release surface of the platform.
 - [REPO_CHARTER.md](REPO_CHARTER.md): ownership and scope
 - [ROADMAP.md](ROADMAP.md): execution sequence and launch priorities
 - [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md): curated cross-repo contract
+- [docs/WORKSPACE_AUTHORING_CONTRACT.md](docs/WORKSPACE_AUTHORING_CONTRACT.md): cross-repo authoring standard
 - [docs/FEDERATED_PLATFORM_AUDIT.md](docs/FEDERATED_PLATFORM_AUDIT.md): federated platform checks
 - [docs/MIGRATION_BOUNDARY.md](docs/MIGRATION_BOUNDARY.md): migration rules
 

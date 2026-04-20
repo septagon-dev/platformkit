@@ -11,6 +11,7 @@ The flagship product is not "all repos are green."
 The flagship product is the smallest end-to-end surface that a team can
 evaluate, deploy, and build against with confidence:
 
+- a shared workspace authoring contract
 - a versioned backend runtime contract
 - interoperable API, event, identity, and telemetry seams
 - a flagship app that runs in lean and composed deployment modes
@@ -72,6 +73,8 @@ This command validates:
 3. frontend AI-facing registry and workbench surface health
 4. agent runtime governance surface health
 5. flagship app lean bootstrap and composed deployment contracts
+6. alignment with the workspace authoring standard described in
+   [WORKSPACE_AUTHORING_CONTRACT.md](WORKSPACE_AUTHORING_CONTRACT.md)
 
 ## Complementary Workspace Guard
 
@@ -102,6 +105,7 @@ these:
 
 - it has one canonical path, not parallel legacy and replacement paths
 - it is covered by a machine-runnable contract, not only prose
+- it follows the workspace authoring contract, not a repo-local dialect
 - it has a clear owner repo
 - it is safe to document externally without caveats about instability
 - it composes cleanly into the flagship app without bespoke local glue
