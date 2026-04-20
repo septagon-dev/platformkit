@@ -46,6 +46,11 @@ The weakest layers are the ones that still rely on mixed ownership:
 Those layers are not missing. They are present, but they are not yet expressed
 through one explicit platform-wide contract language.
 
+That missing authoring language is now defined in
+[WORKSPACE_AUTHORING_CONTRACT.md](WORKSPACE_AUTHORING_CONTRACT.md). The next
+step is to turn that contract from prose into repo-local and workspace-level
+ratchets.
+
 ## Guard
 
 Run the workspace-level federated contract guard from the flagship repo:
@@ -77,4 +82,7 @@ fully green; it proves the current federated contract floor has not regressed.
 1. Introduce repo-level build manifests and migrate root/CI orchestration onto them.
 2. Replace heuristic authz and i18n enforcement with first-class declarative manifests.
 3. Add a per-module observability declaration surface.
-4. Promote the strongest parts of this guard into the curated flagship product contract once they are stable enough to version.
+4. Promote the workspace authoring contract into machine-runnable checks across
+   the core repos.
+5. Promote the strongest parts of this guard into the curated flagship product
+   contract once they are stable enough to version.
