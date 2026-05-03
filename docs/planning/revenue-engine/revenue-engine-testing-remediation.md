@@ -73,10 +73,10 @@ Completed:
      command it is about to execute
 5. `TEST-005` completed on `2026-03-22`
    Result:
-   - `check-tags` now runs through a dedicated repo-owned scanner that covers
-     `tests/e2e`, `tests/bdd`, and feature-level `e2e.go` files
-   - `verify-modules` now includes both `check-tags` and the interoperability
-     contract check, so the repo has one truthful module-verification path
+   - E2E build-tag discipline now runs through the `buildtags` pkvet analyzer
+     as part of `check-pkvet`
+   - `verify-modules` now includes `check-pkvet`, so tag discipline and
+     interoperability checks share one truthful module-verification path
    - CI now calls `make verify-modules` directly instead of stitching together
      side commands around it
    - a broken `//go:build e2e` header now fails the checker against a fixture
@@ -132,7 +132,7 @@ These tickets make green builds mean something.
    Repo: `platformkit-business-modules`
    Depends on: `TEST-004`
    Exit criteria:
-   - `check-tags` is part of `verify-modules`
+   - `check-pkvet` covers E2E build-tag discipline as part of `verify-modules`
    - CI uses that path without a side channel that bypasses it
    - a broken `//go:build e2e` header fails verification
 
