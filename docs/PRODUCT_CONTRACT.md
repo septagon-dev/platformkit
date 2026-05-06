@@ -18,39 +18,63 @@ evaluate, deploy, and build against with confidence:
 - AI-operable UI and data surfaces
 - a governed agent runtime and operator workbench
 
-## Product Surface
+## Open Source Product Surface
 
-The current product contract is intentionally curated.
+The public product contract is intentionally smaller than the working
+workspace. PlatformKit OSS should be the minimum complete path for a developer
+to understand, run, extend, and verify a governed SaaS platform.
 
-Included:
+Included in the OSS core:
 
+- `platformkit`
+  - public product contract
+  - quickstart and contributor documentation
+  - OSS surface audit
+- `platformkit-devtools`
+  - `platformkit` CLI
+  - workspace doctor, scaffolding, verification, and contract checks
+  - no private staging, Synology, or release-runner assumptions in public paths
 - `platformkit-backend-kit`
   - stable runtime boundary
-  - interoperability profile
-  - runtime capability manifest
-  - runtime release policy
+  - API, config, tenancy, authn/authz, events, observability, and module
+    composition contracts
+  - runtime capability manifest and release policy
 - `platformkit-frontend-kit`
-  - MCP-facing component registry
-  - A2UI presentation bridge
-  - flagship workbench UI primitives
-- `platformkit-agent-runtime`
-  - policy-safe agent control plane
-  - approvals, budgets, and execution traces
+  - renderer, component registry, Storybook contract, A2UI bridge, and UI
+    primitives
+  - public theming and interaction contracts
+- `platformkit-design-system`
+  - token engine
+  - provider-neutral design contracts
+  - Figma/Storybook parity checks where they do not require private data
+- `platformkit-shared`
+  - only stable cross-repo schemas that cannot yet live in one owning repo
+  - every package here must have an extraction or ownership note
+- `platformkit-business-modules`
+  - OSS essentials pack only: tenant, user, auth, admin, API key, audit,
+    entitlement, notification, mail, chat, billing, content, and site
+  - other modules stay outside the public core until they are independently
+    useful, documented, and supportable
 - `platformkit-apps`
-  - lean flagship runtime
-  - composed monolith and microservices app compositions
-  - flagship bootstrap surfaces such as mobile UI endpoints
+  - one starter app and one flagship composed example
+  - no staging-only, customer-specific, or private release orchestration in the
+    OSS path
 
-Excluded for now:
+Excluded from the OSS core:
 
-- `platformkit-devtools`
-- `platformkit-module-bindings`
-- `platformkit-infra-pulumi`
-- experimental or legacy compatibility branches outside the curated flagship
-  runtime
+- private deployment state, GitOps mirrors, staging configs, Synology routing,
+  registry credentials, and release-runner implementation details
+- generated release workspaces, local Go/module caches, node modules, E2E
+  artifacts, screenshots, videos, and temporary probe files
+- vertical/client demos that exist to sell or validate a private business wedge
+- modules outside the essentials pack until they have public docs, tests, and a
+  stable support story
+- experimental compatibility branches, duplicate renderers, and replacement
+  paths without a removal plan
 
-Those repos still matter, but they are not part of the product contract until
-their surfaces are stable enough to version and support.
+Those excluded surfaces may remain valuable, but they should live in private or
+separately versioned repositories until they are mature enough to support as
+public product.
 
 ## Verification
 
@@ -114,8 +138,10 @@ these:
 
 The next maturity tranches should focus on:
 
-1. collapsing duplicate admin and protocol paths onto canonical platform seams
-2. promoting more AI/operator surfaces into curated product verification
-3. shrinking the gap between the curated flagship contract and the full runtime
-4. adding release artifacts and consumer-facing compatibility notes on top of
-   this verified base
+1. deleting local/generated weight from public worktrees before moving code
+2. splitting staging and customer-specific release state out of public repos
+3. shrinking `platformkit-business-modules` to an OSS essentials pack
+4. collapsing duplicate app compositions into one starter and one flagship
+   example
+5. promoting the CLI, design-system parity checks, and module contracts into a
+   first-class public DevX

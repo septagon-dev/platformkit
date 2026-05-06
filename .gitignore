@@ -12,3 +12,11 @@ tmp/
 node_modules/
 coverage/
 .coverage
+.gocache/
+.gotmp/
+.tmp*
+**/.gocache/
+**/.tmp-go-cache/
+**/.tmp-go-modcache/
+**/.tmp-go-path/
+**/.tmp-go-tmp/
