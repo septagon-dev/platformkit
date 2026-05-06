@@ -27,13 +27,15 @@ cli_runtime_root="$workspace_root/.tmp/platformkit-contract-cli"
 cli_go_cache="$cli_runtime_root/gocache"
 cli_go_modcache="$cli_runtime_root/gomodcache"
 cli_go_tmp="$cli_runtime_root/gotmp"
+cli_go_path="$cli_runtime_root/gopath"
 
-mkdir -p "$cli_go_cache" "$cli_go_modcache" "$cli_go_tmp"
+mkdir -p "$cli_go_cache" "$cli_go_modcache" "$cli_go_tmp" "$cli_go_path"
 
 (
 	cd "$devtools_repo"
 	env \
 		GOWORK=off \
+		GOPATH="$cli_go_path" \
 		GOCACHE="$cli_go_cache" \
 		GOMODCACHE="$cli_go_modcache" \
 		GOTMPDIR="$cli_go_tmp" \

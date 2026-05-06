@@ -9,6 +9,7 @@ integrated release surface of the platform.
 ## Start here
 
 - Product contract: [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md)
+- OSS extraction plan: [docs/OSS_EXTRACTION_PLAN.md](docs/OSS_EXTRACTION_PLAN.md)
 - Workspace authoring contract: [docs/WORKSPACE_AUTHORING_CONTRACT.md](docs/WORKSPACE_AUTHORING_CONTRACT.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
 - Contribution guide: [CONTRIBUTING.md](CONTRIBUTING.md)
@@ -41,6 +42,12 @@ integrated release surface of the platform.
 
 ## Verification
 
+Check that this repository stays safe as the public OSS surface:
+
+```bash
+make audit-oss
+```
+
 For integrated flagship verification in the Septagon workspace, this repo expects
 the sibling repositories referenced by
 [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md) to exist next to it.
@@ -70,3 +77,7 @@ make verify-federated-platform
 This repository keeps a clean Septagon-native history. Code and assets are only
 introduced intentionally, with explicit repository boundaries and launch-facing
 documentation.
+
+The active direction is removal-first: public PlatformKit should contain the
+smallest complete developer path, while private deployment state, vertical demos,
+generated artifacts, and non-essential module packs move out of the OSS core.
