@@ -1,0 +1,15 @@
+name: OSV Scan
+
+on:
+  pull_request:
+  schedule:
+    - cron: '17 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  scan:
+    uses: septagon-dev/actions/.github/workflows/reusable-osv-scan.yml@main
