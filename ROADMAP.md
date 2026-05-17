@@ -12,8 +12,13 @@ Bootstrap.
    of the public product surface.
 4. Reduce the public module set to the OSS essentials pack defined in
    `docs/OSS_EXTRACTION_PLAN.md`.
-5. Collapse app compositions into one starter app and one flagship example.
-6. Cut the first tagged release with release notes and artifacts.
+5. Make PlatformKit the flagship commercial product surface, with Septagon
+   clearly framed as the parent company and maker.
+6. Collapse app compositions into one starter app and one PlatformKit
+   evaluation surface.
+7. Keep COMUM, Incomum, Apex, and Velora in their owning repositories as full
+   products with explicit end-to-end readiness gates.
+8. Cut the first tagged release with release notes and artifacts.
 
 ## Definition of Ready for Code Migration
 

@@ -1,6 +1,6 @@
 # Revenue Engine 30-Day Execution
 
-Updated: `2026-03-21`
+Updated: `2026-05-13`
 
 ## Purpose
 
@@ -15,8 +15,8 @@ At the end of the next `30 days`, PlatformKit should have:
 
 1. a credible flagship story that builds trust quickly
 2. one payment-enabled reference path defined and under implementation
-3. one partner-readable commercial package visible in the product
-4. one standard coworking reference client contract
+3. one buyer-readable PlatformKit package visible in the product
+4. one product portfolio readiness scorecard for COMUM, Incomum, Apex, and Velora
 5. one supervised AI workflow that can be shown without hand-waving
 
 If those five things are not moving together, the platform is still a
@@ -28,7 +28,7 @@ collection of repos rather than a sellable operating system.
 
 Owns:
 
-1. wedge discipline
+1. product portfolio discipline
 2. pricing and packaging decisions
 3. design-partner selection and outreach
 4. final product tradeoff calls
@@ -60,7 +60,7 @@ AI should absorb the rest.
 
 Do not start these unless they directly block the objective:
 
-1. second vertical work
+1. fifth product-line work
 2. broad design-system extraction
 3. mobile cleanup work
 4. deep microservices parity work beyond release confidence
@@ -113,20 +113,20 @@ Day-30 outcome:
 
 Goal:
 
-Turn the platform from a technical composer into a partner-facing commercial
-surface.
+Turn the platform from a technical composer into the flagship commercial
+surface for PlatformKit.
 
 Committed new work:
 
-1. new issue: partner-readable composer package and launch summary
+1. new issue: buyer-readable composer package and launch summary
 2. new issue: payment-enabled reference flow in `complete-saas-monolith`
-3. new issue: coworking reference client contract and launch smoke
+3. new issue: product portfolio readiness scoring and launch smoke
 
 Day-30 outcome:
 
-1. composer recommends the coworking package in product language
+1. composer recommends a PlatformKit package in product language
 2. flagship app has one canonical payment-enabled path defined and partially wired
-3. one reference client contract is documented and testable
+3. one product readiness contract is documented and testable
 
 ### Stream D: Launch Tooling
 
@@ -143,7 +143,7 @@ Committed issues:
 Day-30 outcome:
 
 1. the CLI boundary is explicit
-2. client validation is more useful for the first wedge
+2. client validation is more useful for the first named products
 3. launch gaps are visible before runtime
 
 ### Stream E: AI Proof
@@ -202,10 +202,8 @@ Lock scope and remove obvious trust blockers.
 
 Founder:
 
-1. finalize the commercial wedge statement:
-   coworking and flex-space only
-2. finalize the buyer statement:
-   partner, operator group, or consultant
+1. finalize the PlatformKit commercial statement
+2. finalize Septagon's maker/parent/support positioning
 3. approve the first pricing strawman
 
 Codex / AI:
@@ -237,15 +235,15 @@ Founder:
 
 Codex / AI:
 
-1. implement partner-readable composer summary work
-2. document the coworking reference client contract
+1. implement buyer-readable composer summary work
+2. document the product portfolio readiness scorecard
 3. improve quickstart and architecture docs
 4. scope `platformkit-devtools` validation output for missing contract checks
 
 Checkpoint:
 
 1. composer speaks in package language, not only module language
-2. reference client contract exists
+2. product readiness contract exists
 3. prospecting list has started
 
 ### Week 3
@@ -265,7 +263,7 @@ Codex / AI:
 1. wire the first payment-enabled reference path in the flagship app
 2. add or tighten flagship smoke for the reference path
 3. implement one AI-assisted workflow draft with explicit approval points
-4. improve `platformkit client validate` output for the wedge if feasible
+4. improve `platformkit client validate` output for the first named products if feasible
 
 Checkpoint:
 
@@ -282,7 +280,7 @@ Turn product work into commercial evidence.
 Founder:
 
 1. finalize design-partner offer
-2. finish the first `30` partner prospects
+2. finish the first `30` partner, customer, or builder prospects
 3. begin outreach and demos
 
 Codex / AI:
@@ -333,25 +331,25 @@ Committed:
 
 1. advance `platformkit-business-modules#28`
 2. add the composer package-summary issue
-3. keep wedge-specific composer work moving
+3. keep product-package composer work moving
 
 Output:
 
 1. trustworthy billing path
-2. partner-readable product selection
+2. buyer-readable product selection
 
 ### `platformkit-devtools`
 
 Committed:
 
-1. narrow `platformkit-devtools#1` to wedge-critical commands
+1. narrow `platformkit-devtools#1` to product-critical commands
 2. advance `platformkit-devtools#2`
 3. add missing-contract reporting issue for `platformkit client validate`
 
 Output:
 
 1. clearer launch boundary
-2. better preflight validation for the first wedge
+2. better preflight validation for the first named products
 
 ### `platformkit-frontend-kit`
 
@@ -404,7 +402,7 @@ Output:
 This plan is working if:
 
 1. the product is easier to trust than it was `30` days ago
-2. the commercial wedge is visible in product and docs
+2. the PlatformKit commercial package is visible in product and docs
 3. the payment path is explicit and being wired, not deferred
 4. the launch contract is becoming repeatable
 5. the founder is spending more time on partner conversations than on support archaeology

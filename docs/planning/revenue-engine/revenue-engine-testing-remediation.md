@@ -254,8 +254,8 @@ These are the first depth upgrades after the entrypoints are honest.
     - each critical module has named behavioral obligations, not just “one test
       file”
     - breadth guards remain, but they stop being the primary confidence signal
-    - allowlist debt for first-wedge modules is reduced or explicitly tracked as
-      blocking risk
+    - allowlist debt for first-product modules is reduced or explicitly tracked
+      as blocking risk
 
 16. `TEST-016` Publish the test taxonomy and ownership contract
     Repo: `platformkit`

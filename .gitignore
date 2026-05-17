@@ -12,6 +12,7 @@ tmp/
 node_modules/
 coverage/
 .coverage
+ruvector.db
 .gocache/
 .gotmp/
 .tmp*
