@@ -55,7 +55,7 @@ for pattern in \
 	'SEPTAGON_MODULES_TOKEN' \
 	'BEGIN (RSA |OPENSSH |EC )?PRIVATE KEY'
 do
-	if matches="$(git grep -nE "$pattern" -- . 2>/dev/null || true)" && [[ -n "$matches" ]]; then
+	if matches="$(git grep -nE "$pattern" -- . ':(exclude)scripts/audit_oss_surface.sh' 2>/dev/null || true)" && [[ -n "$matches" ]]; then
 		report_failure "forbidden private/deployment marker matched pattern: $pattern"
 		echo "$matches" >&2
 	fi

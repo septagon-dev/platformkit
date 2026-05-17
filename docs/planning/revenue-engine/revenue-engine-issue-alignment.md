@@ -1,15 +1,16 @@
 # Revenue Engine Issue Alignment
 
-Updated: `2026-03-21`
+Updated: `2026-05-13`
 
 ## Purpose
 
 Map the currently open issues across the split repos to the active platform
 objective:
 
-Build PlatformKit into a credible, partner-led, AI-augmented vertical platform
-with a realistic path to payment-linked revenue, while preserving split-repo
-integrity and thin app composition boundaries.
+Build PlatformKit into the flagship commercial product developed by Septagon,
+with COMUM, Incomum, Apex, and Velora treated as full products that must prove
+end-to-end readiness. Preserve split-repo integrity and thin app composition
+boundaries while making payment-linked revenue and AI-operated workflows real.
 
 ## Active Platform Objectives
 
@@ -21,15 +22,16 @@ For the current phase, the objectives are:
 4. make billing and payment-adjacent workflows reliable
 5. make the split-repo toolchain usable for launches
 6. prove one supervised AI workflow end to end
-7. preserve client-scoped branding and white-label delivery
+7. preserve product-scoped branding and deployment overlays
+8. score COMUM, Incomum, Apex, and Velora against one readiness contract
 
 ## Decision Rule
 
 An issue is `Now` if it directly supports one of the current objectives or is a
 hard prerequisite.
 
-An issue is `Later` if it is useful but not on the critical path for the first
-commercial wedge.
+An issue is `Later` if it is useful but not on the critical path for the
+PlatformKit commercial surface or the first named product readiness pass.
 
 An issue is `Keep Watching` if it matters, but should not preempt the current
 launch, trust, or payment path.
@@ -126,8 +128,8 @@ eventually monetize.
 
 Why:
 
-White-label delivery is part of the commercial motion. Client-scoped theming
-and branding gaps sit on that path.
+Product-scoped delivery is part of the commercial motion. Client/product
+theming and branding gaps sit on that path.
 
 ### Later
 
@@ -146,19 +148,19 @@ partner-proof work.
 Why:
 
 They improve long-term structure or polish, but are not on the shortest path to
-the first credible commercial wedge.
+the PlatformKit commercial page or first product-readiness pass.
 
 ### Keep Watching
 
-These issues matter, but are outside the first wedge or are not currently
-revenue-critical.
+These issues matter, but are outside the first product-readiness pass or are
+not currently revenue-critical.
 
 - `platformkit-business-modules#29` Fail fast on device command state persistence and tighten shared test mocks
 
 Why:
 
 It is important for device-control quality, but device command persistence is
-not on the critical path for the coworking and flex-space commercial wedge.
+not on the critical path unless Apex becomes the first readiness candidate.
 
 ## Gaps In The Current Open Issue Set
 
@@ -168,13 +170,13 @@ for the actual revenue motion.
 Missing issue categories:
 
 1. payment-enabled reference flow for the flagship app
-2. partner-facing composer output:
+2. buyer-facing composer output:
    preset, quote, recommended package, and launch summary
-3. standard coworking reference client contract and launch checklist
+3. product portfolio readiness scorecard and launch checklist
 4. launch instrumentation:
    time-to-live, manual interventions, and failure reasons
-5. partner and brand metrics:
-   live brands, active partners, monthly volume, and usage
+5. product, partner, and brand metrics:
+   live products, live brands, active partners, monthly volume, and usage
 6. AI-assisted support and onboarding operations
 7. design-partner offer, qualification, and evidence capture
 
@@ -236,7 +238,7 @@ What we need is:
 
 1. keep the aligned `Now` issues active
 2. avoid letting `Later` issues displace payment, trust, and launch work
-3. open missing issues for partner launch, payment flow, metrics, and AI-supported ops
+3. open missing issues for product readiness, partner launch, payment flow, metrics, and AI-supported ops
 
 ## Proposed New Issues
 
@@ -245,17 +247,17 @@ These are the highest-signal additions to the issue trackers.
 ### `platformkit-apps`
 
 1. Wire one payment-enabled reference flow through `complete-saas-monolith`
-2. Define the standard coworking reference client and launch smoke contract
+2. Define the standard product readiness and launch smoke contract
 3. Instrument launch-cycle timing and manual intervention reporting
 
 ### `platformkit-business-modules`
 
-1. Make the platform composer emit a partner-readable package and launch summary
+1. Make the platform composer emit a buyer-readable package and launch summary
 2. Add partner and brand reporting primitives for live brands, active partners, and monthly volume
 
 ### `platformkit-devtools`
 
-1. Materialize the canonical coworking preset into a launch-ready client scaffold
+1. Materialize the first named product preset into a launch-ready scaffold
 2. Emit a launch checklist and missing-contract report from `platformkit client validate`
 
 ### `platformkit-agent-runtime`
@@ -264,4 +266,4 @@ These are the highest-signal additions to the issue trackers.
 
 ### `platformkit-tests`
 
-1. Add payment-enabled flagship smoke coverage for the canonical wedge
+1. Add payment-enabled flagship smoke coverage for the first named product path

@@ -9,6 +9,7 @@ integrated release surface of the platform.
 ## Start here
 
 - Product contract: [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md)
+- PlatformKit formula: [docs/PLATFORMKIT_FORMULA.md](docs/PLATFORMKIT_FORMULA.md)
 - OSS extraction plan: [docs/OSS_EXTRACTION_PLAN.md](docs/OSS_EXTRACTION_PLAN.md)
 - Workspace authoring contract: [docs/WORKSPACE_AUTHORING_CONTRACT.md](docs/WORKSPACE_AUTHORING_CONTRACT.md)
 - Roadmap: [ROADMAP.md](ROADMAP.md)
@@ -36,6 +37,7 @@ integrated release surface of the platform.
 - [REPO_CHARTER.md](REPO_CHARTER.md): ownership and scope
 - [ROADMAP.md](ROADMAP.md): execution sequence and launch priorities
 - [docs/PRODUCT_CONTRACT.md](docs/PRODUCT_CONTRACT.md): curated cross-repo contract
+- [docs/PLATFORMKIT_FORMULA.md](docs/PLATFORMKIT_FORMULA.md): core/module/client architecture formula
 - [docs/WORKSPACE_AUTHORING_CONTRACT.md](docs/WORKSPACE_AUTHORING_CONTRACT.md): cross-repo authoring standard
 - [docs/FEDERATED_PLATFORM_AUDIT.md](docs/FEDERATED_PLATFORM_AUDIT.md): federated platform checks
 - [docs/MIGRATION_BOUNDARY.md](docs/MIGRATION_BOUNDARY.md): migration rules
@@ -78,6 +80,9 @@ This repository keeps a clean Septagon-native history. Code and assets are only
 introduced intentionally, with explicit repository boundaries and launch-facing
 documentation.
 
-The active direction is removal-first: public PlatformKit should contain the
-smallest complete developer path, while private deployment state, vertical demos,
-generated artifacts, and non-essential module packs move out of the OSS core.
+The active direction is product-first and removal-disciplined: public
+PlatformKit should contain the smallest complete developer path, while private
+deployment state, generated artifacts, and non-essential module packs move out
+of the OSS core. Commercial products such as COMUM, Incomum, Apex, and Velora
+live in their owning product repositories and must prove end-to-end readiness
+there; they are not throwaway demos inside the OSS core.

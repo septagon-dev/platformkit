@@ -24,6 +24,11 @@ The public product contract is intentionally smaller than the working
 workspace. PlatformKit OSS should be the minimum complete path for a developer
 to understand, run, extend, and verify a governed SaaS platform.
 
+The architecture formula behind this contract is defined in
+[PLATFORMKIT_FORMULA.md](PLATFORMKIT_FORMULA.md): core defines the rules,
+modules add capabilities, and clients compose capabilities into products and
+user flows.
+
 Included in the OSS core:
 
 - `platformkit`
@@ -66,7 +71,9 @@ Excluded from the OSS core:
   registry credentials, and release-runner implementation details
 - generated release workspaces, local Go/module caches, node modules, E2E
   artifacts, screenshots, videos, and temporary probe files
-- vertical/client demos that exist to sell or validate a private business wedge
+- commercial product and customer surfaces such as COMUM, Incomum, Apex, and
+  Velora; these belong in their owning repositories with their own end-to-end
+  readiness contracts rather than inside the OSS core
 - modules outside the essentials pack until they have public docs, tests, and a
   stable support story
 - experimental compatibility branches, duplicate renderers, and replacement
