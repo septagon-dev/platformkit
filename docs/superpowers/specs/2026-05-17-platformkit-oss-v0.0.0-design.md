@@ -30,7 +30,7 @@ The following are **out of scope for v0.0.0** and ship in v0.0.1 or later:
 - NATS / JetStream / Kafka event providers — only in-memory + sqlite-outbox in OSS; cloud providers stay Pro
 - SCIM provisioning — stays in Pro `auth_management`
 - Magic-link login, OAuth providers, MFA-TOTP, WebAuthn — v0.0.0 ships username/password + session cookies; richer auth is v0.0.1
-- `site_management`, `entitlement_management`, `billing_management`, `chat_management`, `file_management`, `mail_management` as full modules — `mail_management` ships as a `MailSender` port + logger-stub default; the rest are v0.1.0+ candidates
+- `mail_management`, `site_management`, `entitlement_management`, `billing_management`, `chat_management`, `file_management` — all cut from v0.0.0. No `MailSender` port ships in OSS. Pro adds mail/SMS/push as separate provider modules in its own pack.
 - `translation_management` — v0.0.0 modules use literal English strings; a no-op `TranslationRegistrar` port is exposed for forward compatibility
 - `change_management` — already optional in source, dropped from v0.0.0 default
 - Full bridge of all 9 modules in `septagon-dev` — only `user_management` is bridged as PoC
@@ -110,7 +110,7 @@ septagon-oss-workspace/
 │   pkg/{cliapp,tui}                     # (already exists)
 │
 ├── pk-modules/                          # the 9 essential modules
-│   pkg/portslib/                        # shared ports across modules (AdminRegistrar, MailSender, HealthRegistrar, ...)
+│   pkg/portslib/                        # shared ports across modules (AdminRegistrar, HealthRegistrar, NotificationChannel, ...)
 │   pkg/tenant/                          # ports + sqlite default + admin pages + extension example
 │   pkg/user/
 │   pkg/auth/
@@ -250,7 +250,7 @@ Each module lives at `pk-modules/pkg/<name>/` and ships:
 ```
 pk-modules/pkg/<name>/
 ├── module.go                           # Module struct, NewModule(opts...), exported for embedding
-├── options.go                          # WithStore, WithMailer, WithExtraRoutes, WithExtraAdminPages
+├── options.go                          # WithStore, WithExtraRoutes, WithExtraAdminPages, WithEventBus
 ├── ports.go                            # public ports for Pro to consume/extend
 ├── entities.go                         # entity descriptors
 ├── handler.go                          # HTTP routes via entity.GenericHandler + custom routes
@@ -273,18 +273,17 @@ pk-modules/pkg/<name>/
 |---|---|---|---|
 | **tenant** | `TenantService`, `TenantContextProvider`, `TenantIsolationEnforcer` | tenant CRUD, current-tenant context, query-scope middleware | drops vertical tenant types (traffic, spatial) |
 | **user** | `UserService`, `UserBoundaryReader`, `UserBoundaryRoleManager` | user CRUD, profile, role assignment | drops SCIM, enterprise SSO |
-| **auth** | `AuthService`, `SessionStore`, `PasswordHasher`, `LoginPolicy` | login/logout, session lifecycle, password reset email | drops magic links, OAuth, MFA (v0.0.1) |
+| **auth** | `AuthService`, `SessionStore`, `PasswordHasher`, `LoginPolicy` | login/logout, session lifecycle, password reset (emits event; Pro mail module sends the email) | drops magic links, OAuth, MFA (v0.0.1) |
 | **api_key** | `APIKeyService`, `APIKeyAuthenticator`, `RateLimiter` (port only) | API key CRUD, key auth middleware | rate-limit primitive in pk-core, wiring deferred to v0.0.1 |
 | **audit** | `AuditService`, `AuditReader`, `AuditEmitter` | append-only audit log, query, subscribe-to-event-bus | drops vertical audit categories |
 | **health** | `HealthRegistrar`, `HealthReporter` | health check registry, /healthz, /readyz | thin wrapper over pk-core/pkg/observability |
-| **notification** | `NotificationService`, `NotificationChannel`, `NotificationSubscriber` | create/dispatch notifications via channels (mail, in-app); subscribes to event bus | drops translation_management dep (English literals); drops change_management (optional anyway) |
+| **notification** | `NotificationService`, `NotificationChannel`, `NotificationSubscriber` | create/dispatch **in-app** notifications (DB + admin UI inbox) and emit events; channel interface is extensible so Pro adds mail/SMS/push providers | drops mail entirely (Pro concern); drops translation_management (English literals); drops change_management (optional anyway) |
 | **content** | `ContentService`, `ContentReader`, `ContentPublisher` | generic content CRUD (page, post, snippet types) | drops site/SEO/CDN concerns (those stay Pro/v0.1.0) |
 | **admin** (plugin) | `AdminRegistrar`, `AdminRenderer`, `AdminPage` | register CRUD pages, render server-side, sidebar | wrap above modules; replaceable by Pro |
 
 ### 6.2 Shared ports (`pk-modules/pkg/portslib`)
 
 ```go
-type MailSender interface { Send(ctx context.Context, msg Mail) error }
 type TranslationRegistrar interface { Register(key, lang, text string) error }  // no-op default
 type HealthRegistrar interface { Register(name string, check HealthCheck) }
 type AdminRegistrar interface {
@@ -293,6 +292,10 @@ type AdminRegistrar interface {
     RegisterSidebarSection(s SidebarSection) error
 }
 type SettingsRegistrar interface { Register(group, key string, schema SettingSchema) error }
+type NotificationChannel interface {                  // satisfied by built-in in-app channel; Pro adds mail/SMS/push
+    Name() string
+    Deliver(ctx context.Context, n Notification) error
+}
 ```
 
 Default implementations live next to the port and are wired by default in `NewModule()`.
@@ -304,7 +307,6 @@ Every module exposes:
 type Module struct {
     metadata module.Metadata
     store    Store
-    mailer   portslib.MailSender
     // ... unexported impl details
 }
 
@@ -326,7 +328,6 @@ type ProModule struct {
 func NewModule(deps Deps) *ProModule {
     base := user.NewModule(
         user.WithStore(postgres.NewUserStore(deps.DB)),
-        user.WithMailer(ses.NewMailer(deps.SES)),
         user.WithExtraAdminPages(scimAdminPage),
     )
     return &ProModule{Module: base, sso: deps.SSO}
@@ -370,10 +371,10 @@ Form fields are derived from the `entity.Descriptor` (already exists in pk-core)
 | DB | sqlite (modernc.org/sqlite — pure Go) | postgres, mysql, planetscale, etc. |
 | Cache | sync.Map with TTL | redis, memcached |
 | Logger | slog JSON | datadog, honeycomb, otel sink |
-| Mailer | logger stub (writes "would send" to logs) | SES, SendGrid, Postmark, SMTP |
 | Event bus | in-memory + sqlite outbox | NATS, JetStream, Kafka |
 | Session store | sqlite | redis, cookie-encrypted, JWT |
-| Object storage | local filesystem | S3, GCS, R2 |
+| Notification channel | in-app (DB + admin inbox) | mail (SES/SMTP), SMS, push, Slack |
+| Object storage | (not in v0.0.0) | S3, GCS, R2 |
 
 ### 8.2 Override mechanism
 
@@ -521,7 +522,7 @@ If the existing tests cannot pass against the bridged shape, the OSS contract is
 
 - The OSS `user.Module` type is correctly exported and embeddable
 - The `user.Store` interface accommodates a custom backend (postgres) without internal changes
-- The `user.Mailer` swap works
+- Adding Pro routes via `user.WithExtraRoutes` works
 - Admin pages from OSS + admin pages from Pro coexist via `AdminRegistrar`
 - Tests written against the OSS module also pass when consumed by Pro
 
