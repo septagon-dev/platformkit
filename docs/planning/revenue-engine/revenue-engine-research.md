@@ -1,6 +1,6 @@
 # Revenue Engine Research
 
-Updated: `2026-03-21`
+Updated: `2026-05-13`
 
 ## Question
 
@@ -10,16 +10,17 @@ What is the most credible path for PlatformKit to become a
 
 ## Summary
 
-The evidence does not support a broad horizontal SaaS strategy.
+The evidence does not support a broad, generic horizontal SaaS strategy.
 
 The credible path is:
 
-1. start with one vertical workflow kernel
-2. own a payment or transaction rail inside that workflow
-3. use AI to compress support, onboarding, implementation, and QA
-4. distribute through a small number of high-leverage partners rather than
+1. make PlatformKit the flagship commercial product
+2. prove it through a small product portfolio with end-to-end readiness gates
+3. own payment or transaction rails inside those products where the workflow supports it
+4. use AI to compress support, onboarding, implementation, and QA
+5. distribute through a small number of high-leverage partners rather than
    hundreds of direct SMB accounts
-5. make the product machine-readable and agent-compatible early enough that
+6. make the product machine-readable and agent-compatible early enough that
    it can sell to both humans and AI-driven buying flows
 
 ## Research Signals
@@ -67,7 +68,7 @@ Implication:
 A narrow vertical can still create very large payment volume if the product is
 operationally central and tied to revenue collection.
 
-### 4. Flex-space demand is real enough to justify a wedge
+### 4. Flex-space demand is real enough to justify COMUM as proof
 
 Recent commercial real estate research still shows real demand for flex and
 coworking:
@@ -80,9 +81,9 @@ coworking:
 
 Implication:
 
-Coworking and flex-space are still credible entry wedges, especially if the
-target buyer is a multi-location operator or partner rather than a single
-location.
+Coworking and flex-space are still credible product proof areas for COMUM,
+especially if the commercial motion also supports multi-location operators and
+partners rather than only a single location.
 
 ### 5. Competitors monetize more than just subscriptions
 
@@ -135,12 +136,13 @@ used to make the platform operable by AI agents, not just by human admins.
 
 For PlatformKit, the credible solo-founder strategy is:
 
-1. `One wedge first`:
-   coworking/flex-space
-2. `One buyer first`:
-   partner, operator group, or consultant with multiple downstream brands
-3. `One commercial motion first`:
-   white-label operator OS plus payments
+1. `One flagship first`:
+   PlatformKit is the commercial product and Septagon is the maker
+2. `One portfolio first`:
+   COMUM, Incomum, Apex, and Velora prove PlatformKit in real operating domains
+3. `One readiness contract first`:
+   product pages cannot claim end-to-end readiness without runtime, revenue,
+   deployment, support, and E2E proof
 4. `One leverage model`:
    AI handles repetitive operational work, while the founder handles product,
    sales, and high-value partner relationships
@@ -200,12 +202,13 @@ customers.
 
 ## Immediate Strategy Adjustments
 
-1. keep `coworking/flex-space` as the first wedge
-2. shift target customer language toward `partners` and `multi-location operators`
-3. make payment integration a first-order milestone rather than a later add-on
-4. make the composer output commercial packaging, not just technical module
+1. make `platformkit.dev` the flagship commercial PlatformKit page
+2. position Septagon as parent company, maker, and support organization
+3. score COMUM, Incomum, Apex, and Velora against product-readiness gates
+4. make payment integration a first-order milestone rather than a later add-on
+5. make the composer output commercial packaging, not just technical module
    selection
-5. add a machine-readable and agent-usable surface to all revenue-critical
+6. add a machine-readable and agent-usable surface to all revenue-critical
    workflows
 
 ## Sources

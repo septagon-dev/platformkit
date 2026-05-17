@@ -28,7 +28,7 @@ The current workspace is large for the wrong reasons:
 - `platformkit-business-modules` has 50 modules, but the public core only needs
   a much smaller essentials pack
 - `platformkit-apps` currently carries product composition, staging recovery,
-  vertical demos, and test artifacts in one mental bucket
+  product proof surfaces, and test artifacts in one mental bucket
 
 The first extraction rule is therefore simple: do not move everything into the
 public product. Move only the surfaces that improve the first developer hour.
@@ -45,7 +45,7 @@ Keep these as first-class public surfaces.
 | `platformkit-frontend-kit` | Renderer, components, Storybook, A2UI bridge | Keep only tokenized, registry-backed primitives and public previews |
 | `platformkit-design-system` | Tokens, themes, provider contracts, parity checks | Provider adapters must be optional and target-neutral first |
 | `platformkit-business-modules` | Essential SaaS domain pack | Split non-essential modules out of the OSS core |
-| `platformkit-apps` | Starter app and composed example | Delete or move staging, private verticals, and release recovery code |
+| `platformkit-apps` | Starter app and composed example | Delete or move staging, private product overlays, and release recovery code |
 | `platformkit-shared` | Stable shared schemas | Shrink continuously; prefer moving packages back to owning repos |
 
 ## OSS Essentials Pack

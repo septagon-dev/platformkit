@@ -10,32 +10,42 @@ This is not a 12-month target. The planning horizon is `36 months`.
 
 ## Starting Point
 
-The current platform already has four assets worth commercializing:
+The commercial hierarchy is now explicit:
 
-1. `complete-saas` as a runnable flagship application surface
-2. client overlays under `septagon-clients/*` for white-label delivery
-3. the module composer under `module_management`
-4. the agent runtime for operator automation and approval flows
+1. PlatformKit is the flagship commercial product.
+2. Septagon is the parent company that develops and supports PlatformKit.
+3. COMUM, Incomum, Apex, and Velora are full products built on PlatformKit,
+   not disposable demos.
 
-The current gaps are commercial, not just technical:
+The current platform already has assets worth commercializing:
 
-1. no locked vertical wedge
-2. no explicit commercial package
-3. no payment-led revenue rail
-4. no partner control plane
-5. no repeatable launch motion with measured cycle time
+1. `platformkit.dev` and `platformkit-marketing` as the commercial site surface
+2. `complete-saas` as the runnable PlatformKit evaluation surface
+3. product overlays under `septagon-clients/*` and `septagon-demos/*`
+4. the module composer under `module_management`
+5. the agent runtime for operator automation and approval flows
+
+The current gaps are commercial and operational, not just technical:
+
+1. PlatformKit's public page does not yet read as the flagship commercial page.
+2. the product portfolio lacks one shared end-to-end readiness contract
+3. COMUM, Incomum, Apex, and Velora have uneven runtime readiness
+4. payment-led revenue paths are not yet standard across products
+5. partner, support, and launch operations are not yet repeatable
 
 ## Hard Assumptions
 
-1. First wedge is `coworking/flex-space`.
-2. Primary customer is a `partner`:
-   agency, consultant, operator group, or franchise-style buyer.
-3. The product sold first is a `white-label operator OS`, not a generic
-   low-price SMB SaaS.
-4. Revenue must come from a mix of:
-   platform fees, per-brand fees, automation usage, and payment volume.
-5. The path is invalid if payment flow is still outside PlatformKit after
-   `M2`.
+1. The first commercial surface is PlatformKit itself, not a Septagon parent
+   company page.
+2. Septagon appears as the maker, support organization, and operator behind
+   PlatformKit.
+3. The first product proofs are COMUM, Incomum, Apex, and Velora.
+4. A product is not public-ready until it passes the readiness gates in
+   [`product-portfolio-readiness.md`](./product-portfolio-readiness.md).
+5. Revenue must come from a mix of:
+   platform fees, product subscriptions, partner fees, automation usage, and
+   payment/booking volume.
+6. The path is invalid if the named products cannot run end to end.
 
 ## Revenue Model
 
@@ -63,16 +73,16 @@ This math is only useful if each layer is proven in sequence.
 
 Target date: `2026-05-15`
 
-Goal: stop treating PlatformKit as a broad platform and define the first
- sellable offer.
+Goal: stop treating PlatformKit as a loose engineering umbrella and make it the
+flagship commercial product page with a product portfolio behind it.
 
 Exit criteria:
 
-1. one vertical wedge: `coworking/flex-space`
-2. one commercial package: `white-label operator OS`
-3. one recommended module preset for the wedge
-4. one partner-facing pricing model
-5. one demo path from branding to deployment to payment collection
+1. `platformkit.dev` has one clear commercial promise and one primary CTA
+2. Septagon is positioned as maker/parent, not as the competing product brand
+3. COMUM, Incomum, Apex, and Velora each have a readiness score
+4. one commercial PlatformKit package and pricing strawman exist
+5. one local evaluation path proves PlatformKit from install to product flow
 
 ### M1 Design Partner Proof
 
@@ -82,9 +92,9 @@ Goal: prove that real buyers will pay for the offer.
 
 Exit criteria:
 
-1. `3` signed design partners
-2. `1` live payment-enabled deployment
-3. `10` committed downstream launches across those partners
+1. `1` named product passes every readiness gate
+2. `3` signed design partners, customers, or implementation partners
+3. `1` live payment-enabled deployment
 4. first case study with measured launch time and operator outcome
 5. booked recurring revenue of at least `$8k/mo`
 
@@ -155,35 +165,35 @@ The program should be reviewed or stopped if any of the following are true:
 
 ## Workstreams
 
-### W1 Offer and Packaging
+### W1 PlatformKit Commercial Surface
 
 Primary repos:
 
 - `platformkit`
-- `platformkit-apps`
-- `platformkit-business-modules`
+- `platformkit-marketing`
 
 Deliverables:
 
-1. wedge definition and ICP
-2. pricing model and package boundaries
-3. one-click recommended module preset
-4. demo story and ROI framing
+1. flagship homepage, product narrative, and primary CTA
+2. Septagon-as-maker positioning
+3. pricing model and package boundaries
+4. comparison, FAQ, and AI-search-readable pages
 
-### W2 White-Label Launch System
+### W2 Product Portfolio Readiness
 
 Primary repos:
 
-- `platformkit-devtools`
 - `platformkit-apps`
 - `septagon-clients/*`
+- `septagon-demos/*`
+- `platformkit-tests`
 
 Deliverables:
 
-1. generated client setup path
-2. branded deployment overlays
-3. launch checklist and smoke verification
-4. measured deployment lead time
+1. readiness score for COMUM, Incomum, Apex, and Velora
+2. one local runbook per product
+3. one E2E smoke per product covering the primary flow
+4. measured launch and onboarding time per product
 
 ### W3 Payments and Revenue Capture
 
@@ -194,12 +204,12 @@ Primary repos:
 
 Deliverables:
 
-1. payment-enabled default flow
-2. booking and billing instrumentation
-3. take-rate ready settlement model
-4. partner and brand-level revenue reporting
+1. payment-enabled default flow in PlatformKit
+2. booking, subscription, and billing instrumentation for product lines
+3. take-rate ready settlement model where the product has transaction volume
+4. product, partner, and brand-level revenue reporting
 
-### W4 Partner Operations
+### W4 Product and Partner Operations
 
 Primary repos:
 
@@ -209,10 +219,10 @@ Primary repos:
 
 Deliverables:
 
-1. partner dashboard
+1. product readiness dashboard
 2. launch queue and approval workflow
 3. support triage and automation
-4. brand fleet management
+4. partner console for builders and operators
 
 ### W5 Marketplace
 
@@ -233,24 +243,24 @@ Deliverables:
 
 ### Week 1-2
 
-1. lock the `coworking/flex-space` wedge and reject adjacent vertical work
-2. add a recommended coworking preset to the platform composer
-3. define the first commercial package and draft pricing
-4. map the current flagship demo path and list broken steps
+1. publish the PlatformKit flagship commercial positioning
+2. define Septagon's role as maker/parent/support organization
+3. score COMUM, Incomum, Apex, and Velora against the readiness contract
+4. map the current PlatformKit evaluation path and list broken steps
 
 ### Week 3-4
 
-1. make the composer output a partner-readable summary, not just a technical selection
-2. define the standard client launch artifact set
-3. instrument launch cycle time and payment path gaps
-4. identify the minimum billing and booking events needed for GMV reporting
+1. make the composer output a buyer-readable product summary, not just a technical selection
+2. define the standard product launch artifact set
+3. instrument product launch time and payment path gaps
+4. identify the minimum billing, booking, and subscription events needed for revenue reporting
 
 ### Week 5-6
 
-1. publish a partner launch checklist
-2. stand up one internal reference deployment using the full path
-3. prepare the first design-partner demo script
-4. create the first case-study template and launch scorecard
+1. publish product launch checklists for the first two readiness candidates
+2. stand up one product using the full path
+3. prepare the first PlatformKit commercial walkthrough
+4. publish the first case-study template and product readiness scorecard
 
 ## Immediate Repo Task Map
 
@@ -258,30 +268,36 @@ Deliverables:
 
 1. keep this program document current
 2. add product-facing packaging and pricing docs
-3. publish the canonical wedge narrative
+3. publish the PlatformKit flagship narrative
+4. maintain the product portfolio readiness contract
 
 ### `platformkit-business-modules`
 
-1. make the composer opinionated around the first wedge
+1. make the composer output product-readable summaries
 2. add payment and partner reporting requirements to the relevant modules
-3. remove demo-path breakage in validation, composition, and deployment flows
+3. remove product-path breakage in validation, composition, and deployment flows
 
 ### `platformkit-devtools`
 
-1. turn client materialization into a standard launch path
-2. emit launch-ready artifacts for partners
-3. validate the minimum client contract automatically
+1. turn product materialization into a standard launch path
+2. emit launch-ready artifacts for products and partners
+3. validate the minimum product contract automatically
 
 ### `platformkit-apps`
 
-1. make `complete-saas-monolith` the commercial reference surface
-2. define the standard payment-enabled demo path
-3. publish a launch smoke that matches partner onboarding
+1. make `complete-saas-monolith` the PlatformKit evaluation surface
+2. define the standard payment-enabled product path
+3. publish launch smokes that match product onboarding
 
 ### `septagon-clients/*`
 
-1. keep one clean reference client for the coworking wedge
+1. keep COMUM and Incomum honest as full product/customer surfaces
 2. keep one internal staging deployment current with the standard path
+
+### `septagon-demos/*`
+
+1. promote Apex and Velora from product stories into end-to-end product surfaces
+2. close readiness gaps before public pages imply production readiness
 
 ## Current Status
 
