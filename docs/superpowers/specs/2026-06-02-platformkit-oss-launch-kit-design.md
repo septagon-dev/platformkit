@@ -95,10 +95,9 @@ Create one canonical entry repo: **`septagon-oss/platformkit`** (the "meta" / fr
 Sub-repos get **lean, focused READMEs** that each answer exactly three questions:
 *what is this? how do I use it? what does it depend on?* — and link back to the front door.
 
-> Decision rule for the front-door repo location: if creating `septagon-oss/platformkit`
-> is undesirable, the fallback front door is `pk-apps` (the thing that runs). Confirmed
-> default is the dedicated meta repo, because it lets the first impression be curated
-> independent of any single component. (Open question 8.1.)
+> **Decided:** create the dedicated `septagon-oss/platformkit` meta repo as the front door
+> (it lets the first impression be curated independent of any single component). Creating
+> the repo + its initial commit is a pre-flight item in `CHECKLIST.md`.
 
 ## 4. Narrative spine (the source everything derives from)
 
@@ -123,9 +122,11 @@ so we never contradict ourselves across channels. It fixes:
   replacement; not production-hardened-at-scale on the SQLite default; not a framework you
   must adopt wholesale. Honesty here is the single best HN-survival investment.
 
-Voice: technical peer talking to a tired senior Go dev. Substance-first, zero hype, mildly
-self-aware. The existing `elevator-pitches.md` is the raw material; this kit **simplifies
-and de-jargons** it (e.g. drop "governed product substrate" → "reusable SaaS backend").
+Voice: **Septagon (the company) speaking as a technical peer** to a tired senior Go dev.
+Substance-first, zero hype, mildly self-aware — the company voice stays warm and plain, not
+corporate. The existing `elevator-pitches.md` is the raw material; this kit **simplifies and
+de-jargons** it (e.g. drop "governed product substrate" → "reusable SaaS backend"). Same
+voice across all channels (no individual-maker persona).
 
 ## 5. Deliverables in detail
 
@@ -302,19 +303,22 @@ Each step ends with the relevant repo(s) green and the Codex gate passed.
 
 ## 8. Open questions
 
-1. **Front-door repo:** create `septagon-oss/platformkit` as the meta entry repo (default,
-   recommended), or designate `pk-apps` as the front door to avoid an 11th repo?
-2. **CLI vs make for the hero verb:** does the `platformkit`/`pk` binary path actually work
+**Resolved:**
+
+- **Front-door repo** → create the dedicated `septagon-oss/platformkit` meta repo.
+- **Attribution voice** → Septagon (company), same voice across all channels.
+- **Launch timing** → ready-when-green; no fixed date. Quality is the gate.
+
+**Still open (non-blocking; resolved during execution):**
+
+1. **CLI vs make for the hero verb:** does the `platformkit`/`pk` binary path actually work
    today, or does §5.1 verification show we must lead with `make up`/`go run .`? (Resolved by
    running it — do not assume.)
-3. **Launch timing:** is there a target launch date/window, or is "ready when the kit + code
-   are green" the only constraint?
-4. **Blog host:** where does `blog-post.md` actually publish (Septagon site, dev.to,
-   Medium, GitHub Pages)? Affects the canonical URL the posts link to.
-5. **Apache-2.0 confirmed** across all 10 repos? (`pk-*` LICENSE files must match the README
+2. **Blog host:** where does `blog-post.md` actually publish (Septagon site, dev.to,
+   Medium, GitHub Pages)? Affects the canonical URL the posts link to. Default assumption:
+   Septagon site; confirm before the post links go live.
+3. **Apache-2.0 confirmed** across all 10 repos? (`pk-*` LICENSE files must match the README
    claim — verified in pre-flight.)
-6. **Attribution voice:** posts authored as "Septagon" (company) or as an individual maker?
-   HN often responds better to a named human; confirm preference.
 
 ## 9. Risks
 
