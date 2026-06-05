@@ -16,12 +16,12 @@
 admin UI, audit, API keys, content, and notifications — composed from nine
 modules. Pure Go: no CGO, no npm, no Docker, no external database.**
 
-It is the part of a SaaS backend you would otherwise rebuild, badly, in every
-project.
+It is the part of a SaaS backend you would otherwise rebuild from scratch in
+every project.
 
 ---
 
-## 2. The wedge — substrate, not scaffold
+## 2. The wedge — the backend, not a demo of one
 
 Most SaaS starters hand you a CRUD demo. You spend the next month deleting their
 opinions and bolting on the things every product actually needs — tenant
@@ -35,23 +35,24 @@ verified hero path — a fresh clone boots, seeds a tenant and an admin user, an
 serves the admin UI at `http://localhost:8080/admin` in about two seconds on a
 warm cache (about seventeen on the first cold build, while Go downloads modules).
 
-Modules do not import each other. They talk only through ports — Go interfaces
-like `AdminRegistrar` and `HealthRegistrar` — and are wired together by
-dependency injection. So you can replace one module's implementation without the
-change cascading through the others, and you can add your own module the same way
-the nine built-ins are added.
+Modules never import each other's implementations. They depend only on
+interfaces — ports like `AdminRegistrar` and `HealthRegistrar`, or a provider's
+published contract such as `audit.AuditEmitter` — and dependency injection
+supplies the concrete type at startup. So you can replace one module's
+implementation without the change cascading through the others, and you can add
+your own module the same way the nine built-ins are added.
 
 Multi-tenancy is there from the first line, not retrofitted. Tenant identity is a
 first-class part of the data layer and the auth flow: the seeded login is scoped
 to a tenant, and the tenant store is what the admin UI reads. You do not opt into
-tenancy later; it is the substrate.
+tenancy later; it is built in, not bolted on.
 
 ---
 
 ## 3. Honest open-core
 
-PlatformKit is **Apache-2.0**. The thing you clone and run is the real product,
-not a teaser.
+PlatformKit is **Apache-2.0**. The thing you clone and run is the whole thing,
+not a trial slice.
 
 **What's free (the whole substrate):** all the public contracts and ports, the
 default providers that make it run with zero setup (SQLite, in-memory, stdlib,
@@ -121,3 +122,9 @@ platform/Pro features and do not run in the OSS slice today: a REST
 `/api/_platform` introspection API, and a running 55-tool MCP server. Do not
 claim either for the OSS launch. The honest AI-introspection story is §4 above —
 `pk explain --json`, typed module metadata, and MCP descriptor hooks on entities.
+
+One scoping note on "no Docker": that describes the **starter app's runtime** —
+`go run .` needs nothing but Go. The `pk scaffold` generator does emit a
+`docker-compose.yml` (Postgres/Redis/NATS) for projects that want those backends,
+so don't phrase "no Docker" near scaffolding copy in a way a reader could call a
+contradiction. The starter runs on SQLite with zero containers; that is the claim.
