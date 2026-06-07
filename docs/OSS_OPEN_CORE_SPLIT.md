@@ -191,6 +191,47 @@ platformkit-pro
 
 No public repo may import a private `septagon-dev` package.
 
+## Frontend UI Stack (authoritative)
+
+PlatformKit does **not** use Vue, React, or any client-side admin SPA for
+product UI. ADR-0000 (`platformkit-docs/adr/0000-technology-stack.md`) is the
+source of truth. ADR-0027 (Astro Starlight) applies only to **public docs sites**
+— build-time MDX/React islands that never ship inside server binaries.
+
+### Runtime layers
+
+| Layer | Technology | OSS | Pro |
+|-------|------------|-----|-----|
+| HTML composition | **gomponents** (`maragu.dev/gomponents`) | — | `platformkit-frontend-kit`, `admin_management` |
+| Interactivity | **HTMX** + vendored JS **controller runtime** | — | embedded in admin layout |
+| OSS admin shell | **`html/template`** + embedded CSS | `pk-modules/pkg/admin` | extended via `ossbridge` |
+| Design tokens | **pk-design** / CUE pipeline | `pk-design` | `platformkit-design-system` |
+| Component catalog | **Go registry** (metadata for builders, A2UI, Storybook) | contracts in `platformkit-ui` | `platformkit-frontend-kit/registry` |
+| Agent HTML surfaces | **A2UI** (server-rendered fragments) | — | optional Pro endpoints |
+
+Vue files exist only under `platformkit-courses/` (Slidev decks), not in admin
+or apps.
+
+### Extension contract (not replacement)
+
+- OSS `pk-modules/pkg/admin` implements `portslib.AdminRegistrar` with a
+  minimal swappable shell.
+- Pro `admin_management` **extends** via `ossbridge.NewOSSModule` (DI parity +
+  tests) while production `/admin` renders through gomponents + HTMX.
+- Other pack modules follow the same `ossbridge/` pattern — Pro stores and
+  routes delegate to OSS module types; no parallel framework implementations.
+
+Extraction path: `platformkit-ui` (contracts + accessibility first), then runtime
+tiers per `platformkit-frontend-kit/docs/OPEN_SOURCE_EXTRACTION_PLAN.md`.
+
+### Enforcement
+
+```bash
+cd platformkit && make check-ui-stack-docs          # stale client-framework admin claims
+cd platformkit-business-modules && make check-oss-extension  # nine pack modules bridged
+cd platformkit-backend-kit && go test -run OpenCore   # kernel packages bridge pk-core
+```
+
 ## Release Lanes
 
 Use independent public tags per repo, then keep a compatibility matrix in
