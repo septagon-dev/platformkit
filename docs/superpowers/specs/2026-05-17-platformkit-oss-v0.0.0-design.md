@@ -7,7 +7,7 @@
 
 ## 0. Summary
 
-Cut the first public release of PlatformKit by extracting the full set of architectural pillars and a curated 9-module pack from `septagon-dev/*` into `septagon-oss-workspace/*`. The release ships under the `github.com/septagon-oss/*` namespace, tagged `v0.0.0` across 10 repos. A one-module Pro-extension PoC (`user_management`) proves the open-core extension contract end-to-end before tag.
+Cut the first public release of PlatformKit by extracting the full set of architectural pillars and a curated 9-module pack from `septagon-dev/*` into `septagon-oss-workspace/*`. The release ships under the `github.com/septagon-oss/*` namespace, tagged `v0.0.0` across 10 repos. Pro extension is proved via `ossbridge/` adapters for all nine v0.0.0 pack modules (pattern validated first on `user_management`).
 
 The bar is **masterpiece quality**, scoped to what is genuinely best-in-class today. Any capability that already exists in production form inside `septagon-dev` and meets the public/private boundary rules is in scope.
 
@@ -15,7 +15,7 @@ The bar is **masterpiece quality**, scoped to what is genuinely best-in-class to
 
 1. **All architectural pillars of PlatformKit live in OSS.** Module system, application lifecycle, infrastructure providers (logger/cache/db/router), observability, security baseline, resilience, event bus + outbox, entity/CRUD framework, design tokens, runtime/host, testkit. The OSS is not a subset of the framework — it is the framework.
 2. **A 9-module essentials pack ships polished.** Each module has ports, sqlite default implementation, embedded migrations, admin pages, extension hooks, tests, and a Pro-extension example.
-3. **The Pro extension model is proved.** `platformkit-business-modules/user_management` refactors to embed `pk-modules/pkg/user.Module` and all its existing tests still pass. If the contract is not extensible enough for one module, it is not ready.
+3. **The Pro extension model is proved.** All nine v0.0.0 pack modules expose `ossbridge/` adapters; the pattern was validated first on `user_management` (embed `pk-modules/pkg/user.Module`, existing tests pass). If the contract is not extensible enough for one module, it is not ready for any.
 4. **The first developer hour works.** `git clone septagon-oss/pk-starter-saas && cd pk-starter-saas && go run .` opens an admin at `http://localhost:8080/admin` against a SQLite database, with a seeded tenant + admin user, zero external dependencies, zero npm.
 5. **Every OSS repo has CI from day one.** GitHub Actions (test, vet, staticcheck, codeql, dependency-review, release) wired in all 10 OSS repos.
 6. **The quality gate is green.** The architecture + execution gates defined in `OSS_QUALITY_GATE.md` pass for every touched repo.
@@ -24,7 +24,7 @@ The bar is **masterpiece quality**, scoped to what is genuinely best-in-class to
 
 The following are **out of scope for v0.0.0** and ship in v0.0.1 or later:
 
-- Vue / registry / A2UI / SPA admin UI — admin is server-rendered Go templates + pk-design tokens
+- Full `platformkit-frontend-kit` runtime (gomponents + HTMX + component registry + A2UI) — v0.0.0 admin is server-rendered `html/template` + pk-design tokens (see ADR-0000; no Vue/React SPA)
 - `pk new <project> --template <t>` scaffold generators — first-run path is `git clone` of a starter repo
 - Storybook for OSS components
 - NATS / JetStream / Kafka event providers — only in-memory + sqlite-outbox in OSS; cloud providers stay Pro
@@ -33,7 +33,7 @@ The following are **out of scope for v0.0.0** and ship in v0.0.1 or later:
 - `mail_management`, `site_management`, `entitlement_management`, `billing_management`, `chat_management`, `file_management` — all cut from v0.0.0. No `MailSender` port ships in OSS. Pro adds mail/SMS/push as separate provider modules in its own pack.
 - `translation_management` — v0.0.0 modules use literal English strings; a no-op `TranslationRegistrar` port is exposed for forward compatibility
 - `change_management` — already optional in source, dropped from v0.0.0 default
-- Full bridge of all 9 modules in `septagon-dev` — only `user_management` is bridged as PoC
+- Full ossbridge rollout for all 9 essentials modules in `septagon-dev` — completed; further work is extracting frontend runtime tiers to OSS
 - Multi-region deployment, Pulumi/Terraform overlays, Helm charts — all stay private
 - Sourcegraph/MCP/A2A-style ancillary services
 - End-to-end smoke test through Playwright (planned for v0.0.1)
@@ -62,7 +62,7 @@ The line between OSS and Pro is drawn at the **provider, not the contract**.
 - Demo/client overlays (`septagon-demos/*`, client extensions)
 - Synology routing, GitOps mirrors, staging release runners
 - Hosted observability backends (Datadog, Honeycomb adapters)
-- Vue/registry frontend kit (until extracted in a later release)
+- `platformkit-frontend-kit` runtime (gomponents, HTMX, Go component registry, A2UI) until extracted per `platformkit-frontend-kit/docs/OPEN_SOURCE_EXTRACTION_PLAN.md` → `platformkit-ui`
 - Pro distribution tag (`platformkit-pro`)
 
 ### Boundary enforcement
@@ -343,7 +343,7 @@ func NewModule(deps Deps) *ProModule {
 - A different admin implementation can be wired by calling `module.NewCatalog().Add(other8...).WithAdminRegistrar(custom).Build()` and omitting `admin.Module()`
 - The default `admin` renders Go `html/template` views with CSS imported from `pk-design/pkg/tokens` (compiled to a `_admin.css` stylesheet at build time)
 - No npm, no Vite, no JS framework in the OSS admin
-- Pro's richer Vue/registry admin slots in via the same `AdminRegistrar` interface
+- Pro's richer gomponents/HTMX admin (`admin_management` + `platformkit-frontend-kit`) extends via the same `AdminRegistrar` interface; OSS ships the minimal `html/template` shell in `pk-modules/pkg/admin`
 
 ### 7.1 Admin styling
 
@@ -476,7 +476,7 @@ Adds `docs/v0.0.0/`:
 | `architecture.md` | The formula: core defines rules, modules add capabilities, clients compose |
 | `release-notes-v0.0.0.md` | What's in v0.0.0, what's coming in v0.0.1 |
 
-Pre-existing assets in `pk-docs` (adr/, requirements/, antora-playbook.yml) stay in place; v0.0.0 just adds the user-facing slice.
+Pre-existing assets in `pk-docs` (adr/, `.archive/requirements/`, antora-playbook.yml) stay in place; v0.0.0 just adds the user-facing slice.
 
 ## 12. CI / Release Pipeline
 
@@ -501,11 +501,11 @@ Each of the 10 OSS repos receives the following GitHub Actions workflows (copied
 - Remove tracked `pk-design/coverage.out`
 - Fix two `github.com/septagon-dev` URL refs in `pk-docs/overlays/platformkit/site/homepage.{en,pt}.json` → point to `github.com/septagon-oss`
 
-## 13. The Pro-Extension PoC — `user_management`
+## 13. Pro extension — `ossbridge` pattern (all nine pack modules)
 
-The single non-negotiable validation gate is that the extension contract works for one real module before tagging.
+The non-negotiable validation gate is that the extension contract works for real modules before tagging. The pattern was validated first on `user_management`, then replicated for the other eight v0.0.0 pack modules.
 
-### 13.1 Scope of the bridge
+### 13.1 Scope of the bridge (example: `user_management`)
 
 After `pk-modules/pkg/user` lands, `platformkit-business-modules/user_management` is refactored to:
 
@@ -526,9 +526,13 @@ If the existing tests cannot pass against the bridged shape, the OSS contract is
 - Admin pages from OSS + admin pages from Pro coexist via `AdminRegistrar`
 - Tests written against the OSS module also pass when consumed by Pro
 
-### 13.3 What stays in Pro
+### 13.3 Current bridge coverage
 
-The other 8 modules in `platformkit-business-modules` stay on their current (non-bridged) implementation in v0.0.0. They will be bridged module-by-module in v0.1.0 once the PoC pattern is validated.
+All nine v0.0.0 pack modules in `platformkit-business-modules` expose `ossbridge/` adapters and `NewOSS*Module()` exports, enforced by `internal/ossbridgepolicy` and `make check-oss-extension`:
+
+`tenant_management`, `user_management`, `auth_management`, `api_key_management`, `audit_management`, `health_management`, `notification_management`, `content_management`, `admin_management`.
+
+Production `/admin` still renders through Pro `AdminRenderer` (gomponents + HTMX per ADR-0000); ossbridge publishes parallel OSS module types in DI for contract parity and tests.
 
 ## 14. Validation Gates — what counts as "done"
 
@@ -587,7 +591,7 @@ pk-client    2    platformkit-backend-kit        client
 pk-tools     2    platformkit-devtools           cmd/platformkit/{doctor,verify,explain},platformkit/cli,platformkit/contractcheck
 pk-modules   3    platformkit-business-modules   tenant_management,user_management,auth_management,api_key_management,audit_management,health_management,notification_management,content_management,admin_management,ports,catalog
 pk-apps      4    platformkit-apps               complete-saas-monolith (skeleton, no private overlays)
-pk-docs      5    platformkit-docs               adr,architecture,requirements,docs,apps,packages,schemas
+pk-docs      5    platformkit-docs               adr,architecture,docs,apps,packages,clients,.archive/requirements,.archive/schemas
 ```
 
 (The existing manifest had `pk-runtime` and `pk-testkit` missing; this spec adds them as stage-1 alongside pk-core and pk-shared.)
@@ -626,9 +630,9 @@ Approximate phasing for the work, ordered by dependency. Each phase ends with a 
 - Fix homepage JSON URLs
 - Update `OSS_REPOSITORY_MANIFEST.tsv`
 
-### Phase E — Pro extension PoC + tag (~1 week)
-- Refactor `platformkit-business-modules/user_management` to bridge `pk-modules/pkg/user`
-- Make all existing `user_management` tests pass
+### Phase E — Pro extension bridges + tag (~1 week)
+- Complete `ossbridge/` for all nine pack modules (pattern from `user_management`)
+- Enforce via `make check-oss-extension` / `internal/ossbridgepolicy`
 - Run all 21 validation gates
 - Tag v0.0.0 across all 10 OSS repos in publish order: pk-shared → pk-core → pk-runtime → pk-testkit → pk-design → pk-client → pk-tools → pk-modules → pk-apps → pk-docs
 
@@ -638,10 +642,10 @@ Approximate phasing for the work, ordered by dependency. Each phase ends with a 
 
 | Risk | Mitigation |
 |---|---|
-| `pk-core` shape diverges from `platformkit-backend-kit/app/module` and Pro bridge breaks | The PoC bridge for `user_management` in Phase E is the early-warning system. If it doesn't work, we stop and fix `pk-core` before tagging. |
+| `pk-core` shape diverges from `platformkit-backend-kit/app/module` and Pro bridge breaks | `ossbridge/` adapters for all nine pack modules are the early-warning system. If any bridge fails, we stop and fix `pk-core` before tagging. |
 | Extraction of `observability/security/resilience/event` drags in transitive deps that aren't OSS-safe | Each extraction phase reviews `go mod why` for every new dep. Any non-stdlib non-Apache/MIT/BSD dep gets explicit approval. |
 | SQLite default doesn't scale enough to feel real | SQLite is fine for starter; the bar is "git clone && go run works" not "production-grade at scale." Pro adapter is the production answer. |
-| Admin Go templates feel dated and weaken "best of the best" perception | Acknowledged. The plugin boundary means Pro/community can replace with a Vue admin later without forking. v0.0.1 can backfill a Vue admin in `pk-modules/pkg/admin/vue` if desired. |
+| Admin Go templates feel minimal vs Pro gomponents/HTMX admin | Intentional. OSS admin is a swappable `AdminRegistrar` implementation (ADR-0000 stack: server HTML, no client framework). Pro production `/admin` uses gomponents + HTMX + controller runtime. Community can replace either shell via `AdminRegistrar` without forking module contracts. |
 | Extraction is slower than 7.5 weeks because of unanticipated interdependencies | Phase A is the highest-risk phase; budget a 2-week slip. Worst case v0.0.0 ships in ~9-10 weeks. |
 | Quality gate keeps failing on architectural invariants | The gate is the work, not a checkbox. If it fails, we fix the contract — that's the whole point of the gate. |
 

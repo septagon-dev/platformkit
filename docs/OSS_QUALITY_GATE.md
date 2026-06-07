@@ -66,6 +66,7 @@ make fitness
 cd ../../platformkit
 make validate-oss-split
 make validate-open-core-workspace
+make check-ui-stack-docs
 ```
 
 Then run focused downstream smoke from the workspace root for every private
