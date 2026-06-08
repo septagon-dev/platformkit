@@ -26,7 +26,8 @@ seconds.
 
 ### What each step does
 
-- `git clone …` pulls the front-door repo and the layers it composes.
+- `git clone …` pulls the thin front-door wrapper; the first `go run .` downloads
+  the PlatformKit modules by version from the proxy.
 - `cd platformkit` puts you at the repo root.
 - `go run .` builds and runs the starter app. On boot it opens a local
   SQLite file (`pk.db` in the working directory), creates the tables, seeds one
@@ -54,7 +55,8 @@ admin dashboard with a sidebar and entity links.
 ### Check it from another shell
 
 ```bash
-# Health — returns 200 with every module's store reporting healthy.
+# Health — returns 200. /healthz reports seven data/session checks; admin and
+# health are composed modules without SQLite stores.
 curl -s http://localhost:8080/healthz
 # → {"status":"healthy"}
 

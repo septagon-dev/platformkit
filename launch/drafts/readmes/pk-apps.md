@@ -20,7 +20,6 @@ First build downloads modules and takes ~15-20 s; subsequent starts ~2 s. No CGO
 | Path | Purpose |
 |---|---|
 | `apps/starter-saas` | Hero app: all nine modules, SQLite, one listener |
-| `apps/platformkit-page` | Static landing/page example |
 | `examples/minimal` | Smallest catalog composition |
 | `examples/runtime` | Composing a bundle into a `pk-runtime` host |
 

@@ -70,8 +70,8 @@ Pro is where the operational and at-scale concerns live.
 
 **The commitment:** the boundary is drawn at the *provider*, never at the
 *contract*. Every public interface a module exposes stays in OSS. Pro plugs new
-implementations in behind those same interfaces — a Postgres store behind the
-store port, an enterprise SSO provider behind the auth port. Nothing in Pro
+implementations in behind those same interfaces — a Postgres store behind a
+module's store interface, an enterprise SSO provider behind the auth interface. Nothing in Pro
 requires re-typing your code against a closed API. The contracts you build
 against today do not move out of open source.
 
@@ -83,10 +83,10 @@ PlatformKit exposes its own structure as data, so an AI agent can read it instea
 of guessing. `pk explain modules --json` prints the module catalog — id, name,
 description, version — sourced directly from each module's public constants, so it
 stays in sync with the code. Every module carries a typed `module.Metadata`
-descriptor, and the scaffolding generator emits MCP descriptor hooks
-(`MCPToolName`, `MCPDescription`, `MCPSemanticTags`) on new entities, so code an
-agent generates is already self-describing. You can see all of this in
-`pk-tools/cmd/pk/explain.go` and the module packages under `pk-modules/pkg/`.
+descriptor, and the scaffold generator library (`pk-tools/pkg/scaffold`) emits MCP
+descriptor hooks (`MCPToolName`, `MCPDescription`, `MCPSemanticTags`) on new
+entities, so code an agent generates is already self-describing. You can see all of
+this in `pk-tools/cmd/pk/explain.go` and the module packages under `pk-modules/pkg/`.
 This is a convenience, not the headline: it means an agent can list what exists
 and extend it through the same ports a human would, with less reverse-engineering.
 
@@ -105,7 +105,8 @@ advance.
 - **Not production-hardened at scale on the default store.** SQLite is the
   zero-setup local default so the first run needs no database. It is great for
   development and small deployments. For production at scale, swap in your own
-  store behind the store port — that is exactly what the port boundary is for.
+  store behind the relevant module store interfaces (auth uses `WithSessionStore`)
+  — that is exactly what the port boundary is for.
 - **Not a framework you must adopt wholesale.** Modules compose; you can take the
   ones you want and ignore the rest, or add your own alongside them.
 - **Early. v0.1.0 — our first public release; expect APIs to move.** Verified on
@@ -124,7 +125,10 @@ claim either for the OSS launch. The honest AI-introspection story is §4 above 
 `pk explain --json`, typed module metadata, and MCP descriptor hooks on entities.
 
 One scoping note on "no Docker": that describes the **starter app's runtime** —
-`go run .` needs nothing but Go. The `pk scaffold` generator does emit a
-`docker-compose.yml` (Postgres/Redis/NATS) for projects that want those backends,
-so don't phrase "no Docker" near scaffolding copy in a way a reader could call a
-contradiction. The starter runs on SQLite with zero containers; that is the claim.
+`go run .` needs nothing but Go. The scaffold generator library
+(`pk-tools/pkg/scaffold`) does emit a `docker-compose.yml` (Postgres/Redis/NATS)
+for projects that want those backends, so don't phrase "no Docker" near
+scaffolding copy in a way a reader could call a contradiction. Also note the `pk`
+CLI itself has only `doctor`, `verify`, `explain` — there is no `pk scaffold`
+subcommand; scaffolding is the library above. The starter runs on SQLite with
+zero containers; that is the claim.

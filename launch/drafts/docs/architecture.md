@@ -4,25 +4,26 @@
 
 PlatformKit is three layers: a **core** that defines the rules, **modules** that
 add capabilities behind those rules, and **clients** that compose the modules
-they want into a running app. Below that sits **shared**, a small vocabulary of
-types the other layers agree on.
+they want into a running app. Alongside sits **shared**, a small vocabulary of
+types some layers agree on.
 
 ```mermaid
 graph TD
-    shared["pk-shared — shared vocabulary (types used across layers)"]
     core["pk-core — the rules (module contract, catalog, ports, security baseline)"]
+    shared["pk-shared — shared vocabulary (types used across some layers)"]
     modules["pk-modules — capabilities (tenant, user, auth, audit, content, ...)"]
     clients["clients — your app (starter-saas, your own composition)"]
 
-    shared --> core
-    core --> modules
-    modules --> clients
-    core --> clients
+    modules --> core
+    clients --> core
+    clients --> modules
+    clients --> shared
 ```
 
-The arrow direction is the dependency direction: clients depend on modules and
-core; modules depend on core and shared; core depends on nothing else in
-PlatformKit. Nothing points back up.
+The arrow direction is the dependency direction: clients (the starter app) depend
+on core, modules, and shared; modules depend on core only. Both `pk-core` and
+`pk-shared` are leaves — neither depends on anything else in PlatformKit.
+Nothing points back up.
 
 ## Core — the rules
 
@@ -39,10 +40,12 @@ requirement is `golang.org/x/crypto`.
 
 ## Modules — capabilities behind ports
 
-A module is a small, self-contained vertical slice: an entity, a persistence
-store with a default SQLite implementation, a service with the business logic,
-and an HTTP handler. The reference pack in `pk-modules` ships nine of them —
-tenant, user, auth, api_key, audit, content, notification, health, and admin.
+A store-backed module is a small, self-contained vertical slice: an entity, a
+persistence store with a default SQLite implementation, a service with the
+business logic, and an HTTP handler. The reference pack in `pk-modules` ships nine
+modules — tenant, user, auth, api_key, audit, content, notification, health, and
+admin. Seven own a SQLite data/session store; `admin` and `health` are composed
+modules that own none. (`/healthz` reports seven data/session checks accordingly.)
 
 The key rule: **modules never import each other's implementations.** They depend
 only on interfaces. There are two kinds:
@@ -93,10 +96,11 @@ its providers and invocations as `any` precisely so it does not force one.
 ## Clients — your composition
 
 A client is an app that picks modules and wires them together. The reference
-client is `starter-saas`: it opens one shared SQLite connection, builds the nine
+client is `starter-saas`: it opens one shared SQLite connection, builds the
 module stores on it, constructs each module with its dependencies, seeds a demo
-tenant and admin user, composes them into a `module.Catalog` (which validates
-that every declared dependency has a provider), and serves HTTP.
+tenant and admin user, registers them in a `module.Catalog`, and serves HTTP. The
+dependency validation and ordering happen when the modules are composed (via
+`module.Compose(...)` / `host.New(...)`), not at catalog-build time.
 
 You compose your own app the same way, and you add your own module alongside the
 nine built-ins with no special privilege — that is the whole point of the port
@@ -104,12 +108,16 @@ boundary. Walk through it in [add-a-module.md](add-a-module.md).
 
 ## The catalog: composition that is checked
 
-When the app builds its catalog, `pk-core` topologically sorts the modules on
-their declared dependencies and verifies each required port has a provider. A
-missing or miswired dependency is a build-time error, not a runtime surprise.
+`module.NewCatalog().Add(bundle).Build()` registers the available modules and
+their defaults — it does not topologically sort or validate dependencies. The
+checks happen at compose time: `module.Compose(...)` (used by `host.New(...)`)
+topologically sorts the selected modules on their declared dependencies and
+verifies each required port has a provider. A missing or miswired dependency
+surfaces there, before the app starts serving — not as a runtime surprise.
 
 ```go
-catalog, err := pkmodule.NewCatalog().Add(bundle).Build()
+catalog := pkmodule.NewCatalog().Add(bundle).MustBuild() // registers entries + defaults
+plan, err := pkmodule.Compose(catalog, ids...)           // sorts + validates dependencies
 ```
 
 ## What is NOT here (so you don't go looking)

@@ -8,15 +8,18 @@
 ```go
 import (
     "github.com/septagon-oss/pk-core/pkg/module"
+    "github.com/septagon-oss/pk-modules/pkg/coremodules"
     "github.com/septagon-oss/pk-core/pkg/security/passhash"
 )
 
-catalog := module.NewCatalog().Add(/* a module.Bundle */).MustBuild()
+// Register a bundle of modules, then compose to sort + validate dependencies.
+catalog := module.NewCatalog().Add(coremodules.Bundle()).MustBuild()
+plan, _ := module.Compose(catalog)
 
 hasher, _ := passhash.NewBcrypt(12)
 ```
 
-**Depends on.** Nothing else in PlatformKit. With `pk-shared`, it sits at the bottom of the dependency graph; its only external requirement is `golang.org/x/crypto`.
+**Depends on.** Nothing else in PlatformKit. It is a leaf in the dependency graph (as is `pk-shared`); its only external requirement is `golang.org/x/crypto`.
 
 **Packages.**
 

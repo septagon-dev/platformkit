@@ -18,7 +18,7 @@ The commitment is explicit and it's the most important line in the project: the 
 
 ## SQLite in production — really?
 
-No. SQLite is the zero-setup *local default* so the first run needs no database, and it's genuinely fine for development and small deployments. For production at scale you swap your own store in behind the store port; that's exactly what the port boundary is for. We state this plainly in the "What this is NOT" list rather than hiding it. (Pro ships Postgres-cluster and read-replica providers, but the port is OSS and you can write your own.)
+No. SQLite is the zero-setup *local default* so the first run needs no database, and it's genuinely fine for development and small deployments. For production at scale you swap your own store in behind the relevant module store interfaces (auth uses `WithSessionStore`); that's exactly what the port boundary is for. We state this plainly in the "What this is NOT" list rather than hiding it. (Pro adds Postgres-cluster and read-replica providers, but the interfaces are OSS and you can write your own.)
 
 ## Why fx / dependency injection? Isn't that a lot of magic for Go?
 
@@ -58,8 +58,8 @@ You add your own module the same way the nine built-ins are added: it's a self-c
 
 ### How do I use Postgres instead of SQLite?
 
-SQLite is the default store provider, wired behind the store port. To use Postgres you supply a store implementation behind that same port and wire it in the client composition instead of the SQLite default — the modules that depend on the store don't change, because they depend on the port, not on SQLite. A Postgres-cluster/read-replica provider ships in Pro, but the port is OSS, so you can write or wire your own.
+SQLite is the default store provider, wired behind each store-backed module's store interface (for example, auth uses `WithSessionStore`; user, tenant, audit, content, api_key, and notification each take their own `WithStore`). To use Postgres you supply a store implementation behind that same interface and wire it in the client composition instead of the SQLite default — the modules that depend on the store don't change, because they depend on the interface, not on SQLite. A Postgres-cluster/read-replica provider is added in Pro, but the interfaces are OSS, so you can write or wire your own.
 
 ### Is it production-ready?
 
-It's early — v0.1.0, our first public release; expect APIs to move. The hero path is verified on a cold clone (Linux/x86_64, Go 1.26, fresh database), and the substrate is designed to run on your own infrastructure. But the default SQLite store is for development and small deployments, not scale; `/admin` is an open dashboard rather than a gated login today; and the broader surface is not battle-tested yet. For production, swap your store in behind the store port and pin a commit. Read the "What this is NOT" section before you depend on it.
+It's early — v0.1.0, our first public release; expect APIs to move. The hero path is verified on a cold clone (Linux/x86_64, Go 1.26, fresh database), and the substrate is designed to run on your own infrastructure. But the default SQLite store is for development and small deployments, not scale; `/admin` is an open dashboard rather than a gated login today; and the broader surface is not battle-tested yet. For production, swap your store in behind the relevant module store interfaces and pin a commit. Read the "What this is NOT" section before you depend on it.

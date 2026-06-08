@@ -31,8 +31,16 @@ Then create a `go.work` at the workspace root listing the repos you cloned:
 go work init ./pk-core ./pk-shared ./pk-runtime ./pk-modules ./pk-tools ./pk-apps
 ```
 
-That is the whole setup. With the workspace in place, `go build ./...` and the
-per-repo tests resolve sibling modules from your local checkouts.
+That is the whole setup. With the workspace in place, the per-repo builds and
+tests resolve sibling modules from your local checkouts. Build and test each repo
+from inside it (each is its own Go module) rather than running `go build ./...`
+at the workspace root, e.g.:
+
+```bash
+for repo in pk-core pk-shared pk-runtime pk-modules pk-tools pk-apps; do
+  ( cd "$repo" && go build ./... ) || break
+done
+```
 
 > **Published modules carry no `replace` directives.** The `go.work` file is how
 > sibling modules resolve *during local development*. Outside the workspace, each
@@ -47,31 +55,31 @@ per-repo tests resolve sibling modules from your local checkouts.
 Each repo has its own checks. Run them from inside the repo you changed.
 
 ```bash
-# Build everything in the workspace
+# Per-repo build + tests (run from inside the repo you changed, e.g. pk-modules)
+cd pk-modules
 go build ./...
-
-# Per-repo tests (run from inside the repo, e.g. pk-modules)
 go test ./...
 
 # The pk-apps repo exposes make targets:
-cd pk-apps
+cd ../pk-apps
 make test
 make vet
 make staticcheck
 make verify        # the aggregate gate
 
-# Run the starter app end to end (from pk-apps)
-cd pk-apps/apps/starter-saas
+# Run the starter app end to end (from the pk-apps repo root)
+cd apps/starter-saas
 go run .
 ```
 
 The `pk` CLI (in `pk-tools`) can sanity-check an environment and explain the
-catalog:
+catalog. Run it from the `pk-tools` repo:
 
 ```bash
-go run ./cmd/pk doctor    # checks your local toolchain/setup
-go run ./cmd/pk verify    # runs verification for the layer
-go run ./cmd/pk explain   # describes modules/contracts as data
+cd pk-tools
+go run ./cmd/pk doctor           # checks your local toolchain/setup
+go run ./cmd/pk verify           # runs verification for the layer
+go run ./cmd/pk explain modules  # describes modules/contracts as data
 ```
 
 `pk` is a dev-workflow tool — `doctor`, `verify`, `explain`. It does not run your

@@ -8,18 +8,20 @@
 ```go
 import (
     "github.com/septagon-oss/pk-core/pkg/module"
+    "github.com/septagon-oss/pk-modules/pkg/coremodules"
     "github.com/septagon-oss/pk-runtime/pkg/host"
 )
 
-catalog := module.NewCatalog().Add(/* modules */).MustBuild()
+catalog := module.NewCatalog().Add(coremodules.Bundle()).MustBuild()
 h, err := host.New(ctx, host.Input{
     Config:  host.Config{Name: "my-app", Version: "0.1.0"},
     Catalog: catalog,
 })
-// h is an http.Handler.
+// host.New composes the catalog (sort + dependency validation) and returns a
+// *Host, which is an http.Handler (it implements ServeHTTP).
 ```
 
-**Depends on.** `pk-core` (and, transitively, `pk-shared`). Nothing else in PlatformKit.
+**Depends on.** `pk-core` only. Nothing else in PlatformKit.
 
 **Packages.**
 

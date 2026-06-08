@@ -66,10 +66,12 @@ The rule that makes this hold together: **modules never import each other's impl
 A module declares what it needs as a dependency on a port, not as an import of another module:
 
 ```go
-standard.WithDep(module.RequiresPort[ports.AuditService](module.PortSpec{
-    Purpose:           "Audit changes to records",
-    PreferredProvider: "audit_management",
-}))
+// Declared in the module's Compose(), inside WithDependencies(...):
+pkmodule.Require[user.UserBoundaryReader](pkmodule.DependencySpec{
+    Version:           "0.0.0",
+    Purpose:           "Resolve user credentials at login time.",
+    PreferredProvider: "user_management",
+})
 ```
 
 Two consequences follow, and they're the whole point. You can replace one module's implementation without the change cascading through the others — swap the store, swap the auth provider, and the modules that depend on those ports don't notice. And you add your own module the same way the nine built-ins are added — by declaring its ports and letting DI wire it in.
@@ -86,7 +88,7 @@ Free is everything you need to build and run a multi-tenant SaaS backend on your
 
 Pro adds the operational and at-scale concerns: hosted and cloud-scale providers (NATS/JetStream/Kafka event buses, Postgres-cluster and read-replica backends, cloud secrets managers), enterprise identity (SCIM, SAML, SSO), vertical business modules, hosted observability, and a hosted control plane.
 
-Here's the commitment, stated plainly because this is where open-core projects earn or lose trust: **the boundary is drawn at the provider, never at the contract.** Every public interface a module exposes stays in OSS. Pro plugs new implementations in behind those same interfaces — a Postgres-cluster store behind the store port, an enterprise SSO provider behind the auth port. Nothing in Pro requires re-typing your code against a closed API. The contracts you build against today do not move out of open source.
+Here's the commitment, stated plainly because this is where open-core projects earn or lose trust: **the boundary is drawn at the provider, never at the contract.** Every public interface a module exposes stays in OSS. Pro plugs new implementations in behind those same interfaces — a Postgres-cluster store behind a module's store interface, an enterprise SSO provider behind the auth interface. Nothing in Pro requires re-typing your code against a closed API. The contracts you build against today do not move out of open source.
 
 ## What's not there yet
 
@@ -94,7 +96,7 @@ We'd rather you read this from us than write it in a GitHub issue.
 
 It's not a no-code tool — it's a Go codebase, and you write Go to extend it. It's not a Rails or Django replacement — there's no ORM, no router opinion, no generator for everything; if you want batteries-included web MVC, this isn't that.
 
-It's not production-hardened at scale on the default store. SQLite is the zero-setup local default, and it's great for development and small deployments; for production at scale you swap in your own store behind the store port. That's exactly what the port boundary is for.
+It's not production-hardened at scale on the default store. SQLite is the zero-setup local default, and it's great for development and small deployments; for production at scale you swap in your own store behind the relevant module store interfaces (auth uses `WithSessionStore`). That's exactly what the port boundary is for.
 
 And it's early. This is v0.1.0 — our first public release; expect APIs to move — verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move. Pin a commit if you need stability today.
 
