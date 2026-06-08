@@ -156,7 +156,7 @@ chromium --headless --screenshot=og-card.png --window-size=1200,630 --hide-scrol
     <div class="accentbar"></div>
     <div class="footer">
       <span>$ go run .</span>
-      <span>github.com/septagon-dev/platformkit</span>
+      <span>github.com/septagon-oss/platformkit</span>
     </div>
   </div>
 </body>
@@ -356,7 +356,7 @@ display and is tiny. If a raster badge is needed (e.g. for a marketplace that
 rejects SVG), rasterize at 2× with `rsvg-convert -z 2 built-with-platformkit-dark.svg -o built-with-platformkit-dark.png`. The 4-square glyph echoes the
 "composable modules" idea in the hero; the single teal square keeps the
 one-accent rule. Markdown usage:
-`[![Built with PlatformKit](launch/images/built-with-platformkit-dark.svg)](https://github.com/septagon-dev/platformkit)`.
+`[![Built with PlatformKit](launch/images/built-with-platformkit-dark.svg)](https://github.com/septagon-oss/platformkit)`.
 
 ---
 
