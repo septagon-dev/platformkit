@@ -1,0 +1,488 @@
+# PlatformKit OSS — Release & Run Model
+
+> Status: **LOCALLY VERIFIED — NOT PUSHED.** Every change in this document
+> lives on local branches and local tags only. No remote was touched: no
+> push, no remote tag created or moved, no GitHub repo created. The final
+> outward actions are enumerated in the **Gated Push Steps** section and await
+> explicit human approval.
+
+This runbook defines how a PlatformKit OSS application resolves its
+dependencies (the "run model") and how the 10-repo split is released so an
+outsider can `git clone … && go run .` and get a booting app (the "release
+model"). It records the design, the rationale (including the rejected
+monorepo alternative), and the **evidence from a real local proof** that the
+outsider proxy path works.
+
+Toolchain of record for all evidence below: `go version go1.26.4 linux/amd64`
+(`go.work` pins `go 1.26`).
+
+---
+
+## 1. The decision (and why)
+
+### 1.1 Remove ALL `replace` directives from published consumer go.mods
+
+The launch blocker was that published consumer go.mods (e.g. `pk-apps/go.mod`)
+carried `replace github.com/septagon-oss/pk-core => ../pk-core` and friends.
+Those relative paths exist only inside the local multi-repo workspace. A real
+outsider who runs `git clone pk-apps && cd apps/starter-saas && go build .`
+hits `replacement directory ../pk-core does not exist` and is dead in the
+water.
+
+**Decision:** published consumer go.mods carry **no** `replace` of any
+`github.com/septagon-oss/*` module and **no** relative-path replace. Modules
+resolve purely **by version** from the Go module proxy. Local cross-repo
+development keeps working through the workspace `go.work` (which does
+`use ./pk-core`, `use ./pk-modules`, …) — the workspace, not replaces, is what
+wires sibling repos together on disk.
+
+Current state: **already clean.** A scan of every workspace go.mod finds zero
+`replace` of a septagon-oss module and zero `=> ../` / `=> ./` directive. The
+release-blocking grep guard (§5.2) passes against all 11 Go modules.
+
+### 1.2 Keep the 10-repo split — rejected alternative: monorepo
+
+We considered collapsing the split into a single Go module / monorepo. That
+would make the replace problem disappear (one module, no cross-repo
+resolution) and simplify tagging to a single version.
+
+**Rejected, because:**
+
+- The split is the product. PlatformKit's thesis is *independently versioned,
+  independently consumable* layers (`pk-core`, `pk-modules`, `pk-runtime`, …).
+  A monorepo erases the very boundary the framework teaches.
+- Consumers want to depend on `pk-core` without pulling `pk-modules`,
+  `pk-tools`, etc. The front-door proof below shows `go mod tidy` pruning
+  `pk-shared`/`pk-testkit` out of the starter's build graph — granularity the
+  split delivers and a monorepo cannot.
+- A monorepo forces lockstep versioning: a docs typo in one corner bumps the
+  whole product's version. The split lets each layer cut patch releases on its
+  own cadence.
+- The replace problem is fully solved by §1.1 + §1.3 + §1.5 without sacrificing
+  any of the above. Collapsing to a monorepo would be paying a large
+  architectural price to fix a one-line-per-file bug.
+
+### 1.3 Front door = a NEW repo that does NOT duplicate the starter
+
+The public entry point is a new repo `github.com/septagon-oss/platformkit`.
+The naive version would copy the starter's `main.go` + app graph into it,
+creating a second source of truth that silently drifts from `pk-apps`.
+
+**Decision: extract the app graph into an importable package and make BOTH
+entry points thin wrappers over it.** See §2.
+
+### 1.4 Versioning: clean `v0.1.0`, retract `v0.0.0`, never reuse
+
+- The remote `v0.0.0` tag on all 10 repos is broken (it was cut with the local
+  replace directives baked in) and can never resolve from the proxy.
+- We **never reuse or move** `v0.0.0`. Tags are immutable once on the proxy.
+- Each module's go.mod declares
+  `retract v0.0.0 // broken: contained local replace directives`, so
+  `go list -m -versions` and `go get` steer consumers to `v0.1.0+` and hide the
+  poison tag. (Proven in §4.4 — the proxy reports only `v0.1.0`.)
+- The release cuts fresh, clean `v0.1.0` tags on every repo, topologically
+  leaf-first (§3).
+
+### 1.5 Release-blocking guards
+
+Every repo's CI must, from a clean checkout:
+
+1. Build and test with `GOWORK=off` (no workspace rescue — exactly what an
+   outsider gets).
+2. Run a **grep guard** that fails if any published go.mod contains a
+   `replace` of a `github.com/septagon-oss/*` module or any `=> ../` / `=> ./`.
+3. For the front door: a real **clone + `go run .` smoke** that asserts
+   `/healthz` 200 and `/api/v1/tenants` 200.
+
+See §5 for the exact commands; all three were prototyped locally and pass.
+
+---
+
+## 2. The importable-starter design
+
+### 2.1 What moved
+
+The starter's application graph moved from `package main` in
+`pk-apps/apps/starter-saas/` into a new importable package
+**`github.com/septagon-oss/pk-apps/pkg/starterapp`**:
+
+| Before (`apps/starter-saas/`, `package main`) | After (`pkg/starterapp/`, `package starterapp`) |
+|---|---|
+| `app.go` — `buildApp`, `App`, `(*App).mux`, `(*App).Close`, `indexHandler`, `bundleName` | `app.go` — `BuildApp`, `App`, `(*App).Mux`, `(*App).Close`, `indexHandler`, `BundleName` + accessors |
+| `config.go` — `Config`, `loadConfig`, `defaultConfig` | `config.go` — `Config`, `LoadConfig`, `DefaultConfig` |
+| `run` + `printBanner` (in `main.go`) | `serve.go` — `Run` (build → serve → graceful shutdown) + `printBanner` |
+| `seed/` package | `pkg/starterapp/seed/` (moved with the package) |
+| `main_test.go`, `firstboot_test.go` | `app_test.go`, `firstboot_test.go` (moved in-package) |
+
+`App`'s fields stay **unexported** — the construction graph is encapsulated.
+The exported surface is exactly what wrappers and tests need: `BuildApp`,
+`Run`, `(*App).Mux`, `(*App).Close`, `Config`/`LoadConfig`/`DefaultConfig`, and
+read-only accessors (`ModuleIDs`, `AdminBasePath`, `SeedEmail`, `SeedPassword`,
+`Catalog`). The tests live in-package so they can keep asserting against the
+unexported graph (`app.catalog`, `app.tenant`, `app.db`, …) with no behavior
+change.
+
+### 2.2 The two wrappers (single source of truth)
+
+`pk-apps/apps/starter-saas/main.go` is now ~25 lines: load `config.yaml`,
+register the SQLite driver, hand a signal context to `starterapp.Run`.
+
+The front-door repo's `main.go` is the same shape (~30 lines), but uses
+`starterapp.DefaultConfig()` so it boots with **zero config files**:
+
+```go
+package main
+
+import (
+	"context"; "log"; "os/signal"; "syscall"
+	_ "modernc.org/sqlite"
+	"github.com/septagon-oss/pk-apps/pkg/starterapp"
+)
+
+func main() {
+	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer cancel()
+	cfg := starterapp.DefaultConfig()
+	if err := starterapp.Run(ctx, cfg); err != nil {
+		log.Fatalf("platformkit: %v", err)
+	}
+}
+```
+
+Change the module graph once in `pkg/starterapp/app.go` and **both** the
+pk-apps binary and the front door inherit it. There is no logic duplication.
+
+### 2.3 Front-door repo layout (for the real push)
+
+```
+github.com/septagon-oss/platformkit
+├── go.mod          # module github.com/septagon-oss/platformkit; require pk-apps v0.1.0 + modernc.org/sqlite
+├── go.sum
+├── main.go         # the ~30-line wrapper above
+├── README.md       # "git clone && go run ." quickstart
+└── LICENSE
+```
+
+No `replace`. No `config.yaml` (DefaultConfig boots). No app logic.
+
+---
+
+## 3. Topological tag order (leaf-first, right-sized)
+
+### 3.1 The real dependency edges (from each go.mod's `require`)
+
+```
+pk-shared      → (no septagon-oss deps)        ── leaf
+pk-core        → (no septagon-oss deps)        ── leaf
+pk-design      → (no septagon-oss deps)        ── leaf
+pk-client      → (no septagon-oss deps)        ── leaf
+pk-registry    → (no septagon-oss deps)        ── leaf
+platformkit-ui → (no septagon-oss deps)        ── leaf
+pk-runtime     → pk-core
+pk-modules     → pk-core
+pk-testkit     → pk-shared
+pk-tools       → pk-core, pk-modules
+pk-apps        → pk-core, pk-modules, pk-runtime, pk-shared, pk-testkit
+platformkit    → pk-apps                       ── front door (new repo)
+```
+
+### 3.2 Tag order
+
+Cut and (later) push `v0.1.0` in this order so each repo's deps already exist
+by version when it is tagged:
+
+1. **Layer 0 (leaves):** `pk-shared`, `pk-core`, `pk-design`, `pk-client`,
+   `pk-registry`, `platformkit-ui`
+2. **Layer 1:** `pk-runtime`, `pk-modules`, `pk-testkit`
+3. **Layer 2:** `pk-tools`
+4. **Layer 3:** `pk-apps`
+5. **Layer 4 (front door, new repo):** `platformkit`
+
+### 3.3 Right-sizing the runnable train
+
+The full split is 11 Go modules, but the **starter monolith only needs four of
+them transitively.** Proof: a fresh `go mod tidy` on the front door (which
+imports only `pkg/starterapp`) produced this graph:
+
+```
+github.com/septagon-oss/pk-apps    v0.1.0
+github.com/septagon-oss/pk-core    v0.1.0 // indirect
+github.com/septagon-oss/pk-modules v0.1.0 // indirect
+github.com/septagon-oss/pk-runtime v0.1.0 // indirect
+```
+
+`pk-shared` and `pk-testkit` appear in **pk-apps's** `require` block (other
+pk-apps packages/tests use them) but are **pruned from the starter's build
+graph** — granularity the repo split delivers. The minimal runnable train is
+therefore **pk-core → {pk-runtime, pk-modules} → pk-apps → platformkit**.
+`pk-shared`/`pk-testkit` tags must still exist because `go get pk-apps@v0.1.0`
+must satisfy pk-apps's own go.mod, but they are not compiled into the binary.
+
+`pk-design`, `pk-client`, `pk-registry`, `pk-tools`, `platformkit-ui`,
+`pk-docs`, and `pk-deploy` are part of the release but **not** on the runnable
+train; `pk-deploy` carries no remote tag and is excluded from the v0.1.0
+train (it is operational tooling, consistent with `launch/FLIP_RUNBOOK.md`).
+
+---
+
+## 4. Verified-locally evidence (the crux)
+
+The hard claim is: *an outsider, with no workspace, resolving purely by
+version, gets a booting app.* Proving this without touching GitHub required
+simulating the proxy locally.
+
+### 4.1 The mechanism
+
+A **git `insteadOf` URL rewrite to local file paths, with `GOPROXY=direct`.**
+This is the most faithful simulation: Go runs its real VCS code path
+(`git ls-remote`, `git fetch`, `.info`/`.mod`/`.zip` synthesis, go.sum hashing)
+against the local clones, reading the real `v0.1.0` git tags. Nothing is
+hand-stubbed.
+
+A scratch `GIT_CONFIG_GLOBAL` file (never the user's real `~/.gitconfig`) maps
+each septagon-oss module URL to its local clone, while preserving the SSH
+fallback so non-oss (e.g. private `septagon-dev/*`) deps still resolve:
+
+```gitconfig
+[url "git@github.com:"]
+    insteadOf = https://github.com/
+[url "file:///…/septagon-oss-workspace/pk-core"]
+    insteadOf = https://github.com/septagon-oss/pk-core
+# … one block per septagon-oss module …
+```
+
+Local `v0.1.0` tags were (re)pointed at the branch tips that contain the
+importable-starter refactor + the `retract v0.0.0` directives. **These are
+local annotated tags only — the remote still carries only the old `v0.0.0`.**
+The stale `septagon-oss` entries were purged from the module cache so the sim
+fetched fresh `v0.1.0`.
+
+### 4.2 The outsider build (GOWORK=off, by version, no replace)
+
+In a **pristine scratch dir** (`.tmp-frontdoor/`, prototyping the front-door
+repo), with the exact env an outsider's machine approximates:
+
+```bash
+export GOWORK=off                 # NO workspace rescue
+export GOPROXY=direct             # resolve via git (→ local clones via insteadOf)
+export GOSUMDB=off                # local tags aren't on sum.golang.org
+export GOFLAGS=-mod=mod           # allow go.mod/go.sum population (non-workspace)
+export GIT_CONFIG_GLOBAL=…/.tmp-gitconfig
+
+go mod init github.com/septagon-oss/platformkit
+go get github.com/septagon-oss/pk-apps@v0.1.0      # → "added … pk-apps v0.1.0"
+go mod tidy                                         # pulls pk-core/modules/runtime @v0.1.0
+go build -o pk-frontdoor .                          # clean build
+```
+
+Resulting front-door `go.mod` — **zero `replace`**, all pk-* pinned `v0.1.0`:
+
+```
+require (
+	github.com/septagon-oss/pk-apps v0.1.0
+	modernc.org/sqlite v1.50.1
+)
+require (
+	github.com/septagon-oss/pk-core    v0.1.0 // indirect
+	github.com/septagon-oss/pk-modules v0.1.0 // indirect
+	github.com/septagon-oss/pk-runtime v0.1.0 // indirect
+	… stdlib-adjacent indirects …
+)
+```
+
+`go.sum` carried real content + go.mod hashes for each pk-* module, e.g.:
+
+```
+github.com/septagon-oss/pk-apps v0.1.0 h1:Dh3iN2jgwe4QRj3dWmCvmKXzLk+0Pf9Q1XwbktZxtz8=
+github.com/septagon-oss/pk-apps v0.1.0/go.mod h1:msIXdtF6i/TPbpUXwsb2qLBrpmzJs/DI0oeU/iD66H8=
+github.com/septagon-oss/pk-core v0.1.0 h1:w/BHSGP5UUUxGMstHZRNF1GQIw9B2hSbOI//+Cg73Z0=
+…
+```
+
+### 4.3 The outsider boot (real HTTP probes)
+
+```text
+============================================================
+ starter-saas — PlatformKit OSS monolith
+  listening:    http://localhost:8080
+  admin UI:     http://localhost:8080/admin
+  health:       http://localhost:8080/healthz
+  default login: admin@local.test / changeme
+  modules:      9 composed (admin_management, health_management, tenant_management,
+                user_management, audit_management, auth_management,
+                api_key_management, content_management, notification_management)
+============================================================
+
+GET /healthz          → HTTP 200
+  {"status":"healthy","components":[
+     {"name":"tenant_management.store","status":"healthy"},
+     {"name":"user_management.store","status":"healthy"},
+     {"name":"audit_management.store","status":"healthy"},
+     {"name":"auth_management.sessions","status":"healthy"},
+     {"name":"api_key_management.store","status":"healthy"},
+     {"name":"content_management.store","status":"healthy"},
+     {"name":"notification_management.store","status":"healthy"}]}
+
+GET /api/v1/tenants   → HTTP 200
+  [{"id":"tenant_acme","slug":"acme","name":"Acme Inc", …}]
+```
+
+Both required assertions pass: **`/healthz` 200** and **`/api/v1/tenants` 200**
+on a fresh database, with every dependency resolved by version.
+
+### 4.4 The retract works
+
+```bash
+go list -m -versions github.com/septagon-oss/pk-apps
+# → github.com/septagon-oss/pk-apps v0.1.0      (v0.0.0 suppressed: retracted)
+```
+
+The broken `v0.0.0` is hidden from version selection exactly as intended.
+
+### 4.5 `buildvcs` caveat (and why it is not a resolution issue)
+
+`go build` in the *non-git* scratch dir first failed with
+`error obtaining VCS status` — Go's build-stamping wants a VCS root. This is a
+property of the scratch directory, **not** of dependency resolution. Proven
+two ways: (a) `go build -buildvcs=false` succeeds and runs; (b) after
+`git init` in the scratch dir, a plain `go build` (VCS stamping ON) also
+succeeds. A real cloned repo is a git repo, so the front door builds clean with
+no flag.
+
+### 4.6 What remains verifiable only after a real push
+
+The local sim covers everything except the public network surface:
+
+- That `proxy.golang.org` serves the same `.mod`/`.zip`/hashes (our `GOSUMDB`
+  was off; the real proxy + `sum.golang.org` will compute identical content
+  hashes because the git trees are identical).
+- That `sum.golang.org` records the new modules (first `go get` after push).
+- That the public CI runners reach the tags (GitHub availability/timing).
+
+These are availability/transport facts, not logic facts; the logic — by-version
+resolution, no replaces, retract suppression, green boot — is proven.
+
+---
+
+## 5. Release gates (CI), prototyped locally
+
+### 5.1 GOWORK=off build + test (per repo, clean state)
+
+```bash
+# In each repo, with NO workspace:
+GOWORK=off go build ./...
+GOWORK=off go test ./...
+```
+
+Run locally (via the local proxy) for the runnable train and all leaves —
+green.
+
+### 5.2 Grep guard — no septagon-oss replace, no relative replace
+
+```bash
+# Fails (exit 1) if a published go.mod replaces a septagon-oss module
+# or uses a relative-path replace.
+guard() {
+  local mod="$1"
+  if grep -nE '^[[:space:]]*replace[[:space:]]+github\.com/septagon-oss/' "$mod"; then
+    echo "GUARD FAIL ($mod): replace of a septagon-oss module"; return 1
+  fi
+  if grep -nE '=>[[:space:]]*\.\.?/' "$mod"; then
+    echo "GUARD FAIL ($mod): relative-path replace"; return 1
+  fi
+}
+guard go.mod
+```
+
+Prototyped against all 11 Go modules — all PASS (exit 0).
+
+### 5.3 Front-door clone + run smoke
+
+```bash
+# In CI for the platformkit front-door repo:
+go build -o pk-frontdoor .
+./pk-frontdoor & PID=$!; sleep 3
+test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/healthz)"      = 200
+test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants)" = 200
+kill $PID
+```
+
+Run locally against the by-version build — both 200 (§4.3).
+
+---
+
+## 6. Per-repo go.mod cleanup summary
+
+| Repo | replace of oss? | retract v0.0.0? | requires (oss) |
+|------|-----------------|-----------------|----------------|
+| pk-shared      | none (clean) | added | — |
+| pk-core        | none (clean) | added | — |
+| pk-runtime     | none (clean) | added | pk-core |
+| pk-modules     | none (clean) | added | pk-core |
+| pk-testkit     | none (clean) | added | pk-shared |
+| pk-design      | none (clean) | added | — |
+| pk-client      | none (clean) | added | — |
+| pk-registry    | none (clean) | added | — |
+| pk-tools       | none (clean) | added | pk-core, pk-modules |
+| platformkit-ui | none (clean) | added | — |
+| pk-apps        | none (clean) | added | pk-core, pk-modules, pk-runtime, pk-shared, pk-testkit |
+
+`replace` removal was already done by prior launch-prep work; this pass added
+the `retract v0.0.0` directive everywhere and refactored pk-apps for
+importability. `pk-deploy` and `pk-docs` are out of the Go-module v0.1.0 train.
+
+---
+
+## 7. Local branches & tags produced (NOT pushed)
+
+| Repo | Branch | HEAD commit | Local `v0.1.0` → commit |
+|------|--------|-------------|--------------------------|
+| pk-apps        | `run-model/importable-starter` | `c7b207d` | `c7b207d` |
+| pk-core        | `run-model/retract-v0.0.0`     | `6d45c32` | `6d45c32` |
+| pk-shared      | `run-model/retract-v0.0.0`     | `b72f53d` | `b72f53d` |
+| pk-runtime     | `run-model/retract-v0.0.0`     | `2540d59` | `2540d59` |
+| pk-modules     | `run-model/retract-v0.0.0`     | `8c98490` | `8c98490` |
+| pk-testkit     | `run-model/retract-v0.0.0`     | `12f0597` | `12f0597` |
+| pk-design      | `run-model/retract-v0.0.0`     | `00959fc` | `00959fc` |
+| pk-client      | `run-model/retract-v0.0.0`     | `c3f7055` | `c3f7055` |
+| pk-registry    | `run-model/retract-v0.0.0`     | `1c8f9a3` | `1c8f9a3` |
+| pk-tools       | `run-model/retract-v0.0.0`     | `72885b8` | `72885b8` |
+| platformkit-ui | `run-model/retract-v0.0.0`     | `d1eadde` | `d1eadde` |
+
+The local `v0.1.0` tags are annotated and re-pointed to these branch tips for
+the proxy simulation. The remote still carries only the old broken `v0.0.0`.
+
+---
+
+## 8. GATED PUSH STEPS (await user approval)
+
+Nothing below has run. Each is an outward, irreversible-on-the-proxy action.
+
+1. **Land the branches on `main`** in each repo (merge/rebase
+   `run-model/retract-v0.0.0`, and `run-model/importable-starter` in pk-apps,
+   onto `main`). Local only until step 4.
+2. **Re-cut clean `v0.1.0` annotated tags** on the final `main` commits with a
+   real release message (the current local tags say "local verification");
+   delete the local placeholder tags first. **Never** reuse or move `v0.0.0`.
+3. **Clear the launch-mechanics blockers** tracked in
+   `launch/FLIP_RUNBOOK.md` §A (CI CODEOWNERS baseline, docs `v0.0.0→v0.1.0`,
+   README links) — they are out of scope for this run model but block CI.
+4. **Push `main` + `v0.1.0` per layer, leaf-first** (§3.2), letting each layer
+   settle on the proxy before the next so dependents resolve `@v0.1.0`:
+   - Layer 0: pk-shared, pk-core, pk-design, pk-client, pk-registry, platformkit-ui
+   - Layer 1: pk-runtime, pk-modules, pk-testkit
+   - Layer 2: pk-tools
+   - Layer 3: pk-apps
+5. **Create the new front-door repo** `github.com/septagon-oss/platformkit`
+   from the §2.2/§2.3 layout (the prototyped `.tmp-frontdoor/` is the template;
+   add it as a git repo with README + LICENSE), push `main`, then tag `v0.1.0`.
+6. **Post-push verification (real proxy):** from a clean machine with the
+   default `GOPROXY`,
+   `GOWORK=off go install github.com/septagon-oss/platformkit@v0.1.0` (or clone
+   + `go run .`), then assert `/healthz` 200 and `/api/v1/tenants` 200.
+7. **(Optional) Decide on `v0.0.0` retraction reach:** the retract is in the
+   `v0.1.0` go.mods, so it takes effect once `v0.1.0` is on the proxy. No
+   action needed on the `v0.0.0` tag itself — leave it; never move it.
+
+> The runnable contract is proven locally. The only remaining variable is the
+> public proxy/CI transport, which steps 4–6 exercise once approved.
