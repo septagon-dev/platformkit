@@ -1,7 +1,7 @@
 # pk-modules
 > Part of **[PlatformKit](https://github.com/septagon-oss/platformkit)** — an open-source Go backend for multi-tenant SaaS.
 
-**What this is.** The reference module pack — nine small, self-contained business modules that compose into the running starter app. Each one demonstrates the public module contract end to end: an entity, a `store.Store` persistence port with a SQLite reference implementation, a service, and an HTTP handler. They communicate only through ports, never by importing each other, so your own modules can follow the same pattern.
+**What this is.** The reference module pack — nine small, self-contained business modules that compose into the running starter app. The store-backed modules demonstrate the public module contract end to end: an entity, a `store.Store` persistence port with a SQLite reference implementation, a service, and an HTTP handler. (`admin` and `health` are composed modules that own no SQLite store.) They communicate only through ports, never by importing each other, so your own modules can follow the same pattern.
 
 **How to use it.** For a first taste, compose the minimal demo bundle; for the real thing, run the starter app, which wires all nine modules.
 
@@ -21,9 +21,9 @@ module is constructed via its own `NewModule(...)` and wired together by the
 starter app (`pk-apps/apps/starter-saas`). To see all nine running, clone the
 workspace and from `pk-apps/apps/starter-saas/` run `go run .`.
 
-**Depends on.** `pk-core` (and, transitively, `pk-shared`). It does not depend on `pk-runtime` — an app supplies the host.
+**Depends on.** `pk-core` only. It does not depend on `pk-shared` or `pk-runtime` — an app supplies the host.
 
-**Packages.** The nine modules under `pkg/` (plus `coremodules`, the bundle that wires them, and `portslib`, the shared module-to-module ports):
+**Packages.** The nine modules under `pkg/` (plus `coremodules`, the bundle that wires them; `portslib`, the shared module-to-module ports; and `homepage`, a support package for the landing page):
 
 | Module | Purpose |
 |---|---|

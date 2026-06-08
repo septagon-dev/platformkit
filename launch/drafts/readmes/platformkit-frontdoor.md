@@ -27,10 +27,11 @@ starter-saas — PlatformKit OSS monolith
   default login: admin@local.test / changeme
 ```
 
-That's it. Open `http://localhost:8080/admin`.
+That's it. Open `http://localhost:8080/admin` — note it is an open dashboard with no
+login wall today; put it behind your own auth before exposing the port.
 
 The seeded credentials — `admin@local.test` / `changeme`, tenant `tenant_acme` —
-authenticate against the auth API:
+authenticate against the auth API (not an admin login screen):
 
 ```bash
 curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
@@ -59,11 +60,12 @@ Nine modules compose into the running app on the first `go run .`:
 - **Audit log** — an append trail of changes.
 - **Content** — a content store with entity CRUD.
 - **In-app notifications** — a notification store.
-- **Admin UI** — a server-rendered dashboard at `/admin`, with a sidebar and entity links.
-- **Health** — `/healthz` reports the status of every module's data store.
+- **Admin UI** — an open server-rendered dashboard at `/admin` (no login wall today), with a sidebar and entity links.
+- **Health** — `/healthz` reports the status of the modules that own a data store.
 
-All nine are health-checked: `GET /healthz` returns `200` with each module's store
-reporting `healthy` on a fresh database.
+`/healthz` reports seven data/session checks; `admin` and `health` are composed
+modules without SQLite stores. `GET /healthz` returns `200` with each of those
+seven reporting `healthy` on a fresh database.
 
 ---
 
@@ -107,7 +109,9 @@ through the others, and you add your own module the same way the nine built-ins 
 
 PlatformKit is an independently versioned, independently consumable set of layers.
 A consumer depends on `pk-core` without pulling the rest. This front-door repo is a
-thin wrapper that resolves the layers it needs by version from the Go module proxy.
+thin `main` wrapping `pk-apps/pkg/starterapp`; the first `go run .` downloads the
+PlatformKit modules it needs by version from the Go module proxy. There are no
+`replace` directives — `go.work` is local-dev-only.
 
 | Repository | Purpose |
 |---|---|
@@ -116,7 +120,7 @@ thin wrapper that resolves the layers it needs by version from the Go module pro
 | `pk-runtime` | The host: request handling, health, and HTTP primitives. |
 | `pk-design` | Design tokens, themes, and component contracts. |
 | `pk-client` | Public client primitives. |
-| `pk-tools` | The `pk` CLI — `doctor`, `verify`, `explain`, and scaffolding. |
+| `pk-tools` | The `pk` CLI — `doctor`, `verify`, `explain`; a scaffold generator lives in `pk-tools/pkg/scaffold` as a library (not a `pk` subcommand). |
 | `pk-modules` | The reference module pack — the nine modules above and more. |
 | `pk-apps` | Runnable example compositions, including the starter. |
 | `pk-testkit` | Conformance and flow testing. |

@@ -504,13 +504,20 @@ bundle := pkmodule.NewBundle("yourapp.modules",
 
 catalog, err := pkmodule.NewCatalog().Add(bundle).Build()
 if err != nil {
-	return nil, fmt.Errorf("catalog build: %w", err) // catches a miswired dependency
+	return nil, fmt.Errorf("catalog build: %w", err) // empty/duplicate-ID errors only
+}
+
+// Compose (used by host.New) is where dependencies are sorted + validated.
+plan, err := pkmodule.Compose(catalog)
+if err != nil {
+	return nil, fmt.Errorf("compose: %w", err) // catches a miswired dependency
 }
 ```
 
-`Build()` topologically sorts on declared dependencies and fails if a required
-port has no provider — so a wiring mistake is a build-time error, not a runtime
-surprise.
+`Build()` only registers entries and defaults — it does not look at dependencies.
+`Compose()` (which `host.New(...)` calls for you) topologically sorts on declared
+dependencies and fails if a required port has no provider, so a wiring mistake is
+caught at compose time, before the app serves — not a runtime surprise.
 
 ## Why one shared `*sql.DB`?
 

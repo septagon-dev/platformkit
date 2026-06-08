@@ -18,7 +18,7 @@ Fair question to ask up front. The commitment is explicit: the boundary is drawn
 
 ### 4. SQLite in production? Really?
 
-No — SQLite is the zero-setup *local default* so the first run needs no database, and it's genuinely fine for development and small deployments. For production at scale you swap your own store in behind the store port; that's exactly what the port boundary is for. We say this plainly in the `What this is NOT` list rather than hiding it. (Pro ships Postgres-cluster/read-replica providers, but the port is OSS and you can write your own.)
+No — SQLite is the zero-setup *local default* so the first run needs no database, and it's genuinely fine for development and small deployments. For production at scale you swap your own store in behind the relevant module store interfaces (auth uses `WithSessionStore`); that's exactly what the port boundary is for. We say this plainly in the `What this is NOT` list rather than hiding it. (Pro adds Postgres-cluster/read-replica providers, but the interfaces are OSS and you can write your own.)
 
 ### 5. Why fx / dependency injection? That's a lot of magic for Go.
 

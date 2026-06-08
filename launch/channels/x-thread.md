@@ -43,13 +43,13 @@ The modules don't import each other. They depend on interfaces (ports), and depe
 
 **5/ (open core, honest)**
 
-It's open core, and the line is drawn at the provider, never the contract: every public interface stays in OSS. Pro plugs new implementations in behind the same ports — e.g. a Postgres-cluster store behind the store port. Nothing you build against today moves out of open source.
+It's open core, and the line is drawn at the provider, never the contract: every public interface stays in OSS. Pro plugs new implementations in behind the same ports — e.g. a Postgres-cluster store behind the relevant module store interface. Nothing you build against today moves out of open source.
 
 ---
 
 **6/ (what it's NOT)**
 
-Honest scope: not a no-code tool (you write Go). Not a Rails/Django replacement. SQLite is the zero-setup local default — for production you put your own store behind the store port. And it's early: v0.1.0, our first public release; expect APIs to move, verified on Linux + Go 1.26. Pin a commit if you need stability.
+Honest scope: not a no-code tool (you write Go). Not a Rails/Django replacement. SQLite is the zero-setup local default — for production you put your own store behind the relevant module store interface (auth uses `WithSessionStore`). `/admin` is an open dashboard today, not a gated login — the seeded creds authenticate against the auth API (`POST /api/v1/auth/sessions`, with `tenant_id` in the body), so gate it before exposing the port. And it's early: v0.1.0, our first public release; expect APIs to move, verified on Linux + Go 1.26. Pin a commit if you need stability.
 
 ---
 
