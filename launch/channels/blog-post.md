@@ -96,7 +96,7 @@ It's not a no-code tool — it's a Go codebase, and you write Go to extend it. I
 
 It's not production-hardened at scale on the default store. SQLite is the zero-setup local default, and it's great for development and small deployments; for production at scale you swap in your own store behind the store port. That's exactly what the port boundary is for.
 
-And it's early. This is v0.0.0, a first public cut, verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move. Pin a commit if you need stability today.
+And it's early. This is v0.1.0 — our first public release; expect APIs to move — verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move. Pin a commit if you need stability today.
 
 ## How to try it, and how to contribute
 

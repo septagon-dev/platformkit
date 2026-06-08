@@ -100,8 +100,9 @@ your own auth before exposing it.
 ## Verified scope
 
 This path is verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`,
-the default `/admin` base path, and a fresh database. This is an early cut
-(v0.0.0); pin a commit if you need stability today.
+the default `/admin` base path, and a fresh database. This is an early release
+(v0.1.0 — our first public release; expect APIs to move); pin a commit if you
+need stability today.
 
 ---
 

@@ -36,7 +36,7 @@ standard.WithDep(module.RequiresPort[ports.AuditService](module.PortSpec{
 
 So you swap a module's implementation without the change cascading, and you add your own module the same way the nine built-ins are added. Multi-tenancy is in the data layer and the auth flow, not retrofitted — the seeded login is tenant-scoped, which is why the auth API needs `tenant_id` in the body.
 
-Honest scope: it's early (v0.0.0), verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, fresh DB. `/admin` is an open dashboard right now, not a gated login. SQLite is the zero-setup default — for production at scale you put your own store behind the store port. It's not a Rails/Django-style web framework: no ORM, no router opinion, no generators-for-everything. fx-based DI is a real tradeoff if you dislike that style; it's what makes the compose-and-swap work rather than being a slogan.
+Honest scope: it's early (v0.1.0 — our first public release; expect APIs to move), verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, fresh DB. `/admin` is an open dashboard right now, not a gated login. SQLite is the zero-setup default — for production at scale you put your own store behind the store port. It's not a Rails/Django-style web framework: no ORM, no router opinion, no generators-for-everything. fx-based DI is a real tradeoff if you dislike that style; it's what makes the compose-and-swap work rather than being a slogan.
 
 It's open core: the boundary is the *provider*, never the *contract* — every public interface stays in OSS, Pro plugs new implementations in behind the same ports. We're Septagon and we use this ourselves.
 

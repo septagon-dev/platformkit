@@ -22,7 +22,7 @@ A note on the open-core model, because it's where trust is earned or lost: the b
 
 For teams with data-residency or sovereignty requirements, this matters: PlatformKit runs entirely on your own infrastructure, with no managed dependency required to build and operate the substrate. You own the deployment.
 
-It's an early release — v0.0.0, a first public cut, verified on Linux and Go 1.26. We build PlatformKit and use it ourselves, and we'd genuinely value feedback from teams shipping multi-tenant products.
+It's an early release — v0.1.0, our first public release; expect APIs to move, verified on Linux and Go 1.26. We build PlatformKit and use it ourselves, and we'd genuinely value feedback from teams shipping multi-tenant products.
 
 Repo and docs: https://github.com/septagon-oss/platformkit
 
