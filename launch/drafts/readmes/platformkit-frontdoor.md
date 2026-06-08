@@ -1,6 +1,6 @@
 # PlatformKit
 
-**An open-source Go backend for multi-tenant SaaS.** Clone it, run `go run ./starter`, and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, and notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, no external database.
+**An open-source Go backend for multi-tenant SaaS.** Clone it, run `go run .`, and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, and notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, no external database.
 
 It is the part of a SaaS backend you would otherwise rebuild from scratch in every project.
 
@@ -17,7 +17,7 @@ It is the part of a SaaS backend you would otherwise rebuild from scratch in eve
 ```bash
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 ```
 
 ```
@@ -44,13 +44,13 @@ PlatformKit is multi-tenant, so login requires `tenant_id` in the payload.
 database (SQLite by default). The first build downloads a handful of modules and
 takes tens of seconds; subsequent starts take about two seconds.
 
-**Port 8080 busy?** Edit `http.addr` in `starter/config.yaml`.
+**Port 8080 busy?** The front door listens on `:8080` and ships no config file. Run the full starter in pk-apps (`pk-apps/apps/starter-saas`, which reads `http.addr` from its `config.yaml`) or change the address in the wrapper's `main.go`.
 
 ---
 
 ## What you get
 
-Nine modules compose into the running app on the first `go run ./starter`:
+Nine modules compose into the running app on the first `go run .`:
 
 - **Tenants** — tenant isolation built into the data layer and the auth flow, not bolted on.
 - **Users** — user records scoped to a tenant.

@@ -6,7 +6,7 @@ Pre-written, honest, non-defensive replies to the ten hardest questions. Post th
 
 ### 1. Why not just use Supabase / Encore?
 
-Supabase is a hosted Postgres + auth + storage product; Encore is a Go framework with its own cloud and infra provisioning. PlatformKit is narrower and more local: it's the multi-tenant SaaS substrate (tenants, users, auth, audit, admin) as composable Go modules you clone and run with `go run ./starter`, no account, no cloud, no Docker. If you want a managed backend-as-a-service or opinionated infra provisioning, those fit better. If you want the tenant/auth/admin layer as code you own, on your own infra, that's this. (See `What this is NOT` in the README.)
+Supabase is a hosted Postgres + auth + storage product; Encore is a Go framework with its own cloud and infra provisioning. PlatformKit is narrower and more local: it's the multi-tenant SaaS substrate (tenants, users, auth, audit, admin) as composable Go modules you clone and run with `go run .`, no account, no cloud, no Docker. If you want a managed backend-as-a-service or opinionated infra provisioning, those fit better. If you want the tenant/auth/admin layer as code you own, on your own infra, that's this. (See `What this is NOT` in the README.)
 
 ### 2. Why not just plain net/http + sqlc, or Buffalo?
 
@@ -22,7 +22,7 @@ No — SQLite is the zero-setup *local default* so the first run needs no databa
 
 ### 5. Why fx / dependency injection? That's a lot of magic for Go.
 
-It's there so modules can depend on interfaces (ports) and have the concrete type supplied at startup, instead of importing each other. That's what lets you replace one module's implementation without the change cascading, and add your own module the same way the nine built-ins are added. It's a real tradeoff — DI adds indirection, and if you dislike that this won't convert you — but it's what makes the compose-and-swap story work rather than just being a slogan. You can read the wiring in the starter app's `main.go`.
+It's there so modules can depend on interfaces (ports) and have the concrete type supplied at startup, instead of importing each other. That's what lets you replace one module's implementation without the change cascading, and add your own module the same way the nine built-ins are added. It's a real tradeoff — DI adds indirection, and if you dislike that this won't convert you — but it's what makes the compose-and-swap story work rather than just being a slogan. You can read the wiring in `pk-apps/pkg/starterapp/app.go`.
 
 ### 6. What's actually in Pro, concretely?
 
@@ -34,7 +34,7 @@ Apache-2.0 for everything you clone and run: the contracts and ports, the defaul
 
 ### 8. How mature is this? It says v0.1.0.
 
-It's early and we're saying so — v0.1.0, our first public release; expect APIs to move, verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path (clone → `go run ./starter` → seeded admin + healthy data layer) is verified green on a cold clone, but we're not going to pretend the surrounding surface is battle-tested. Tell us where it breaks.
+It's early and we're saying so — v0.1.0, our first public release; expect APIs to move, verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path (clone → `go run .` → seeded admin + healthy data layer) is verified green on a cold clone, but we're not going to pretend the surrounding surface is battle-tested. Tell us where it breaks.
 
 ### 9. Who's behind it, and do you actually use it?
 

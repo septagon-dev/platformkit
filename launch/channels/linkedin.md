@@ -13,7 +13,7 @@ The premise is simple. Every multi-tenant SaaS project rebuilds the same substra
 ```
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 ```
 
 Pure Go: no CGO, no npm, no Docker, SQLite by default. Modules depend on interfaces (ports) rather than on each other, and dependency injection supplies the concrete type at startup — so teams can swap or add modules without changes cascading across the codebase.

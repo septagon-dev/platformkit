@@ -4,7 +4,7 @@ One idea per post. Plain voice, no hype, no emoji-spam. Author = Septagon.
 
 > **Asset notes:**
 > - Post 1 should carry the **OG card** (repo social image / hero) so the link unfurls cleanly.
-> - Post 3 (the one-command demo) is where the **asciinema cast** (or a short screen capture of `go run ./starter` → admin UI) goes.
+> - Post 3 (the one-command demo) is where the **asciinema cast** (or a short screen capture of `go run .` → admin UI) goes.
 
 ---
 
@@ -27,7 +27,7 @@ PlatformKit is an open-source Go backend for multi-tenant SaaS. Clone it and you
 ```
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 # admin UI at http://localhost:8080/admin
 ```
 
