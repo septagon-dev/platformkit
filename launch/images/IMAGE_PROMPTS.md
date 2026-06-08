@@ -56,10 +56,12 @@ from the HTML/CSS, SVG, or Mermaid snippets, which are pixel-deterministic.
 
 ## Asset 1 — OG / social card
 
-**Purpose:** The highest-leverage image. This is what unfurls on Hacker News,
-X/Twitter, LinkedIn, and Slack/Discord link previews. Must legibly show the
-wordmark **PlatformKit** and the one-liner **An open-source Go backend for
-multi-tenant SaaS**.
+**Purpose:** The highest-leverage image. This is the link-preview card that
+unfurls on X/Twitter, LinkedIn, Slack, and Discord. (Hacker News itself does
+**not** render rich OG cards — it shows the title and link only — but the card
+still matters everywhere the link is reshared.) Must legibly show the wordmark
+**PlatformKit** and the one-liner **An open-source Go backend for multi-tenant
+SaaS**.
 
 **Exact dimensions:** 1200 × 630 px (the standard `og:image` size).
 
@@ -183,9 +185,14 @@ and dim it with `rgba(15,23,42,0.82)` so the text stays legible).
 guarantees correct text. The accent dot/bar uses teal `#2DD4BF`; swap to indigo
 `#818CF8` in the two `.dot`/`.accentbar` rules if preferred. If you cannot run
 headless Chrome, open the HTML in any browser, set the window to ~1200×630, and
-take an OS screenshot, then crop. Set the meta tag in your README/site as
-`<meta property="og:image" content=".../og-card.png">` plus
-`<meta name="twitter:card" content="summary_large_image">`.
+take an OS screenshot, then crop. The `og:image` meta value **must be an
+absolute HTTPS URL** — relative paths do not unfurl. Use the raw URL of the
+committed asset (or your site URL):
+
+```html
+<meta property="og:image" content="https://github.com/septagon-oss/platformkit/raw/main/docs/og-card.png">
+<meta name="twitter:card" content="summary_large_image">
+```
 
 ---
 
@@ -213,7 +220,10 @@ Abstract technical illustration of composable software modules connecting into a
 text, words, letters, numbers, logos, no gradients, no 3D blobs, no glossy reflections, no stock-photo people, no fake UI screenshots, no neon, no lens flare, no clutter, no AI-art watermark, no signature, no garbled text, no random letters, photorealism, busy composition, rainbow colors, drop shadows
 ```
 
-**Output filename + target path:** `platformkit/launch/images/hero.png` (1280×640).
+**Output filename + target path:** `platformkit/launch/images/hero.png`
+(1280×640). The **front-door README references `docs/hero.png`**, so the
+generated asset must also be placed at `docs/hero.png` in the front-door
+`platformkit` repo (CHECKLIST §A1/§A2).
 
 **Notes / fallback:** Keep it sparse — if the model returns a busy/cluttered
 result, add `, only 5 nodes, very minimal` to the prompt and regenerate.
@@ -299,6 +309,9 @@ theme, so a single dark-tuned block is usually fine to ship.
 fence directly in the README. For a static export, save SVG to
 `platformkit/launch/images/architecture.svg` (export via
 [mermaid.live](https://mermaid.live) → SVG, or `mmdc -i architecture.mmd -o architecture.svg`).
+The **front-door README references `docs/architecture.svg`**, so place the
+exported SVG at `docs/architecture.svg` in the front-door `platformkit` repo
+(CHECKLIST §A1/§A2).
 
 **Notes / fallback (AI — only if you insist, NOT recommended):** one-line prompt
 for `fal-ai/flux/dev` — `Clean minimal architecture diagram, dark slate background, three labeled tiers (core, modules, clients) as plain boxes connected by thin lines, flat 2D, monospace labels, one teal accent, engineering aesthetic` with the shared negative baseline. Expect mislabeled/garbled boxes; only use as a last resort and proofread every word.
