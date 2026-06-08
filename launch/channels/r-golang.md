@@ -2,7 +2,7 @@
 
 **Suggested title:**
 
-`PlatformKit: an open-source Go backend for multi-tenant SaaS — clone and `go run ./starter``
+PlatformKit: an open-source Go backend for multi-tenant SaaS — clone and `go run .`
 
 **Flair:** `show & tell`
 
@@ -17,7 +17,7 @@ One command from a cold clone:
 ```bash
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 # admin UI at http://localhost:8080/admin
 # seeded auth login: admin@local.test / changeme (tenant tenant_acme)
 ```

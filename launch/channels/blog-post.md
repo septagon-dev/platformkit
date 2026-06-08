@@ -25,7 +25,7 @@ It is the part of a SaaS backend you would otherwise rebuild from scratch in eve
 ```bash
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 ```
 
 That boots the starter app, seeds a tenant and an admin user, and serves the admin UI:
@@ -49,7 +49,7 @@ curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
 
 One thing to be precise about: `/admin` is an open dashboard today, not a gated login wall. The seeded credentials are for the auth API, not an admin login screen — that doesn't exist yet. We'd rather tell you that than let you discover it.
 
-If port 8080 is busy, change `http.addr` in `starter/config.yaml`.
+The front door listens on `:8080` and ships no config file. If 8080 is busy, run the full starter in pk-apps (`pk-apps/apps/starter-saas`, which reads `http.addr` from its `config.yaml`) or change the address in the wrapper's `main.go`.
 
 ## The architecture: core → modules → clients
 
@@ -105,7 +105,7 @@ Clone it and run it:
 ```bash
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 ```
 
 Then poke at the boundary — that's the part we most want stress-tested. Add a module of your own. Swap the store. Try to make the port abstraction leak. If it holds, tell us; if it breaks, definitely tell us. Issues and discussions are open on the repo.

@@ -18,7 +18,7 @@
 
 **Description (short):**
 
-PlatformKit is an open-source Go backend for multi-tenant SaaS. Clone it, run `go run ./starter`, and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, and notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, SQLite by default. Apache-2.0.
+PlatformKit is an open-source Go backend for multi-tenant SaaS. Clone it, run `go run .`, and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, and notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, SQLite by default. Apache-2.0.
 
 ---
 
@@ -33,7 +33,7 @@ What makes it more than nine CRUD modules: modules depend on interfaces (ports),
 ```
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 # admin UI at http://localhost:8080/admin
 ```
 

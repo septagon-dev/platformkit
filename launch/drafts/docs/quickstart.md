@@ -17,7 +17,7 @@ seeded, running app on your machine. One language, one command, no containers.
 ```bash
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 ```
 
 That is it. The first run downloads a handful of Go modules and compiles the
@@ -28,7 +28,7 @@ seconds.
 
 - `git clone …` pulls the front-door repo and the layers it composes.
 - `cd platformkit` puts you at the repo root.
-- `go run ./starter` builds and runs the starter app. On boot it opens a local
+- `go run .` builds and runs the starter app. On boot it opens a local
   SQLite file (`pk.db` in the working directory), creates the tables, seeds one
   tenant and one admin user, composes nine modules, and serves HTTP on `:8080`.
 
@@ -89,8 +89,10 @@ your own auth before exposing it.
 
 ## Gotchas
 
-- **Port 8080 busy?** The app binds `:8080`. To change it, edit `http.addr` in
-  `starter/config.yaml`.
+- **Port 8080 busy?** The front door binds `:8080` and ships no config file. To
+  change it, run the full starter in pk-apps (`pk-apps/apps/starter-saas`, which
+  reads `http.addr` from its `config.yaml`) or change the address in the
+  wrapper's `main.go`.
 - **First build is slow, then fast.** The first `go run` downloads modules and
   compiles (tens of seconds). After that, startup is about two seconds.
 - **Reset to a clean slate.** The SQLite file `pk.db` is created in the working

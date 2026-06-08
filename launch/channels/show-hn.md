@@ -12,12 +12,12 @@ Show HN: PlatformKit – open-source Go backend for multi-tenant SaaS
 
 **Body:**
 
-PlatformKit is an open-source Go backend for multi-tenant SaaS. You clone it, run `go run ./starter`, and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, and notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, no external database (SQLite by default). It's the part of a SaaS backend you'd otherwise rebuild from scratch in every project.
+PlatformKit is an open-source Go backend for multi-tenant SaaS. You clone it, run `go run .`, and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, and notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, no external database (SQLite by default). It's the part of a SaaS backend you'd otherwise rebuild from scratch in every project.
 
 ```
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-go run ./starter
+go run .
 # admin UI at http://localhost:8080/admin
 # seeded auth login: admin@local.test / changeme (tenant tenant_acme)
 ```
