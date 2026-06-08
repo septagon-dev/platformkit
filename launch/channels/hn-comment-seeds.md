@@ -32,9 +32,9 @@ Hosted and cloud-scale providers: NATS/JetStream/Kafka event buses, Postgres-clu
 
 Apache-2.0 for everything you clone and run: the contracts and ports, the default providers (SQLite, in-memory, stdlib, file-based), the security baseline, the reference admin UI, the starter app, the `pk` CLI, and the nine-module essentials pack. That's enough to build and run a multi-tenant SaaS backend on your own infrastructure with no further purchase. The license file is in the repo.
 
-### 8. How mature is this? It says v0.0.0.
+### 8. How mature is this? It says v0.1.0.
 
-It's early and we're saying so — this is a first public cut, verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path (clone → `go run ./starter` → seeded admin + healthy data layer) is verified green on a cold clone, but we're not going to pretend the surrounding surface is battle-tested. Tell us where it breaks.
+It's early and we're saying so — v0.1.0, our first public release; expect APIs to move, verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path (clone → `go run ./starter` → seeded admin + healthy data layer) is verified green on a cold clone, but we're not going to pretend the surrounding surface is battle-tested. Tell us where it breaks.
 
 ### 9. Who's behind it, and do you actually use it?
 

@@ -49,7 +49,7 @@ It's open core, and the line is drawn at the provider, never the contract: every
 
 **6/ (what it's NOT)**
 
-Honest scope: not a no-code tool (you write Go). Not a Rails/Django replacement. SQLite is the zero-setup local default — for production you put your own store behind the store port. And it's early: v0.0.0, verified on Linux + Go 1.26. Pin a commit if you need stability.
+Honest scope: not a no-code tool (you write Go). Not a Rails/Django replacement. SQLite is the zero-setup local default — for production you put your own store behind the store port. And it's early: v0.1.0, our first public release; expect APIs to move, verified on Linux + Go 1.26. Pin a commit if you need stability.
 
 ---
 

@@ -32,9 +32,9 @@ Hosted and cloud-scale providers: NATS/JetStream/Kafka event buses, Postgres-clu
 
 Apache-2.0 for everything you clone and run: the contracts and ports, the default providers (SQLite, in-memory, stdlib, file-based), the security baseline, the reference admin UI, the starter app, the `pk` CLI, and the nine-module essentials pack. That's enough to build and run a multi-tenant SaaS backend on your own infrastructure with no further purchase. The license file is in the repository.
 
-## How mature is this? It says v0.0.0.
+## How mature is this? It says v0.1.0.
 
-It's early, and we say so. This is a first public cut, verified on Linux/x86_64, Go 1.26, and `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path — clone, `go run ./starter`, a seeded admin and a healthy data layer — is verified green on a cold clone, but we won't pretend the surrounding surface is battle-tested. Tell us where it breaks.
+It's early, and we say so: v0.1.0 — our first public release; expect APIs to move. Verified on Linux/x86_64, Go 1.26, and `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move; pin a commit if you need stability today. The hero path — clone, `go run ./starter`, a seeded admin and a healthy data layer — is verified green on a cold clone, but we won't pretend the surrounding surface is battle-tested. Tell us where it breaks.
 
 ## Who's behind it, and do you actually use it?
 
@@ -62,4 +62,4 @@ SQLite is the default store provider, wired behind the store port. To use Postgr
 
 ### Is it production-ready?
 
-It's early — v0.0.0, a first public cut. The hero path is verified on a cold clone (Linux/x86_64, Go 1.26, fresh database), and the substrate is designed to run on your own infrastructure. But the default SQLite store is for development and small deployments, not scale; `/admin` is an open dashboard rather than a gated login today; and the broader surface is not battle-tested yet. For production, swap your store in behind the store port and pin a commit. Read the "What this is NOT" section before you depend on it.
+It's early — v0.1.0, our first public release; expect APIs to move. The hero path is verified on a cold clone (Linux/x86_64, Go 1.26, fresh database), and the substrate is designed to run on your own infrastructure. But the default SQLite store is for development and small deployments, not scale; `/admin` is an open dashboard rather than a gated login today; and the broader surface is not battle-tested yet. For production, swap your store in behind the store port and pin a commit. Read the "What this is NOT" section before you depend on it.

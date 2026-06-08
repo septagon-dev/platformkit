@@ -108,9 +108,9 @@ advance.
   store behind the store port — that is exactly what the port boundary is for.
 - **Not a framework you must adopt wholesale.** Modules compose; you can take the
   ones you want and ignore the rest, or add your own alongside them.
-- **Early. v0.0.0.** This is a first public cut. Verified on Linux/x86_64, Go
-  1.26, `modernc.org/sqlite v1.50.1`, fresh database. Things will move. Pin a
-  commit if you need stability today.
+- **Early. v0.1.0 — our first public release; expect APIs to move.** Verified on
+  Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, fresh database. Things will
+  move. Pin a commit if you need stability today.
 
 ---
 

@@ -29,10 +29,12 @@ Three candidate entry points exist and are all real:
 |---|---|---|---|
 | **Starter app** (hero) | `pk-apps/apps/starter-saas/` (`main.go`) | `go run .` | ✅ Builds, serves, healthy on fresh DB |
 | `pk` CLI | `pk-tools/cmd/pk/` (`doctor`, `verify`, `explain`) | `go run ./cmd/pk …` | Exists; a dev-workflow tool, not the run-the-app path |
-| Examples | `pk-apps/examples/minimal`, `examples/runtime` | `make example` / `make runtime-example` | Exist; smaller demos, not the hero path |
+| Examples | `pk-apps/examples/minimal`, `examples/runtime` | `go run ./examples/minimal` / `go run ./examples/runtime` | Exist; smaller demos, not the hero path |
 
 There is no `make up` / `make showroom` in the OSS workspace. `pk-apps/Makefile`
-exposes only `test`, `vet`, `staticcheck`, `verify`, `example`, `runtime-example`.
+exposes only `test`, `vet`, `staticcheck`, `race`, and `verify` (verification
+targets, not run targets). The examples are run directly with
+`go run ./examples/minimal` / `go run ./examples/runtime`.
 
 **Decided hero verb:** `go run .` inside `pk-apps/apps/starter-saas/`. This
 matches the app's own `README.md` and `main.go` doc comment ("the flagship

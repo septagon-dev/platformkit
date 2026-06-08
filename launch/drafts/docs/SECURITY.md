@@ -23,7 +23,8 @@ address the issue before disclosing it publicly.
 
 ## Supported versions
 
-PlatformKit is early — **v0.0.0**, a first public cut. There is no long-term
+PlatformKit is early — **v0.1.0**, our first public release; expect APIs to
+move. There is no long-term
 support window yet. Security fixes land on the `main` branch of the affected
 repo. If you need stability today, pin to a specific commit and watch the repo
 for security updates.
