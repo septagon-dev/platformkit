@@ -16,29 +16,37 @@ fixed, and adversarially reviewed by Codex — see [§9 History & fixes](#9-hist
 
 ## 1. What "run it" means today (entry-point inventory)
 
-The public surface a user clones is the workspace at the `github.com/septagon-oss`
-org (mirrored locally at `/home/jplr/gitrepos/septagon-dev/septagon-oss-workspace/`).
-It contains the sibling repos (`pk-core`, `pk-modules`, `pk-apps`, …) wired by a
-root `go.work`, and each module's `go.mod` uses `replace … => ../pk-core` style
-directives, so the whole workspace must be present as siblings (a single clone
-provides this).
+PlatformKit OSS publishes under the `github.com/septagon-oss` org (mirrored
+locally at `/home/jplr/gitrepos/septagon-dev/septagon-oss-workspace/`). The
+published module `go.mod` files carry **no `replace` directives** — modules
+resolve from the Go proxy by version. A `go.work` is used for **local multi-repo
+development only** (it points at the sibling repos on disk); it is not part of the
+published surface. (See `RELEASE_AND_RUN_MODEL.md`.)
 
-Three candidate entry points exist and are all real:
+Entry points (all real):
 
 | Entry point | Location | Verb | Status |
 |---|---|---|---|
-| **Starter app** (hero) | `pk-apps/apps/starter-saas/` (`main.go`) | `go run .` | ✅ Builds, serves, healthy on fresh DB |
+| **Front door** (hero) | `github.com/septagon-oss/platformkit` — a thin root `main` wrapper over `pk-apps/pkg/starterapp` | `git clone … && go run .` | ✅ Builds + **boots green** (9 modules, 7 healthy stores, login 201). Locally landed + verified; public clone awaits the gated push. |
+| Starter app (contributor) | `pk-apps/apps/starter-saas/` (`main.go`) | `go run .` (in the workspace) | ✅ Same composition as the front door; the in-workspace dev path |
 | `pk` CLI | `pk-tools/cmd/pk/` (`doctor`, `verify`, `explain`) | `go run ./cmd/pk …` | Exists; a dev-workflow tool, not the run-the-app path |
-| Examples | `pk-apps/examples/minimal`, `examples/runtime` | `go run ./examples/minimal` / `go run ./examples/runtime` | Exist; smaller demos, not the hero path |
+| Examples | `pk-apps/examples/minimal`, `examples/runtime` | `go run ./examples/minimal` / `go run ./examples/runtime` | Smaller demos, not the hero path |
 
 There is no `make up` / `make showroom` in the OSS workspace. `pk-apps/Makefile`
 exposes only `test`, `vet`, `staticcheck`, `race`, and `verify` (verification
-targets, not run targets). The examples are run directly with
-`go run ./examples/minimal` / `go run ./examples/runtime`.
+targets, not run targets).
 
-**Decided hero verb:** `go run .` inside `pk-apps/apps/starter-saas/`. This
-matches the app's own `README.md` and `main.go` doc comment ("the flagship
-'git clone and go run .' demo"). It is the intended dummy-proof first run.
+**Decided hero verb:** `git clone https://github.com/septagon-oss/platformkit && cd platformkit && go run .`.
+The front-door repo is a ~25-line root `main` that imports `pk-apps/pkg/starterapp`
+and boots the identical nine-module monolith via `starterapp.DefaultConfig()`. The
+in-workspace equivalent (`cd pk-apps/apps/starter-saas && go run .`) runs the same
+`starterapp.BuildApp` composition and is the contributor path.
+
+> **Version namespaces (don't conflate them):** the per-module *port-contract*
+> version (`ModuleVersion`, shown by `pk explain modules`) is **`0.0.0`** — the
+> initial contract baseline, deliberately independent of the distribution. The
+> *release/distribution* version is **`v0.1.0`** (the git tag / Go module version).
+> Both are correct simultaneously; do not claim `pk explain` prints `v0.1.0`.
 
 ---
 
