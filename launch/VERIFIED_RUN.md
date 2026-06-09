@@ -8,7 +8,7 @@
 
 **Status: ✅ GREEN — the hero path works on a cold clone.** On a fresh database,
 `go run .` boots the starter app, seeds a tenant + admin user, serves the admin
-UI, and the full data layer is healthy (`/healthz 200`, all 7 modules healthy,
+UI, and the full data layer is healthy (`/healthz 200`, seven data/session health checks pass,
 `/api/v1/tenants 200`, login `201`). The original cold-DB failure was found,
 fixed, and adversarially reviewed by Codex — see [§9 History & fixes](#9-history--fixes-what-changed-and-why).
 
@@ -209,7 +209,7 @@ Safe to state in READMEs / Show HN, scoped as below:
 
 The exact §3 block was re-run in a fresh shell against a freshly deleted `pk.db`:
 build succeeds, server listens on `:8080`, `/` and `/admin` return `200`,
-`/healthz` returns `200` with all 7 modules healthy, `GET /api/v1/tenants`
+`/healthz` returns `200` with all seven data/session health checks passing, `GET /api/v1/tenants`
 returns `200` with the seeded `Acme Inc`, and login with `tenant_id` returns
 `201`. Reproduced green deterministically.
 

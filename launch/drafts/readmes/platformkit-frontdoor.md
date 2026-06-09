@@ -21,10 +21,15 @@ go run .
 ```
 
 ```
-starter-saas — PlatformKit OSS monolith
+============================================================
+ starter-saas — PlatformKit OSS monolith
   listening:    http://localhost:8080
   admin UI:     http://localhost:8080/admin
+  health:       http://localhost:8080/healthz
+  metrics:      http://localhost:8080/metrics
   default login: admin@local.test / changeme
+  modules:      9 composed (admin_management, health_management, tenant_management, user_management, audit_management, auth_management, api_key_management, content_management, notification_management)
+============================================================
 ```
 
 That's it. Open `http://localhost:8080/admin` — note it is an open dashboard with no
