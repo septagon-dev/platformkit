@@ -27,7 +27,7 @@ Entry points (all real):
 
 | Entry point | Location | Verb | Status |
 |---|---|---|---|
-| **Front door** (hero) | `github.com/septagon-oss/platformkit` — a thin root `main` wrapper over `pk-apps/pkg/starterapp` | `git clone … && go run .` | ✅ Builds + **boots green** (9 modules, 7 healthy stores, login 201). Locally landed + verified; public clone awaits the gated push. |
+| **Front door** (hero) | `github.com/septagon-oss/platformkit` — a thin root `main` wrapper over `pk-apps/pkg/starterapp` | `git clone … && go run .` | ✅ Builds + **boots green** (9 modules, 7 data/session health checks, login 201). Locally landed + verified; public clone awaits the gated push. |
 | Starter app (contributor) | `pk-apps/apps/starter-saas/` (`main.go`) | `go run .` (in the workspace) | ✅ Same composition as the front door; the in-workspace dev path |
 | `pk` CLI | `pk-tools/cmd/pk/` (`doctor`, `verify`, `explain`) | `go run ./cmd/pk …` | Exists; a dev-workflow tool, not the run-the-app path |
 | Examples | `pk-apps/examples/minimal`, `examples/runtime` | `go run ./examples/minimal` / `go run ./examples/runtime` | Smaller demos, not the hero path |
@@ -127,7 +127,7 @@ curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
 | `GET /live` | `204` |
 | `GET /ready` | `200` |
 | `GET /metrics` | `200` |
-| **`GET /healthz`** | **`200`** — `{"status":"healthy"}`, all 7 module stores healthy |
+| **`GET /healthz`** | **`200`** — `{"status":"healthy"}`, all 7 data/session health checks pass (6 module stores + `auth_management.sessions`) |
 | **`GET /api/v1/tenants`** | **`200`** — `[{"id":"tenant_acme","slug":"acme","name":"Acme Inc",…}]` |
 | **`POST /api/v1/auth/sessions`** (with `tenant_id`) | **`201`** — returns a session for `user_admin` |
 

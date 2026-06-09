@@ -551,11 +551,17 @@ irreversible-on-the-proxy action.
    - Layer 2: pk-tools
    - Layer 3: pk-apps
 4. **Create + push the new front-door repo**
-   `github.com/septagon-oss/platformkit` (AFTER pk-apps) from the §2.2/§2.3
-   layout (the prototyped `.tmp-frontdoor/` is the template; add it as a git
-   repo with README + LICENSE), push `main`, then tag `v0.1.0`. The front door
-   is the final module layer — **not** `pk-docs` (which is a non-module docs
-   repo, published separately and not on the build train).
+   `github.com/septagon-oss/platformkit` (AFTER pk-apps is public). Its source is
+   **`$OSS/platformkit-frontdoor`** — a thin root `main` over `pk-apps/pkg/starterapp`.
+   Because it resolves `pk-apps` from the proxy by version, generate its committed
+   `go.sum` only after `pk-apps@v0.1.0` is public:
+   `( cd "$OSS/platformkit-frontdoor" && GOWORK=off GOFLAGS= go mod tidy )`, commit
+   the `go.sum`, confirm `README.md` is the corrected front-door draft and that
+   `LICENSE` + the `docs/` assets (hero.png, architecture.svg, open-core.md) are
+   present, then `gh repo create septagon-oss/platformkit --source "$OSS/platformkit-frontdoor"`,
+   push `main`, then tag `v0.1.0`. The front door is the final module layer —
+   **not** `pk-docs` (a non-module docs repo, published separately, not on the build train).
+   (FLIP_RUNBOOK.md §C Layer 4 has the exact commands.)
 5. **Post-push verification (real proxy):** from a clean machine with the
    default `GOPROXY`,
    `git clone https://github.com/septagon-oss/platformkit && cd platformkit &&

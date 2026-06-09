@@ -31,10 +31,15 @@ go run .
 That boots the starter app, seeds a tenant and an admin user, and serves the admin UI:
 
 ```
-starter-saas — PlatformKit OSS monolith
+============================================================
+ starter-saas — PlatformKit OSS monolith
   listening:    http://localhost:8080
   admin UI:     http://localhost:8080/admin
+  health:       http://localhost:8080/healthz
+  metrics:      http://localhost:8080/metrics
   default login: admin@local.test / changeme
+  modules:      9 composed (admin_management, health_management, tenant_management, user_management, audit_management, auth_management, api_key_management, content_management, notification_management)
+============================================================
 ```
 
 Open `http://localhost:8080/admin`. The first build downloads a handful of Go modules and takes tens of seconds; subsequent starts take about two seconds.
