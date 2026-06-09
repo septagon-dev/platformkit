@@ -290,8 +290,9 @@ fetched fresh `v0.1.0`.
 
 ### 4.2 The outsider build (GOWORK=off, by version, no replace)
 
-In a **pristine scratch dir** (`.tmp-frontdoor/`, prototyping the front-door
-repo), with the exact env an outsider's machine approximates:
+In a **pristine scratch dir** (the front-door module now lives at
+`$OSS/platformkit-frontdoor/`; the original proof used a throwaway clone of it),
+with the exact env an outsider's machine approximates:
 
 ```bash
 export GOWORK=off                 # NO workspace rescue
