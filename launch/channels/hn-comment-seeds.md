@@ -20,7 +20,7 @@ Fair question to ask up front. The commitment is explicit: the boundary is drawn
 
 No — SQLite is the zero-setup *local default* so the first run needs no database, and it's genuinely fine for development and small deployments. For production at scale you swap your own store in behind the relevant module store interfaces (auth uses `WithSessionStore`); that's exactly what the port boundary is for. We say this plainly in the `What this is NOT` list rather than hiding it. (Pro adds Postgres-cluster/read-replica providers, but the interfaces are OSS and you can write your own.)
 
-### 5. Why fx / dependency injection? That's a lot of magic for Go.
+### 5. Why dependency injection? That's a lot of magic for Go.
 
 It's there so modules can depend on interfaces (ports) and have the concrete type supplied at startup, instead of importing each other. That's what lets you replace one module's implementation without the change cascading, and add your own module the same way the nine built-ins are added. It's a real tradeoff — DI adds indirection, and if you dislike that this won't convert you — but it's what makes the compose-and-swap story work rather than just being a slogan. You can read the wiring in `pk-apps/pkg/starterapp/app.go`.
 

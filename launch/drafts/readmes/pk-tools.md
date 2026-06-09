@@ -14,7 +14,7 @@ go run ./cmd/pk explain modules --json
 
 Those three subcommands — `doctor`, `verify`, `explain` — are the whole surface today. (A scaffold generator lives in `pkg/scaffold` as a library; it is not yet a `pk` subcommand.)
 
-**Depends on.** `pk-core` and `pk-modules` (and, transitively, `pk-shared`). `explain` imports each module package directly so the catalog it prints is sourced from the modules' own constants.
+**Depends on.** `pk-core` and `pk-modules` (plus `cobra`). `explain` imports each module package directly so the catalog it prints is sourced from the modules' own constants.
 
 **Packages.**
 

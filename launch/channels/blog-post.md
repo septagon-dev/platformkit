@@ -78,7 +78,7 @@ Two consequences follow, and they're the whole point. You can replace one module
 
 This is why "nine modules" isn't the claim. Nine CRUD modules wouldn't be a platform. The substrate is the tenant/auth/audit/admin boundary plus the compose-and-swap mechanism. The nine modules are the reference implementations that prove the mechanism works and give you a running app on the first command.
 
-We use uber/fx for the dependency injection. It's a real tradeoff — DI adds indirection, and if you dislike that style this won't convert you. We think it's worth it because it's what makes compose-and-swap an actual property of the system rather than a slogan.
+We compose modules through a small module catalog — plain Go constructor wiring, no DI framework. The contract types are container-agnostic, so a larger app could drop in uber/fx or another container, but the OSS core forces none. It's still a real tradeoff: composition adds indirection, and if you dislike that style this won't convert you. We think it's worth it because it's what makes compose-and-swap an actual property of the system rather than a slogan.
 
 ## Honest open core
 
