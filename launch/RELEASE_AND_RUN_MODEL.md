@@ -450,7 +450,10 @@ front-door repo and run it exactly as an outsider would:
 # In CI for the platformkit front-door repo (or from any clean machine):
 git clone https://github.com/septagon-oss/platformkit
 cd platformkit
-GOWORK=off go run . & PID=$!; sleep 3
+GOWORK=off go run . & PID=$!
+trap 'kill "$PID" 2>/dev/null' EXIT
+# first cold build downloads + compiles (~tens of seconds) — poll, don't sleep-3
+for i in $(seq 1 60); do curl -fsS -o /dev/null http://localhost:8080/healthz && break; sleep 2; done
 test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/healthz)"        = 200
 test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants)" = 200
 # Auth login must return 201; tenant_id is required in the body:
@@ -496,22 +499,32 @@ local annotated `v0.1.0` tags are cut on those `main` commits. The remote is
 untouched (it still carries only the old broken `v0.0.0`). The commit column
 records the `main` commit the local `v0.1.0` tag points at.
 
-| Repo | Source branch (merged to main) | main commit | Local `v0.1.0` → commit |
-|------|--------|-------------|--------------------------|
-| pk-apps        | `run-model/importable-starter` | `c7b207d` | `c7b207d` |
-| pk-core        | `run-model/retract-v0.0.0`     | `6d45c32` | `6d45c32` |
-| pk-shared      | `run-model/retract-v0.0.0`     | `b72f53d` | `b72f53d` |
-| pk-runtime     | `run-model/retract-v0.0.0`     | `2540d59` | `2540d59` |
-| pk-modules     | `run-model/retract-v0.0.0`     | `8c98490` | `8c98490` |
-| pk-testkit     | `run-model/retract-v0.0.0`     | `12f0597` | `12f0597` |
-| pk-design      | `run-model/retract-v0.0.0`     | `00959fc` | `00959fc` |
-| pk-client      | `run-model/retract-v0.0.0`     | `c3f7055` | `c3f7055` |
-| pk-registry    | `run-model/retract-v0.0.0`     | `1c8f9a3` | `1c8f9a3` |
-| pk-tools       | `run-model/retract-v0.0.0`     | `72885b8` | `72885b8` |
-| platformkit-ui | `run-model/retract-v0.0.0`     | `d1eadde` | `d1eadde` |
+| Repo | Local `v0.1.0` → `main` commit (snapshot — regenerate before push) |
+|------|--------------------------------------------------------------------|
+| pk-shared      | `b72f53d` |
+| pk-core        | `6d45c32` |
+| pk-runtime     | `027a5f0` |
+| pk-design      | `00959fc` |
+| pk-client      | `c3f7055` |
+| pk-registry    | `1c8f9a3` |
+| pk-testkit     | `2834367` |
+| pk-modules     | `9cb05e4` |
+| pk-tools       | `77b2958` |
+| pk-apps        | `639e982` |
+| platformkit-ui | `d1eadde` |
 
-The local `v0.1.0` tags are annotated and point at these `main` commits. The
-remote still carries only the old broken `v0.0.0`.
+The `run-model/*` branches are merged into each repo's `main` (pk-tools landed
+via `fix/scaffold-born-conformant`); the annotated local `v0.1.0` tags point at
+the `main` commits above. **These SHAs are a snapshot — regenerate them right
+before the push**, since any late fix moves them:
+
+```bash
+for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry pk-testkit pk-modules pk-tools pk-apps platformkit-ui; do
+  printf '%-16s %s\n' "$r" "$(git -C "$OSS/$r" rev-parse --short v0.1.0^{})"
+done
+```
+
+The remote still carries only the old broken `v0.0.0`.
 
 ---
 

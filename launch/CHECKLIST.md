@@ -28,9 +28,12 @@ lists the gates you must confirm green.
 This is launch task **T14**. Copy the drafted kit files into their target repos:
 
 - [ ] Front-door `README.md` ← `launch/drafts/readmes/platformkit-frontdoor.md`
-      → `septagon-oss/platformkit`. (References `docs/hero.png` and
-      `docs/architecture.svg`; ensure A2's generated assets land at those paths
-      in the front-door repo.)
+      → `septagon-oss/platformkit`. The README uses relative `docs/` links
+      (`docs/hero.png`, `docs/architecture.svg`, `docs/open-core.md`), so the
+      front-door repo must carry a `docs/` dir containing: A2's generated
+      `hero.png` + `architecture.svg`, **and** a copy of `open-core.md` (from
+      `launch/drafts/docs/open-core.md`). Verify every `docs/*` link resolves
+      before launch.
 - [ ] The 11 module-repo READMEs ← `launch/drafts/readmes/pk-*.md` /
       `platformkit-ui` → each matching repo. (`pk-registry` and `platformkit-ui`
       keep their own existing READMEs if no draft exists.)

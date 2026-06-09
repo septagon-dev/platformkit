@@ -56,7 +56,8 @@ for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry \
   # the TAGGED go.mod must retract v0.0.0 and carry NO septagon-oss / local-path replace
   mod="$(git -C "$d" show v0.1.0:go.mod)"
   echo "$mod" | grep -qE '^[[:space:]]*retract[[:space:]]+v0\.0\.0' || { echo "FAIL $r: tag go.mod missing retract v0.0.0"; exit 1; }
-  if echo "$mod" | grep -qE 'replace[[:space:]]+github\.com/septagon-oss/|=>[[:space:]]*(\.|/|\.\.)'; then
+  # catches single-line AND block-form replaces: any septagon-oss replace, or any local-path target
+  if echo "$mod" | grep -qE 'replace[[:space:]]+github\.com/septagon-oss/|github\.com/septagon-oss/[^[:space:]]+[[:space:]]+=>|=>[[:space:]]*(\.|/|\.\.)'; then
     echo "FAIL $r: tag go.mod has a septagon-oss or local-path replace"; exit 1
   fi
   echo "OK $r"
@@ -90,11 +91,18 @@ done
 ```
 
 **Layer 4 — front door.** The `platformkit` repo does not exist on the remote
-yet. Create it, push `main`, then tag (see RELEASE_AND_RUN_MODEL.md §8.4):
+yet; its source lives in **`$OSS/platformkit-frontdoor`** (a thin root `main`
+over `pk-apps/pkg/starterapp`). Because the front door resolves `pk-apps` (and
+its deps) from the proxy by version, generate its committed `go.sum` only AFTER
+Layer 3 (`pk-apps`) is pushed AND public, then commit, create, and tag:
 ```bash
-gh repo create septagon-oss/platformkit --private --source "$OSS/platformkit" --remote origin
-git -C "$OSS/platformkit" push origin main
-git -C "$OSS/platformkit" push origin v0.1.0
+FD="$OSS/platformkit-frontdoor"
+( cd "$FD" && GOWORK=off GOFLAGS= go mod tidy )   # deps now public → real go.sum
+git -C "$FD" add go.sum && git -C "$FD" commit -m "build(platformkit): pin go.sum from public modules"
+git -C "$FD" tag -a v0.1.0 -m "PlatformKit OSS v0.1.0"
+gh repo create septagon-oss/platformkit --private --source "$FD" --remote origin
+git -C "$FD" push origin main
+git -C "$FD" push origin v0.1.0
 ```
 
 ## D. Visibility flip (after tags pushed, same layer order)
@@ -128,13 +136,16 @@ done
 # (NOT a no-op go get + go build in an empty module, which passes trivially):
 d="$(mktemp -d)/platformkit"
 git clone https://github.com/septagon-oss/platformkit "$d"
-( cd "$d" && GOWORK=off go run . ) & PID=$!; sleep 3
+( cd "$d" && GOWORK=off go run . ) & PID=$!
+trap 'kill "$PID" 2>/dev/null' EXIT
+# first cold build downloads + compiles (~tens of seconds) — poll, don't sleep-3
+for i in $(seq 1 60); do curl -fsS -o /dev/null http://localhost:8080/healthz && break; sleep 2; done
 test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/healthz)"        = 200
 test "$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8080/api/v1/tenants)" = 200
 test "$(curl -s -o /dev/null -w '%{http_code}' -X POST http://localhost:8080/api/v1/auth/sessions \
           -H 'Content-Type: application/json' \
           -d '{"tenant_id":"tenant_acme","email":"admin@local.test","password":"changeme"}')" = 201
-kill $PID
+kill "$PID" 2>/dev/null; trap - EXIT
 ```
 **If any module reached the proxy/sumdb with bad content, cut `v0.1.1` — never retag `v0.1.0`.**
 
