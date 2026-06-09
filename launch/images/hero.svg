@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" viewBox="0 0 1280 640" role="img" aria-label="PlatformKit — composable modules wired into a system through a single accent node">
+  <defs>
+    <marker id="ah" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#475569"/>
+    </marker>
+    <marker id="ah-teal" markerWidth="7" markerHeight="7" refX="5.5" refY="3" orient="auto" markerUnits="userSpaceOnUse">
+      <path d="M0,0 L6,3 L0,6 Z" fill="#2DD4BF"/>
+    </marker>
+  </defs>
+
+  <!-- canvas: deep slate ink -->
+  <rect width="1280" height="640" fill="#0F172A"/>
+
+  <!-- connectors: thin, orthogonal, slate-600; one teal edge from the accent node -->
+  <g fill="none" stroke="#475569" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+    <!-- N1 -> T (fan-in, down-right) -->
+    <path d="M236,184 H300 V314 H372" marker-end="url(#ah)"/>
+    <!-- N2 -> T (fan-in, up-right) -->
+    <path d="M236,456 H300 V314 H372" marker-end="url(#ah)"/>
+    <!-- T -> N4 (fan-out, down-right) -->
+    <path d="M540,330 H636 V456 H700" marker-end="url(#ah)"/>
+    <!-- N3 -> N5 (straight) -->
+    <path d="M840,184 H1010" marker-end="url(#ah)"/>
+    <!-- N4 -> N6 (straight) -->
+    <path d="M840,456 H1010" marker-end="url(#ah)"/>
+  </g>
+  <!-- the single teal edge: T -> N3 (up-right) -->
+  <path d="M540,298 H636 V184 H700" fill="none" stroke="#2DD4BF" stroke-width="2.25"
+        stroke-linecap="round" stroke-linejoin="round" marker-end="url(#ah-teal)"/>
+
+  <!-- nodes: rounded rectangles, flat matte slate fills, thin slate-700 borders -->
+  <g stroke="#334155" stroke-width="1.5">
+    <rect x="96"   y="156" width="140" height="56" rx="12" fill="#1E293B"/>
+    <rect x="96"   y="428" width="140" height="56" rx="12" fill="#1E293B"/>
+    <rect x="700"  y="156" width="140" height="56" rx="12" fill="#223049"/>
+    <rect x="700"  y="428" width="140" height="56" rx="12" fill="#1E293B"/>
+    <rect x="1010" y="156" width="140" height="56" rx="12" fill="#223049"/>
+    <rect x="1010" y="428" width="140" height="56" rx="12" fill="#1E293B"/>
+  </g>
+
+  <!-- the one accent: a single teal node (the composed module) -->
+  <rect x="380" y="288" width="160" height="64" rx="14" fill="#2DD4BF"/>
+</svg>
