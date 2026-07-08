@@ -10,8 +10,24 @@ surface="$1"
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 product_root="$(cd "$script_dir/.." && pwd)"
-workspace_root="$(cd "$product_root/.." && pwd)"
-devtools_repo="$workspace_root/platformkit-devtools"
+
+# The workspace root is the directory holding go.work (the layered layout
+# puts this repo at <root>/product/platformkit, so walk upward rather than
+# assuming a flat sibling topology).
+workspace_root="$product_root"
+while [[ "$workspace_root" != "/" && ! -f "$workspace_root/go.work" ]]; do
+	workspace_root="$(cd "$workspace_root/.." && pwd)"
+done
+if [[ ! -f "$workspace_root/go.work" ]]; then
+	echo "could not locate workspace root (no go.work above $product_root)" >&2
+	exit 2
+fi
+
+devtools_repo="$workspace_root/tooling/platformkit-devtools"
+if [[ ! -d "$devtools_repo" ]]; then
+	# pre-layered flat layout fallback
+	devtools_repo="$workspace_root/platformkit-devtools"
+fi
 
 require_dir() {
 	local dir="$1"
@@ -34,7 +50,7 @@ mkdir -p "$cli_go_cache" "$cli_go_modcache" "$cli_go_tmp" "$cli_go_path"
 (
 	cd "$devtools_repo"
 	env \
-		GOWORK=off \
+		GOWORK="$workspace_root/go.work" \
 		GOPATH="$cli_go_path" \
 		GOCACHE="$cli_go_cache" \
 		GOMODCACHE="$cli_go_modcache" \
