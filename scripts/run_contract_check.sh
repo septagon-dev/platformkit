@@ -51,9 +51,9 @@ mkdir -p "$cli_go_cache" "$cli_go_modcache" "$cli_go_tmp" "$cli_go_path"
 	cd "$devtools_repo"
 	env \
 		GOWORK="$workspace_root/go.work" \
-		GOPATH="$cli_go_path" \
-		GOCACHE="$cli_go_cache" \
-		GOMODCACHE="$cli_go_modcache" \
+		\
+		\
+		\
 		GOTMPDIR="$cli_go_tmp" \
 		go run ./cmd/platformkit verify contract "$surface" --dir "$workspace_root"
 )
