@@ -6,14 +6,23 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-workspace_root="$(cd "$repo_root/.." && pwd)"
+workspace_root="$repo_root"
+while [[ "$workspace_root" != "/" && ! -f "$workspace_root/go.work" ]]; do
+	workspace_root="$(cd "$workspace_root/.." && pwd)"
+done
+
+# Keep the repo-local check useful from a standalone clone, where the sibling
+# scan roots below are simply absent.
+if [[ ! -f "$workspace_root/go.work" ]]; then
+	workspace_root="$(cd "$repo_root/.." && pwd)"
+fi
 
 failures=0
 scan_roots=(
 	"$repo_root/docs"
-	"$workspace_root/platformkit-docs/adr"
-	"$workspace_root/septagon-oss-workspace/pk-modules/pkg/admin"
-	"$workspace_root/platformkit-frontend-kit/docs"
+	"$workspace_root/product/platformkit-docs/adr"
+	"$workspace_root/overlays/septagon-oss-workspace/pk-modules/pkg/admin"
+	"$workspace_root/frontend/platformkit-frontend-kit/docs"
 )
 
 # Patterns that indicate stale mischaracterization of the product admin UI.

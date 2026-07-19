@@ -63,20 +63,18 @@ in-workspace equivalent (`cd pk-apps/apps/starter-saas && go run .`) runs the sa
 
 ---
 
-## 3. The verbatim command block (what was actually executed)
+## 3. Current reproduction command block
 
-> Run from inside the cloned workspace, not from `/tmp`. Go caches are redirected
-> to local `.tmp-*` dirs so the build does not fill `/tmp` (workspace convention).
+> Run from inside the cloned workspace, not from `/tmp`. Only Go's temporary
+> build workspace is redirected to disk; the shared default build and module
+> caches remain content-addressed and reusable across repositories.
 
 ```bash
 cd septagon-oss-workspace/pk-apps/apps/starter-saas
 
-# Redirect Go caches locally (workspace convention; avoids filling /tmp)
-export GOCACHE="$PWD/../../../.tmp-go-cache"
-export GOMODCACHE="$PWD/../../../.tmp-go-mod"
 export GOTMPDIR="$PWD/../../../.tmp-go-tmp"
 export TMPDIR="$PWD/../../../.tmp-go-tmp"
-mkdir -p "$GOCACHE" "$GOMODCACHE" "$GOTMPDIR"
+mkdir -p "$GOTMPDIR"
 
 go run .
 # → banner prints the admin URL + default login (see below)

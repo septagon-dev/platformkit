@@ -275,15 +275,14 @@ platformkit-pro pro-0.1.0 imports the septagon-oss v0.1.0 tags
   provider compatibility, bundle/catalog composition, and Pro embedding
   contract.
 - `pk-shared/pkg/flowdef`: neutral reusable flow definitions for UI/API
-  coverage, authoring, and E2E/testkit bridges. Private
-  `platformkit-shared/flowdef` is now a compatibility layer over the OSS
-  package; flow execution remains downstream.
+  coverage, authoring, and E2E/testkit bridges. Canonical consumers import the
+  OSS package directly; flow execution remains downstream.
 - `pk-statemachine`: declarative lifecycle definitions, structural validation,
   traversal helpers, and Mermaid rendering (github.com/septagon-oss/statemachine).
-  Private `platformkit-shared/statemachine` is now a thin compatibility layer
-  over the OSS package; runtime execution (Engine/Registry + pluggables) remains
-  downstream in the monorepo as a consumer. The old `pk-shared/pkg/statemachine`
-  ghost has been cleaned as part of full cutover.
+  Canonical consumers import the OSS module directly; runtime execution
+  (Engine/Registry + pluggables) remains downstream in the monorepo. Private
+  re-export packages and the old `pk-shared/pkg/statemachine` duplicate were
+  deleted as part of the full cutover.
 - `pk-tools/pkg/cliapp` and `pk-tools/pkg/tui`: reusable CLI root/output and
   terminal rendering foundations.
 - `pk-modules/pkg/homepage/overlay`: public-safe homepage overlay rendering

@@ -123,12 +123,10 @@ Include `platformkit` in Layer 4 and flip `pk-docs` when its content is final.
 > layer → then move to the next layer.
 
 ```bash
-tmp="$(mktemp -d)"
 # Per layer, AFTER it is public. Example for the full module set once all are public:
 for r in pk-shared pk-registry pk-design pk-client pk-core pk-runtime pk-testkit pk-modules pk-tools pk-apps platformkit-ui; do
   m="github.com/septagon-oss/$r"
-  env -u GOPRIVATE -u GONOSUMDB GOPROXY=https://proxy.golang.org GOSUMDB=sum.golang.org GOWORK=off \
-      GOMODCACHE="$tmp/m" GOCACHE="$tmp/c" go list -m -json "$m@v0.1.0" >/dev/null || echo "PROXY FAIL $m"
+  curl -fsS "https://proxy.golang.org/$m/@v/v0.1.0.info" >/dev/null || echo "PROXY FAIL $m"
   curl -fsS "https://sum.golang.org/lookup/$m@v0.1.0" >/dev/null || echo "SUMDB pending $m"
 done
 

@@ -11,8 +11,8 @@ This page builds the smallest module that actually works — a `note` module —
 following the exact shape of the real `tenant` module in `pk-modules`. Every
 identifier here matches a real API: `module.NewBundle`, `module.NewCatalog`,
 `module.Must`, `module.WithProvides`, `module.WithDependencies`,
-`module.Provide`, `module.Optional`, `module.DependencySpec`,
-`portslib.AdminRegistrar`, `portslib.HealthRegistrar`, `portslib.NoopAdminRegistrar`,
+`module.Provide`, `module.OptionalPort`, `module.PortSpec`,
+`portslib.AdminRegistrar`, `portslib.HealthRegistrar`,
 `health.CheckerFunc`.
 
 > There is no `pk scaffold` subcommand. Scaffolding exists as a Go *library*
@@ -38,7 +38,8 @@ note/
 
 You do not need every file to start. The minimum that runs is: an entity, a
 store interface, a SQLite store, options, and `module.go`. Admin and health are
-optional and degrade to no-ops if you don't wire them.
+optional integrations; when their registrars are absent, the module simply does
+not contribute those surfaces.
 
 ## 1. The entity
 
@@ -325,8 +326,8 @@ func WithHealthRegistrar(r portslib.HealthRegistrar) Option {
 
 ## 7. The module
 
-`note/module.go` — `NewModule(opts...)` resolves the store, falls back to no-op
-registrars when the host wires none, registers a health check, and `Compose()`
+`note/module.go` — `NewModule(opts...)` resolves the store, registers optional
+admin and health contributions only when their ports are wired, and `Compose()`
 declares what the module provides and (optionally) depends on for the catalog:
 
 ```go
@@ -357,8 +358,6 @@ type Module struct {
 	metadata pkmodule.Metadata
 	store    store.Store
 	svc      NoteService
-	admin    portslib.AdminRegistrar
-	health   portslib.HealthRegistrar
 }
 
 func NewModule(opts ...Option) (*Module, error) {
@@ -368,13 +367,6 @@ func NewModule(opts ...Option) (*Module, error) {
 			opt(&cfg)
 		}
 	}
-	if cfg.admin == nil {
-		cfg.admin = portslib.NoopAdminRegistrar()
-	}
-	if cfg.health == nil {
-		cfg.health = portslib.NoopHealthRegistrar()
-	}
-
 	st, err := resolveStore(cfg)
 	if err != nil {
 		return nil, err
@@ -385,9 +377,7 @@ func NewModule(opts ...Option) (*Module, error) {
 			ID: ModuleID, Name: ModuleName,
 			Description: ModuleDescription, Version: ModuleVersion,
 		},
-		store:  st,
-		admin:  cfg.admin,
-		health: cfg.health,
+		store: st,
 	}
 	m.svc = newService(st) // your business logic over the store
 
@@ -433,14 +423,14 @@ func (m *Module) Compose() pkmodule.Composable {
 			pkmodule.Provide[NoteService](ModuleVersion),
 		),
 		pkmodule.WithDependencies(
-			pkmodule.Optional[portslib.AdminRegistrar](pkmodule.DependencySpec{
+			pkmodule.OptionalPort[portslib.AdminRegistrar](pkmodule.PortSpec{
 				Version:           "0.0.0",
 				Purpose:           "Mount the notes admin page.",
 				Category:          pkmodule.DependencyCategoryUI,
 				SubCategory:       "admin",
 				PreferredProvider: "admin_management",
 			}),
-			pkmodule.Optional[portslib.HealthRegistrar](pkmodule.DependencySpec{
+			pkmodule.OptionalPort[portslib.HealthRegistrar](pkmodule.PortSpec{
 				Version:           "0.0.0",
 				Purpose:           "Surface note_management store reachability.",
 				Category:          pkmodule.DependencyCategoryMonitoring,
@@ -453,7 +443,8 @@ func (m *Module) Compose() pkmodule.Composable {
 ```
 
 Supply `newService` (and `admin.go`'s `registerAdmin`) yourself — `registerAdmin`
-can be a no-op that returns `nil` if you don't need an admin page yet. The admin
+returns `nil` when its registrar is absent, without constructing a fake provider.
+The admin
 registration in the tenant module's `admin.go` is the worked example to copy:
 `RegisterEntityCRUD(ModuleID, EntityName, APIPath)`, `RegisterPage(...)`,
 `RegisterSidebarSection(...)`.

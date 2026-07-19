@@ -51,21 +51,23 @@ These hurt **Maintainability** (analyzability, modifiability), **Reliability** (
 
 **Finding**: Strong central `app/errors/` (AppError, codes, wrapping, stack traces, Huma mapping, APIError handling) and excellent static checker in `platformkit-devtools/internal/modulechecks/error_contracts.go`.
 
-However, the ratchet is high and ad-hoc construction remains common.
+**Resolved (2026-07-19)**: the compatibility budget and its CLI/configuration
+surface were removed. The checker is now strict, and all canonical business
+module handlers use `SafeError` for private 5xx causes.
 
 **Evidence**:
-- `error_contracts.go:21`: `DefaultLegacyUnsafe5xxDetailBudget = 281` (explicitly called "current business-modules backlog").
-- Checker rules: No raw `err.Error()` as client message; 5xx constructors should not grow variadic internal details. Violations point to `apperrors.SafeError`, `api.ExecuteResultMapped`, `NewPublicError`.
-- Real code still has: direct `huma.Error500InternalServerError("Failed to render stats", ...)`, `fmt.Errorf("module: %w", err)` in repositories/handlers/services, mixed safe/unsafe patterns (e.g. billing stats_handler, various clinical/file/auth handlers).
+- The strict checker reports zero raw client messages and zero direct 5xx constructors across canonical business-module production files.
+- Checker rules reject raw `err.Error()` client messages and every direct Huma/application 5xx constructor, including message-only calls. Violations point to `apperrors.SafeError`, `api.ExecuteResultMapped`, or `NewPublicError`.
+- `SafeError` keeps a generic client message while retaining context-wrapped causes in `AppError.Err` for server-side diagnostics.
 - Ports define good sentinels (`ErrEntityActionNotFound` etc.), but mapping at boundaries is inconsistent.
 - No universal per-module "domain error registry + automatic public boundary mapper".
 
-**Impact**: Leaky or inconsistent client errors (usability), harder uniform monitoring (reliability), scattered sites (maintainability). The *check exists* (great), but the surface is still large.
+**Impact**: The client-leakage path is closed and permanently guarded. Domain
+error registration and automatic boundary mapping remain maintainability
+opportunities, not safety exceptions.
 
-**Proposed fix**:
-- Drive budget to 0 aggressively (add to precommit or CI gate).
+**Follow-up**:
 - Introduce or strengthen a small core helper + codegen / convention for "register domain errors → SafeError mapping at handler".
-- Expand the static checker or add runtime guard examples.
 - Update module scaffolds to emit the safe pattern by default.
 
 ## 3. Traceability (C-14 / REQ-ADR Links) — Partial Enforcement (Maintainability / Analyzability)

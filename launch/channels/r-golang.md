@@ -29,7 +29,7 @@ The shape, briefly. Modules never import each other's implementations; they depe
 ```go
 // A module declares what it needs as a port (in its Compose()), not an import:
 pkmodule.WithDependencies(
-    pkmodule.Require[user.UserBoundaryReader](pkmodule.DependencySpec{
+    pkmodule.RequiresPort[user.UserBoundaryReader](pkmodule.PortSpec{
         Version:           "0.0.0",
         Purpose:           "Resolve user credentials at login time.",
         PreferredProvider: "user_management",
