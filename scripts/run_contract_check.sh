@@ -40,20 +40,15 @@ require_dir() {
 require_dir "$devtools_repo"
 
 cli_runtime_root="$workspace_root/.tmp/platformkit-contract-cli"
-cli_go_cache="$cli_runtime_root/gocache"
-cli_go_modcache="$cli_runtime_root/gomodcache"
 cli_go_tmp="$cli_runtime_root/gotmp"
-cli_go_path="$cli_runtime_root/gopath"
 
-mkdir -p "$cli_go_cache" "$cli_go_modcache" "$cli_go_tmp" "$cli_go_path"
+mkdir -p "$cli_go_tmp"
 
 (
 	cd "$devtools_repo"
 	env \
 		GOWORK="$workspace_root/go.work" \
-		\
-		\
-		\
 		GOTMPDIR="$cli_go_tmp" \
+		TMPDIR="$cli_go_tmp" \
 		go run ./cmd/platformkit verify contract "$surface" --dir "$workspace_root"
 )

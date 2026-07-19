@@ -2,6 +2,7 @@ name: OSV Scan
 
 on:
   pull_request:
+  merge_group:
   schedule:
     - cron: '17 6 * * *'
   workflow_dispatch:

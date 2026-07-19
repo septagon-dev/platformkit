@@ -99,9 +99,9 @@ platformkit verify contract product --dir <workspace-root>
 
 This command validates:
 
-1. backend runtime boundary and release policy enforcement
+1. backend runtime boundary, release policy, and warm-request latency SLO enforcement
 2. backend interoperability guarantees
-3. frontend AI-facing registry and workbench surface health
+3. frontend AI-facing registry, conversation primitives, and immediate interaction-feedback contracts
 4. agent runtime governance surface health
 5. flagship app lean bootstrap and composed deployment contracts
 6. alignment with the workspace authoring standard described in

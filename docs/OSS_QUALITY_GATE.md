@@ -33,8 +33,12 @@ of these checks:
 The execution score is 10/10 only when every touched repo satisfies all of
 these checks:
 
-1. **Every owned Go file declares purpose.** C-14/ADR-0029 references are in
-   the first 30 lines of non-generated Go files.
+1. **Every owned Go file declares purpose.** A registered requirement,
+   C-14 convention, or ADR reference appears within the first 100 physical
+   lines of every governed hand-authored Go file. The workspace guard accepts
+   leading purpose comments on either side of the package declaration and
+   recognizes generated code only through Go's canonical generated-file
+   marker.
 2. **Tests cover the contract, not just happy paths.** Public APIs have success,
    invalid input, duplicate/conflict, nil/zero-value where supported,
    deterministic ordering, and copy/aliasing tests.

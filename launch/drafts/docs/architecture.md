@@ -53,8 +53,8 @@ only on interfaces. There are two kinds:
 - **Shared ports** in `pk-modules/pkg/portslib` — cross-cutting registration
   surfaces a module needs from its host. For example, `AdminRegistrar` (to mount
   an admin page and a sidebar section) and `HealthRegistrar` (to register a
-  health check). These come with no-op defaults (`NoopAdminRegistrar()`,
-  `NoopHealthRegistrar()`) so a module runs standalone with nothing wired in.
+  health check). These are optional ports: a standalone module simply skips
+  those contributions when the host does not wire the corresponding registrar.
 - **A provider's published contract** — the interface a specific module exposes
   for others to consume. The tenant module publishes `tenant.TenantService`; the
   audit module publishes an emitter. A consuming module depends on that

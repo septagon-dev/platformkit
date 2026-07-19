@@ -72,7 +72,7 @@ A module declares what it needs as a dependency on a port, not as an import of a
 
 ```go
 // Declared in the module's Compose(), inside WithDependencies(...):
-pkmodule.Require[user.UserBoundaryReader](pkmodule.DependencySpec{
+pkmodule.RequiresPort[user.UserBoundaryReader](pkmodule.PortSpec{
     Version:           "0.0.0",
     Purpose:           "Resolve user credentials at login time.",
     PreferredProvider: "user_management",

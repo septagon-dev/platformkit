@@ -26,7 +26,7 @@ Compromise: ship the outbox using `database/sql` as the API surface. Add `modern
 OR (simpler): make the outbox's `Store` an interface, and ship a `MemoryStore` default for tests. The sqlite store is in a `outbox/sqlite` sub-sub-package that gets its own go.mod isolation if needed (or just lives in pk-core with the modernc dep whitelisted).
 
 Cleanest for v0.0.0:
-- `event/outbox/store.go` — `Store` interface (Save, MarkDelivered, NextBatch)
+- `event/outbox/store.go` — `Store` interface (Save, ClaimBatch, MarkDelivered, MarkFailed, MarkDead)
 - `event/outbox/memory.go` — `NewMemoryStore()` default for tests (no external dep)
 - `event/outbox/sql.go` — `NewSQLStore(*sql.DB)` — uses stdlib database/sql only
 - The user supplies the driver (modernc.org/sqlite is the recommended OSS default)
@@ -181,16 +181,19 @@ type Store interface {
     // tx mechanism is up to the implementation (sql.Tx, in-memory list, etc.).
     Save(ctx context.Context, env event.Envelope) error
 
-    // NextBatch returns up to limit entries that have not been delivered.
-    // Implementations may use a "claimed" timestamp + lease to coordinate
-    // multi-process delivery.
-    NextBatch(ctx context.Context, limit int) ([]event.Envelope, error)
+    // ClaimBatch atomically reserves up to limit entries until ttl expires.
+    // Implementations must prevent concurrent dispatchers from delivering the
+    // same live claim.
+    ClaimBatch(ctx context.Context, limit int, ttl time.Duration) ([]PendingEntry, error)
 
     // MarkDelivered records that env was successfully delivered downstream.
     MarkDelivered(ctx context.Context, envelopeID string) error
 
     // MarkFailed records a delivery failure with retry metadata.
     MarkFailed(ctx context.Context, envelopeID string, errStr string) error
+
+    // MarkDead parks a retry-exhausted entry for operator inspection/redrive.
+    MarkDead(ctx context.Context, envelopeID string, errStr string) error
 }
 
 // Outbox wraps an inner Bus + a durable Store. Publish writes to the Store
@@ -228,7 +231,7 @@ func WithMaxRetries(n int) Option
 - TestDispatcherMarksDeliveredOnSuccess
 - TestDispatcherMarksFailedOnError
 - TestDuplicateIdempotencyKeyDeduplicated
-- TestMemoryStoreSaveAndNextBatch
+- TestMemoryStoreSaveAndClaimBatch
 - TestSQLStoreCreateSchemaAndRoundTrip (uses an in-memory sql driver if testable; otherwise skip with documentation)
 - TestStopDrainsDispatcher
 - TestPublishAfterStopReturnsErrBusClosed
