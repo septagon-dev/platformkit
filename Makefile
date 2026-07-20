@@ -1,11 +1,12 @@
 SHELL := /bin/bash
 .SHELLFLAGS := -ec
 
-.PHONY: help audit-oss validate-oss-split validate-open-core-workspace check-ui-stack-docs scaffold-oss-repos verify-product verify-federated-platform precommit
+.PHONY: help audit-oss check-workspace-layout validate-oss-split validate-open-core-workspace check-ui-stack-docs scaffold-oss-repos verify-product verify-federated-platform precommit
 
 help:
 	@echo "Available commands:"
 	@echo "  make audit-oss - Check that this repo stays safe as the public OSS surface"
+	@echo "  make check-workspace-layout - Verify layered workspace repository resolution"
 	@echo "  make validate-oss-split - Validate the septagon-oss repository split manifest"
 	@echo "  make validate-open-core-workspace - Validate local OSS repos and go.work wiring"
 	@echo "  make check-ui-stack-docs - Reject stale Vue/React admin SPA doc claims"
@@ -15,6 +16,9 @@ help:
 
 audit-oss:
 	@./scripts/audit_oss_surface.sh
+
+check-workspace-layout:
+	@bash ./scripts/workspace_layout_test.sh
 
 validate-oss-split:
 	@./scripts/validate_oss_repository_manifest.sh
@@ -35,4 +39,4 @@ verify-product:
 verify-federated-platform:
 	@./scripts/verify_federated_platform_contract.sh
 
-precommit: audit-oss validate-oss-split validate-open-core-workspace check-ui-stack-docs verify-product verify-federated-platform
+precommit: audit-oss check-workspace-layout validate-oss-split validate-open-core-workspace check-ui-stack-docs verify-product verify-federated-platform

@@ -23,6 +23,7 @@ The public flagship repository for the platformkit product.
 
 - `audit-oss`
 - `check-ui-stack-docs`
+- `check-workspace-layout`
 - `help`
 - `precommit`
 - `scaffold-oss-repos`

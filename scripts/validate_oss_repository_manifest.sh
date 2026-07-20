@@ -3,7 +3,12 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-workspace_root="$(cd "$repo_root/.." && pwd)"
+# shellcheck source=workspace_layout.sh
+source "$script_dir/workspace_layout.sh"
+if ! workspace_root="$(platformkit_find_workspace_root "$repo_root")"; then
+	echo "oss-split-manifest: could not locate layered workspace root above $repo_root" >&2
+	exit 2
+fi
 manifest="${1:-$repo_root/docs/OSS_REPOSITORY_MANIFEST.tsv}"
 
 if [[ ! -f "$manifest" ]]; then
@@ -62,8 +67,7 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
 	repos[$repo]=1
 	stages[$repo]="$stage"
 
-	source_dir="$workspace_root/$source_repo"
-	if [[ ! -d "$source_dir" ]]; then
+	if ! source_dir="$(platformkit_repo_path "$workspace_root" "$source_repo")"; then
 		report_failure "source repo for $repo does not exist: $source_repo"
 		continue
 	fi

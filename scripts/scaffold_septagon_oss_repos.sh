@@ -3,8 +3,14 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
+# shellcheck source=workspace_layout.sh
+source "$script_dir/workspace_layout.sh"
+if ! workspace_root="$(platformkit_find_workspace_root "$repo_root")"; then
+	echo "septagon-oss scaffold: could not locate layered workspace root above $repo_root" >&2
+	exit 2
+fi
 manifest="${MANIFEST:-$repo_root/docs/OSS_REPOSITORY_MANIFEST.tsv}"
-target_root="${1:-$repo_root/../septagon-oss-workspace}"
+target_root="${1:-$(platformkit_oss_root "$workspace_root")}"
 org="${OSS_ORG:-septagon-oss}"
 init_git="${INIT_GIT:-0}"
 
