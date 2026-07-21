@@ -80,6 +80,30 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
 	fi
 done < "$manifest"
 
+# Every Go module in the OSS workspace is swept for private references,
+# manifested or not — the manifest loop above only covers split-pipeline repos.
+if command -v rg >/dev/null 2>&1; then
+	for module_dir in "$oss_root"/*/; do
+		[[ -f "$module_dir/go.mod" ]] || continue
+		if rg -n "github.com/septagon-dev/" "$module_dir" \
+			--glob '!/.git/**' \
+			--glob '!node_modules/**' \
+			--glob '!.tmp-*/**' \
+			--glob '!.generated/**' \
+			--glob '!go.sum' >"$rg_output"; then
+			report_failure "$(basename "$module_dir") contains private github.com/septagon-dev imports or references"
+			cat "$rg_output" >&2
+		fi
+	done
+fi
+
+# The OSS workspace go.work must not resolve modules from outside its own tree.
+oss_go_work="$oss_root/go.work"
+if [[ -f "$oss_go_work" ]] && grep -nE '^[[:space:]]*(use[[:space:]]+)?\.\./' "$oss_go_work" >"$rg_output"; then
+	report_failure "OSS go.work resolves paths outside the workspace:"
+	cat "$rg_output" >&2
+fi
+
 if (( failures > 0 )); then
 	exit 1
 fi
