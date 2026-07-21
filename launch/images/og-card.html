@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<style>
+  html, body { margin: 0; padding: 0; }
+  .card {
+    width: 1200px;
+    height: 630px;
+    box-sizing: border-box;
+    background: #0F172A;
+    /* faint hairline grid — calm, technical, not glossy */
+    background-image:
+      linear-gradient(to right, rgba(51,65,85,0.25) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(51,65,85,0.25) 1px, transparent 1px);
+    background-size: 48px 48px;
+    color: #F8FAFC;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 96px 88px;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    position: relative;
+  }
+  .eyebrow {
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 22px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: #94A3B8;
+    margin-bottom: 28px;
+  }
+  .wordmark {
+    font-size: 104px;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    line-height: 1.0;
+    margin: 0 0 28px 0;
+  }
+  .wordmark .dot { color: #2DD4BF; }
+  .tagline {
+    font-size: 40px;
+    font-weight: 400;
+    line-height: 1.25;
+    color: #E2E8F0;
+    max-width: 920px;
+    margin: 0;
+  }
+  .accentbar {
+    width: 88px;
+    height: 6px;
+    background: #2DD4BF;
+    border-radius: 3px;
+    margin-top: 40px;
+  }
+  .footer {
+    position: absolute;
+    bottom: 56px;
+    left: 88px;
+    right: 88px;
+    display: flex;
+    justify-content: space-between;
+    font-family: ui-monospace, "SF Mono", "Cascadia Code", "JetBrains Mono", Menlo, Consolas, monospace;
+    font-size: 22px;
+    color: #94A3B8;
+  }
+</style>
+</head>
+<body>
+  <div class="card">
+    <div class="eyebrow">Open source &middot; Apache-2.0</div>
+    <h1 class="wordmark">PlatformKit<span class="dot">.</span></h1>
+    <p class="tagline">An open-source Go backend for multi-tenant SaaS.</p>
+    <div class="accentbar"></div>
+    <div class="footer">
+      <span>$ go run .</span>
+      <span>github.com/septagon-oss/platformkit</span>
+    </div>
+  </div>
+</body>
+</html>

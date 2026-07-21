@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="40" viewBox="0 0 240 40" role="img" aria-label="Built with PlatformKit">
+  <rect x="0.5" y="0.5" width="239" height="39" rx="8" fill="#F8FAFC" stroke="#CBD5E1"/>
+  <g transform="translate(16,12)">
+    <rect x="0" y="0" width="7" height="7" rx="1.5" fill="#0D9488"/>
+    <rect x="9" y="0" width="7" height="7" rx="1.5" fill="#CBD5E1"/>
+    <rect x="0" y="9" width="7" height="7" rx="1.5" fill="#CBD5E1"/>
+    <rect x="9" y="9" width="7" height="7" rx="1.5" fill="#CBD5E1"/>
+  </g>
+  <text x="44" y="18" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="9" letter-spacing="0.12em" fill="#64748B">BUILT WITH</text>
+  <text x="44" y="31" font-family="system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif" font-size="15" font-weight="700" letter-spacing="-0.01em" fill="#0F172A">PlatformKit</text>
+</svg>
