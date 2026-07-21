@@ -3,8 +3,14 @@ set -euo pipefail
 
 script_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 repo_root="$(cd "$script_dir/.." && pwd)"
-workspace_root="$(cd "$repo_root/.." && pwd)"
-oss_root="$workspace_root/septagon-oss-workspace"
+# shellcheck source=workspace_layout.sh
+source "$script_dir/workspace_layout.sh"
+if ! workspace_root="$(platformkit_find_workspace_root "$repo_root")"; then
+	echo "open-core-workspace: could not locate layered workspace root above $repo_root" >&2
+	exit 2
+fi
+oss_root="$(platformkit_oss_root "$workspace_root")"
+oss_workspace_rel="${oss_root#"$workspace_root/"}"
 manifest="${1:-$repo_root/docs/OSS_REPOSITORY_MANIFEST.tsv}"
 go_work="$workspace_root/go.work"
 rg_output="$(mktemp)"
@@ -56,8 +62,8 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
 		if [[ "$module_path" != "github.com/septagon-oss/$repo" ]]; then
 			report_failure "$repo has unexpected module path: ${module_path:-<missing>}"
 		fi
-		if [[ -f "$go_work" ]] && ! grep -Fq "./septagon-oss-workspace/$repo" "$go_work"; then
-			report_failure "go.work does not include ./septagon-oss-workspace/$repo"
+		if [[ -f "$go_work" ]] && ! grep -Fq "./$oss_workspace_rel/$repo" "$go_work"; then
+			report_failure "go.work does not include ./$oss_workspace_rel/$repo"
 		fi
 	fi
 
@@ -73,6 +79,30 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
 		fi
 	fi
 done < "$manifest"
+
+# Every Go module in the OSS workspace is swept for private references,
+# manifested or not — the manifest loop above only covers split-pipeline repos.
+if command -v rg >/dev/null 2>&1; then
+	for module_dir in "$oss_root"/*/; do
+		[[ -f "$module_dir/go.mod" ]] || continue
+		if rg -n "github.com/septagon-dev/" "$module_dir" \
+			--glob '!/.git/**' \
+			--glob '!node_modules/**' \
+			--glob '!.tmp-*/**' \
+			--glob '!.generated/**' \
+			--glob '!go.sum' >"$rg_output"; then
+			report_failure "$(basename "$module_dir") contains private github.com/septagon-dev imports or references"
+			cat "$rg_output" >&2
+		fi
+	done
+fi
+
+# The OSS workspace go.work must not resolve modules from outside its own tree.
+oss_go_work="$oss_root/go.work"
+if [[ -f "$oss_go_work" ]] && grep -nE '^[[:space:]]*(use[[:space:]]+)?\.\./' "$oss_go_work" >"$rg_output"; then
+	report_failure "OSS go.work resolves paths outside the workspace:"
+	cat "$rg_output" >&2
+fi
 
 if (( failures > 0 )); then
 	exit 1
