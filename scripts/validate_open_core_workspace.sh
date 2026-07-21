@@ -67,41 +67,38 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
 		fi
 	fi
 
-	if command -v rg >/dev/null 2>&1; then
-		if rg -n "github.com/septagon-dev/" "$repo_dir" \
-			--glob '!/.git/**' \
-			--glob '!node_modules/**' \
-			--glob '!.tmp-*/**' \
-			--glob '!.generated/**' \
-			--glob '!go.sum' >"$rg_output"; then
-			report_failure "$repo contains private github.com/septagon-dev imports or references"
-			cat "$rg_output" >&2
-		fi
-	fi
 done < "$manifest"
 
-# Every Go module in the OSS workspace is swept for private references,
-# manifested or not — the manifest loop above only covers split-pipeline repos.
+# The whole OSS workspace tree is swept for private references — every file,
+# hidden dirs included, ignore files bypassed so a committed .ignore cannot
+# blind the sweep. Links to the two public septagon-dev repos (platformkit,
+# platformkit-community) are the only allowed matches. go.sum records hashes
+# of public modules only; go.work.sum stays in scope deliberately.
 if command -v rg >/dev/null 2>&1; then
-	for module_dir in "$oss_root"/*/; do
-		[[ -f "$module_dir/go.mod" ]] || continue
-		if rg -n "github.com/septagon-dev/" "$module_dir" \
-			--glob '!/.git/**' \
-			--glob '!node_modules/**' \
-			--glob '!.tmp-*/**' \
-			--glob '!.generated/**' \
-			--glob '!go.sum' >"$rg_output"; then
-			report_failure "$(basename "$module_dir") contains private github.com/septagon-dev imports or references"
-			cat "$rg_output" >&2
-		fi
-	done
+	if rg -nP --hidden --no-ignore \
+		'github\.com/septagon-dev/(?!(platformkit|platformkit-community)([^A-Za-z0-9_-]|$))' \
+		"$oss_root" \
+		--glob '!**/.git/**' \
+		--glob '!**/node_modules/**' \
+		--glob '!**/.tmp-*/**' \
+		--glob '!**/.generated/**' \
+		--glob '!**/go.sum' >"$rg_output"; then
+		report_failure "OSS workspace contains private github.com/septagon-dev references:"
+		cat "$rg_output" >&2
+	fi
 fi
 
-# The OSS workspace go.work must not resolve modules from outside its own tree.
+# The OSS workspace go.work must not resolve modules from outside its own
+# tree: no parent traversal anywhere, no absolute use/replace targets.
 oss_go_work="$oss_root/go.work"
-if [[ -f "$oss_go_work" ]] && grep -nE '^[[:space:]]*(use[[:space:]]+)?\.\./' "$oss_go_work" >"$rg_output"; then
+if [[ -f "$oss_go_work" ]] && grep -nE '\.\./|(use|=>)[[:space:]]+(\.\.$|/|[A-Za-z]:)' "$oss_go_work" >"$rg_output"; then
 	report_failure "OSS go.work resolves paths outside the workspace:"
 	cat "$rg_output" >&2
+fi
+
+# A nested go.work would silently override the root one for builds below it.
+if nested="$(find "$oss_root" -mindepth 2 -name 'go.work' -not -path '*/.git/*' -not -path '*/node_modules/*' -not -path '*/.tmp-*/*' 2>/dev/null)" && [[ -n "$nested" ]]; then
+	report_failure "nested go.work files may bypass workspace resolution: $nested"
 fi
 
 if (( failures > 0 )); then
