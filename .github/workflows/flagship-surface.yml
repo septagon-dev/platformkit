@@ -53,17 +53,7 @@ jobs:
 
       - name: Lint markdown
         shell: bash
-        run: |
-          set -euo pipefail
-          npx --yes markdownlint-cli2 \
-            README.md \
-            CONTRIBUTING.md \
-            CODE_OF_CONDUCT.md \
-            SECURITY.md \
-            SUPPORT.md \
-            REPO_CHARTER.md \
-            ROADMAP.md \
-            docs/**/*.md
+        run: ./scripts/check_markdown_baseline.sh
 
   links:
     runs-on: ubuntu-latest

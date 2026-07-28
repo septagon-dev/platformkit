@@ -7,7 +7,7 @@ Scope:
 - **11 module repos** (Go modules, get a `v0.1.0` tag) under
   `github.com/septagon-oss/` — `pk-shared, pk-core, pk-runtime, pk-design,
   pk-client, pk-registry, pk-testkit, pk-modules, pk-tools, pk-apps,
-  platformkit-ui`.
+  pk-ui`.
 - **Front-door repo** `platformkit` (a NEW repo, created + tagged `v0.1.0` after
   pk-apps — the final module layer).
 - **`pk-docs`** — a non-module docs repo, published but not a Go module and not
@@ -28,10 +28,10 @@ Sources: local readiness gate (`.tmp-oss-gate/ledger.md`) + tri-model council (c
 
 | # | Blocker | Status | Fix | Decision needed |
 |---|---------|--------|-----|-----------------|
-| A1 | **CI baseline fails:** `.github/workflows/repository-baseline.yml:15` requires a **root** `CODEOWNERS`; Go repos only have `.github/CODEOWNERS`; `platformkit-ui` has none. First public CI run fails everywhere. | Verified | Either (a) relax the workflow to accept `.github/CODEOWNERS`, or (b) add root `CODEOWNERS` to all 11 Go repos. | Pick (a) or (b). |
-| A2 | **Tag messages are placeholders:** all 10 backbone `v0.1.0` tags say *"local offline-proxy verification tag"*; `platformkit-ui`/`pk-docs` are lightweight. Tags are immutable once on the proxy. | Verified | Re-create `v0.1.0` as annotated (optionally signed) tags on the same commits with a real release message, immediately before push. | Tag message text; sign? |
+| A1 | **CI baseline fails:** `.github/workflows/repository-baseline.yml:15` requires a **root** `CODEOWNERS`; Go repos only have `.github/CODEOWNERS`; `pk-ui` has none. First public CI run fails everywhere. | Verified | Either (a) relax the workflow to accept `.github/CODEOWNERS`, or (b) add root `CODEOWNERS` to all 11 Go repos. | Pick (a) or (b). |
+| A2 | **Tag messages are placeholders:** all 10 backbone `v0.1.0` tags say *"local offline-proxy verification tag"*; `pk-ui`/`pk-docs` are lightweight. Tags are immutable once on the proxy. | Verified | Re-create `v0.1.0` as annotated (optionally signed) tags on the same commits with a real release message, immediately before push. | Tag message text; sign? |
 | A3 | **pk-apps README broken link:** links to `pk-docs/.../docs/v0.1.0/starter-saas-tutorial.md` which doesn't exist (tutorial is at `docs/v0.0.0/`). 404 once public. | Verified | Point the link at the real path, or create `docs/v0.1.0/`. Coupled to A4. | — |
-| A4 | **Docs versioned `v0.0.0` while launching `v0.1.0`:** whole `pk-docs/docs/v0.0.0/` tree, `RELEASING.md` says v0.0.0 and omits `pk-registry`/`platformkit-ui`, and the tutorial tells users to clone `septagon-oss-workspace` (not a public repo). | Verified | Rename/copy `docs/v0.0.0`→`docs/v0.1.0`, update release notes + repo list, change quickstart to clone `pk-apps`. | Versioning strategy: rename to v0.1.0 vs keep v0.0.0 + fix links only. |
+| A4 | **Docs versioned `v0.0.0` while launching `v0.1.0`:** whole `pk-docs/docs/v0.0.0/` tree, `RELEASING.md` says v0.0.0 and omits `pk-registry`/`pk-ui`, and the tutorial tells users to clone `septagon-oss-workspace` (not a public repo). | Verified | Rename/copy `docs/v0.0.0`→`docs/v0.1.0`, update release notes + repo list, change quickstart to clone `pk-apps`. | Versioning strategy: rename to v0.1.0 vs keep v0.0.0 + fix links only. |
 | A5 | **pk-tools scaffold emits non-public roots:** defaults are `example.com/platformkit/backend-kit|business-modules|frontend-kit` (placeholder + old monorepo layout, not the `pk-core`/`pk-modules` split). Publicly-advertised CLI would generate broken scaffolds. | Verified | Update scaffold defaults to the public split, **or** de-emphasize/remove scaffold from the v0.1.0 public surface. | Rework scaffold vs de-scope for v0.1.0. |
 | A6 | **NOTICE / third-party attribution:** every repo has Apache-2.0 `LICENSE`, none has `NOTICE`. Not required for source-only repos with non-vendored deps, but `pk-docs` ships branding assets. | Verified | Add `NOTICE`/`THIRD_PARTY_NOTICES` only where you ship NOTICE-bearing upstream code or derived assets; do not add blanket fake notices. | Confirm no vendored NOTICE-bearing deps/assets. |
 
@@ -45,7 +45,7 @@ Sources: local readiness gate (`.tmp-oss-gate/ledger.md`) + tri-model council (c
 set -euo pipefail
 OSS=/home/jplr/gitrepos/septagon-dev/septagon-oss-workspace
 for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry \
-         pk-testkit pk-modules pk-tools pk-apps platformkit-ui; do
+         pk-testkit pk-modules pk-tools pk-apps pk-ui; do
   d="$OSS/$r"
   # dirty tree → fail
   [ -z "$(git -C "$d" status --porcelain)" ] || { echo "FAIL $r: dirty tree"; exit 1; }
@@ -72,7 +72,7 @@ done
 Push `main` and the (normalized) `v0.1.0` tag per layer; let each layer settle before the next so dependents resolve upstream `@v0.1.0`.
 
 ```
-Layer 0 (leaves):   pk-shared pk-registry pk-design pk-client pk-core platformkit-ui
+Layer 0 (leaves):   pk-shared pk-registry pk-design pk-client pk-core pk-ui
 Layer 1:            pk-runtime pk-testkit pk-modules
 Layer 2:            pk-tools
 Layer 3:            pk-apps
@@ -124,7 +124,7 @@ Include `platformkit` in Layer 4 and flip `pk-docs` when its content is final.
 
 ```bash
 # Per layer, AFTER it is public. Example for the full module set once all are public:
-for r in pk-shared pk-registry pk-design pk-client pk-core pk-runtime pk-testkit pk-modules pk-tools pk-apps platformkit-ui; do
+for r in pk-shared pk-registry pk-design pk-client pk-core pk-runtime pk-testkit pk-modules pk-tools pk-apps pk-ui; do
   m="github.com/septagon-oss/$r"
   curl -fsS "https://proxy.golang.org/$m/@v/v0.1.0.info" >/dev/null || echo "PROXY FAIL $m"
   curl -fsS "https://sum.golang.org/lookup/$m@v0.1.0" >/dev/null || echo "SUMDB pending $m"
@@ -152,7 +152,7 @@ kill "$PID" 2>/dev/null; trap - EXIT
 ```bash
 # Only over repos that already EXIST publicly (skip platformkit until it's created).
 for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry \
-         pk-testkit pk-modules pk-tools pk-apps platformkit-ui pk-docs platformkit; do
+         pk-testkit pk-modules pk-tools pk-apps pk-ui pk-docs platformkit; do
   gh repo view "septagon-oss/$r" --json visibility,defaultBranchRef,isArchived,isFork
   gh api "repos/septagon-oss/$r/actions/permissions"
 done

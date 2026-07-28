@@ -67,7 +67,7 @@ pk-modules   reference OSS module pack
 pk-apps      runnable example compositions
 pk-testkit   conformance + flow testing
 pk-docs      public docs source
-(platformkit-ui — still PRIVATE; not part of launch)
+(pk-ui — still PRIVATE; not part of launch)
 ```
 
 **The core DX problem:** a 10-repo org has *no front door*. A stranger who lands on

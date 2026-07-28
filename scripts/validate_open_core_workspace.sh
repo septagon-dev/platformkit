@@ -10,9 +10,8 @@ if ! workspace_root="$(platformkit_find_workspace_root "$repo_root")"; then
 	exit 2
 fi
 oss_root="$(platformkit_oss_root "$workspace_root")"
-oss_workspace_rel="${oss_root#"$workspace_root/"}"
 manifest="${1:-$repo_root/docs/OSS_REPOSITORY_MANIFEST.tsv}"
-go_work="$workspace_root/go.work"
+go_work="$oss_root/go.work"
 rg_output="$(mktemp)"
 trap 'rm -f "$rg_output"' EXIT
 
@@ -62,8 +61,8 @@ while IFS= read -r raw_line || [[ -n "$raw_line" ]]; do
 		if [[ "$module_path" != "github.com/septagon-oss/$repo" ]]; then
 			report_failure "$repo has unexpected module path: ${module_path:-<missing>}"
 		fi
-		if [[ -f "$go_work" ]] && ! grep -Fq "./$oss_workspace_rel/$repo" "$go_work"; then
-			report_failure "go.work does not include ./$oss_workspace_rel/$repo"
+		if [[ -f "$go_work" ]] && ! grep -Fq "./$repo" "$go_work"; then
+			report_failure "OSS go.work does not include ./$repo"
 		fi
 	fi
 
@@ -72,8 +71,11 @@ done < "$manifest"
 # The whole OSS workspace tree is swept for private references — every file,
 # hidden dirs included, ignore files bypassed so a committed .ignore cannot
 # blind the sweep. Links to the two public septagon-dev repos (platformkit,
-# platformkit-community) are the only allowed matches. go.sum records hashes
-# of public modules only; go.work.sum stays in scope deliberately.
+# platformkit-community) are the only allowed matches. The architecture test
+# and repository charter must name the forbidden prefix in order to enforce and
+# document it; isolated module verification still covers their dependencies.
+# go.sum records hashes of public modules only; go.work.sum stays in scope
+# deliberately.
 if command -v rg >/dev/null 2>&1; then
 	if rg -nP --hidden --no-ignore \
 		'github\.com/septagon-dev/(?!(platformkit|platformkit-community)([^A-Za-z0-9_-]|$))' \
@@ -82,6 +84,8 @@ if command -v rg >/dev/null 2>&1; then
 		--glob '!**/node_modules/**' \
 		--glob '!**/.tmp-*/**' \
 		--glob '!**/.generated/**' \
+		--glob '!**/architecture_test.go' \
+		--glob '!**/REPO_CHARTER.md' \
 		--glob '!**/go.sum' >"$rg_output"; then
 		report_failure "OSS workspace contains private github.com/septagon-dev references:"
 		cat "$rg_output" >&2

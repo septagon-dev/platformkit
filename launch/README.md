@@ -11,14 +11,14 @@ channel posts, images, and the publish process — lives here.
 
 - **11 module repos** (Go modules, each tagged `v0.1.0`): `pk-shared`,
   `pk-core`, `pk-runtime`, `pk-design`, `pk-client`, `pk-registry`,
-  `pk-testkit`, `pk-modules`, `pk-tools`, `pk-apps`, `platformkit-ui`.
+  `pk-testkit`, `pk-modules`, `pk-tools`, `pk-apps`, `pk-ui`.
 - **1 front-door repo**: `platformkit` — a new repo created + tagged at release
   time, the public entry point (`git clone … && go run .`).
 - **1 docs repo**: `pk-docs` — published but **not** a Go module and not on the
   build train.
 - **Excluded** from the launch train: `pk-deploy` and the internal-only repos.
 
-`pk-registry` and `platformkit-ui` are module repos and keep their own existing
+`pk-registry` and `pk-ui` are module repos and keep their own existing
 READMEs if no draft exists in `drafts/readmes/`.
 
 ## Order to use this kit

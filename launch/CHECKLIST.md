@@ -35,7 +35,7 @@ This is launch task **T14**. Copy the drafted kit files into their target repos:
       `launch/drafts/docs/open-core.md`). Verify every `docs/*` link resolves
       before launch.
 - [ ] The 11 module-repo READMEs ← `launch/drafts/readmes/pk-*.md` /
-      `platformkit-ui` → each matching repo. (`pk-registry` and `platformkit-ui`
+      `pk-ui` → each matching repo. (`pk-registry` and `pk-ui`
       keep their own existing READMEs if no draft exists.)
 - [ ] The docs pages ← `launch/drafts/docs/*.md`
       (`quickstart, architecture, add-a-module, open-core, faq, SECURITY,
@@ -59,7 +59,7 @@ Generate and place per [`images/IMAGE_PROMPTS.md`](./images/IMAGE_PROMPTS.md):
 
 ### A3. Per-repo hygiene (11 module repos + pk-docs + front door)
 
-Module repos: `pk-shared pk-core pk-design pk-client pk-registry platformkit-ui
+Module repos: `pk-shared pk-core pk-design pk-client pk-registry pk-ui
 pk-runtime pk-modules pk-testkit pk-tools pk-apps` (+ `pk-docs`, + front-door
 `platformkit`). For **each**:
 
@@ -104,7 +104,7 @@ gh api -X PATCH orgs/septagon-oss \
 
 # Per EXISTING repo (existing repos do not inherit the "new repo" org defaults).
 # security_and_analysis must use NESTED -F fields, not a JSON string.
-for r in pk-shared pk-core pk-design pk-client pk-registry platformkit-ui \
+for r in pk-shared pk-core pk-design pk-client pk-registry pk-ui \
          pk-runtime pk-modules pk-testkit pk-tools pk-apps pk-docs; do
   gh api -X PATCH repos/septagon-oss/$r \
     -F 'security_and_analysis[secret_scanning][status]=enabled' \

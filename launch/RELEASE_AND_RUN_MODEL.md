@@ -25,7 +25,7 @@ which is purely the git-tag / distribution version. `v0.1.0` ≠ `ModuleVersion`
 
 **Repo set (canonical):** OSS module repos that get a `v0.1.0` tag = pk-shared,
 pk-core, pk-runtime, pk-design, pk-client, pk-registry, pk-testkit, pk-modules,
-pk-tools, pk-apps, platformkit-ui (11 Go modules). Plus the **front-door repo
+pk-tools, pk-apps, pk-ui (11 Go modules). Plus the **front-door repo
 `platformkit`** (a new repo: root `main`, also tagged `v0.1.0`). `pk-docs` is a
 **non-module docs repo** (not on the Go build train). `pk-deploy` and the
 internal-only repos are **excluded** from the OSS launch train.
@@ -206,7 +206,7 @@ pk-core        → (no septagon-oss deps)        ── leaf
 pk-design      → (no septagon-oss deps)        ── leaf
 pk-client      → (no septagon-oss deps)        ── leaf
 pk-registry    → (no septagon-oss deps)        ── leaf
-platformkit-ui → (no septagon-oss deps)        ── leaf
+pk-ui → (no septagon-oss deps)        ── leaf
 pk-runtime     → pk-core
 pk-modules     → pk-core
 pk-testkit     → pk-shared
@@ -221,7 +221,7 @@ Cut and (later) push `v0.1.0` in this order so each repo's deps already exist
 by version when it is tagged:
 
 1. **Layer 0 (leaves):** `pk-shared`, `pk-core`, `pk-design`, `pk-client`,
-   `pk-registry`, `platformkit-ui`
+   `pk-registry`, `pk-ui`
 2. **Layer 1:** `pk-runtime`, `pk-modules`, `pk-testkit`
 3. **Layer 2:** `pk-tools`
 4. **Layer 3:** `pk-apps`
@@ -247,7 +247,7 @@ therefore **pk-core → {pk-runtime, pk-modules} → pk-apps → platformkit**.
 `pk-shared`/`pk-testkit` tags must still exist because `go get pk-apps@v0.1.0`
 must satisfy pk-apps's own go.mod, but they are not compiled into the binary.
 
-`pk-design`, `pk-client`, `pk-registry`, `pk-tools`, and `platformkit-ui` are
+`pk-design`, `pk-client`, `pk-registry`, `pk-tools`, and `pk-ui` are
 tagged `v0.1.0` (they are module repos) but are **not** on the runnable train.
 `pk-docs` is a **non-module docs repo** — it is published but is not a Go module
 and not tagged on the build train. `pk-deploy` and the internal-only repos are
@@ -482,7 +482,7 @@ Run locally against the by-version build — `/healthz` 200, `/api/v1/tenants`
 | pk-client      | none (clean) | added | — |
 | pk-registry    | none (clean) | added | — |
 | pk-tools       | none (clean) | added | pk-core, pk-modules |
-| platformkit-ui | none (clean) | added | — |
+| pk-ui | none (clean) | added | — |
 | pk-apps        | none (clean) | added | pk-core, pk-modules, pk-runtime, pk-shared, pk-testkit |
 
 `replace` removal was already done by prior launch-prep work; this pass added
@@ -512,7 +512,7 @@ records the `main` commit the local `v0.1.0` tag points at.
 | pk-modules     | `9cb05e4` |
 | pk-tools       | `77b2958` |
 | pk-apps        | `639e982` |
-| platformkit-ui | `d1eadde` |
+| pk-ui | `d1eadde` |
 
 The `run-model/*` branches are merged into each repo's `main` (pk-tools landed
 via `fix/scaffold-born-conformant`); the annotated local `v0.1.0` tags point at
@@ -520,7 +520,7 @@ the `main` commits above. **These SHAs are a snapshot — regenerate them right
 before the push**, since any late fix moves them:
 
 ```bash
-for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry pk-testkit pk-modules pk-tools pk-apps platformkit-ui; do
+for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry pk-testkit pk-modules pk-tools pk-apps pk-ui; do
   printf '%-16s %s\n' "$r" "$(git -C "$OSS/$r" rev-parse --short v0.1.0^{})"
 done
 ```
@@ -547,7 +547,7 @@ irreversible-on-the-proxy action.
    README links). These live on `main` and may leave `main` ahead of the tag.
 3. **Push `main` + `v0.1.0` per layer, leaf-first** (§3.2), letting each layer
    settle on the proxy before the next so dependents resolve `@v0.1.0`:
-   - Layer 0: pk-shared, pk-core, pk-design, pk-client, pk-registry, platformkit-ui
+   - Layer 0: pk-shared, pk-core, pk-design, pk-client, pk-registry, pk-ui
    - Layer 1: pk-runtime, pk-modules, pk-testkit
    - Layer 2: pk-tools
    - Layer 3: pk-apps

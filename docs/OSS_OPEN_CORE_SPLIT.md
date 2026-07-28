@@ -206,7 +206,7 @@ source of truth. ADR-0027 (Astro Starlight) applies only to **public docs sites*
 | Interactivity | **HTMX** + vendored JS **controller runtime** | — | embedded in admin layout |
 | OSS admin shell | **`html/template`** + embedded CSS | `pk-modules/pkg/admin` | extended via `ossbridge` |
 | Design tokens | **pk-design** / CUE pipeline | `pk-design` | `platformkit-design-system` |
-| Component catalog | **Go registry** (metadata for builders, A2UI, Storybook) | contracts in `platformkit-ui` | `platformkit-frontend-kit/registry` |
+| Component catalog | **Go registry** (metadata for builders, A2UI, Storybook) | contracts in `pk-ui` | `platformkit-frontend-kit/registry` |
 | Agent HTML surfaces | **A2UI** (server-rendered fragments) | — | optional Pro endpoints |
 
 Vue files exist only under `platformkit-courses/` (Slidev decks), not in admin
@@ -221,7 +221,7 @@ or apps.
 - Other pack modules follow the same `ossbridge/` pattern — Pro stores and
   routes delegate to OSS module types; no parallel framework implementations.
 
-Extraction path: `platformkit-ui` (contracts + accessibility first), then runtime
+Extraction path: `pk-ui` (contracts + accessibility first), then runtime
 tiers per `platformkit-frontend-kit/docs/OPEN_SOURCE_EXTRACTION_PLAN.md`.
 
 ### Enforcement

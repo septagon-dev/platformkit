@@ -62,7 +62,7 @@ The line between OSS and Pro is drawn at the **provider, not the contract**.
 - Demo/client overlays (`septagon-demos/*`, client extensions)
 - Synology routing, GitOps mirrors, staging release runners
 - Hosted observability backends (Datadog, Honeycomb adapters)
-- `platformkit-frontend-kit` runtime (gomponents, HTMX, Go component registry, A2UI) until extracted per `platformkit-frontend-kit/docs/OPEN_SOURCE_EXTRACTION_PLAN.md` → `platformkit-ui`
+- `platformkit-frontend-kit` runtime (gomponents, HTMX, Go component registry, A2UI) until extracted per `platformkit-frontend-kit/docs/OPEN_SOURCE_EXTRACTION_PLAN.md` → `pk-ui`
 - Pro distribution tag (`platformkit-pro`)
 
 ### Boundary enforcement
