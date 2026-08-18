@@ -1,27 +1,34 @@
 # PlatformKit OSS — Launch Checklist
 
-A dummy-proof, ordered checklist for publishing the PlatformKit OSS v0.1.0
-launch. Work it top to bottom. Three phases: **A. Pre-flight**, **B. Launch
-hour**, **C. Day-after**.
+A dummy-proof, ordered checklist for the PlatformKit OSS launch. Work it top
+to bottom. Three phases: **A. Pre-flight**, **B. Launch hour**, **C. Day-after**.
+
+> **Where things stand (2026-07-29):** the code side is done — the
+> `septagon-oss` org has been **public since 2026-07-22** (17 repos; front door
+> `platformkit` at v0.14.1 with 20 GitHub Releases; docs live at
+> <https://septagon-oss.github.io/pk-docs>). **Nothing has been announced**
+> anywhere (0 stars, 0 issues). What remains is the announcement track:
+> re-verify the still-open §A boxes, then run §B/§C. The quickstart to announce
+> is `go run github.com/septagon-oss/platformkit@latest` — no clone needed.
 
 > **Hard rule: do not post anything publicly until every box in §A is checked.**
 > §A is the gate. §B and §C assume §A is fully green.
 
 Release mechanics (push order, tags, retract, guards, front-door creation,
 post-push verification) are **not** restated here — they live in
-[`RELEASE_AND_RUN_MODEL.md`](./RELEASE_AND_RUN_MODEL.md) (authoritative §8 GATED
-PUSH STEPS) and the launch-mechanics blockers live in
-[`FLIP_RUNBOOK.md`](./FLIP_RUNBOOK.md) §A. This checklist references them and
-lists the gates you must confirm green.
+[`RELEASE_AND_RUN_MODEL.md`](./RELEASE_AND_RUN_MODEL.md) (§8 GATED PUSH STEPS —
+executed, now historical) and the launch-mechanics blockers live in
+[`FLIP_RUNBOOK.md`](./FLIP_RUNBOOK.md) §A (likewise historical). This checklist
+references them and lists the gates you must confirm green.
 
 ---
 
 ## A. Pre-flight (ALL must be green before posting)
 
-> **Order matters.** Everything that can be staged *before* touching a remote —
-> file placement, image generation, repo hygiene, security settings, and the
-> link-check — comes first (A1–A4). The tag/push/visibility-flip release step
-> comes **last** (A5), because pushing a tag to the Go proxy is irreversible.
+> **Order matters.** File placement, image generation, repo hygiene, security
+> settings, and the link-check come first (A1–A4). The tag/push/visibility-flip
+> release step (A5) **has already been executed** — repos are public and tagged;
+> A5 is retained below as the historical record.
 
 ### A1. Place the kit's final files into the repos (launch task **T14**)
 
@@ -61,7 +68,9 @@ Generate and place per [`images/IMAGE_PROMPTS.md`](./images/IMAGE_PROMPTS.md):
 
 Module repos: `pk-shared pk-core pk-design pk-client pk-registry pk-ui
 pk-runtime pk-modules pk-testkit pk-tools pk-apps` (+ `pk-docs`, + front-door
-`platformkit`). For **each**:
+`platformkit`). The org now has **17 public repos** — this v0.1.0-era list
+covers 13; extend the hygiene pass to the rest (TODO: enumerate them, e.g.
+`styleengine`, `tw`). For **each**:
 
 - [ ] `README.md` present.
 - [ ] `LICENSE` present and Apache-2.0, consistent across all repos.
@@ -143,30 +152,35 @@ grep -rhoE '\]\(\.{1,2}/[^)]+\)' launch --include='*.md' \
 - [ ] Every link in the **channel posts** (`launch/channels/*`) resolves.
 - [ ] Every link in the **docs** (`pk-docs`) resolves.
 - [ ] Relative links resolve to files that exist (Option C clean).
-- [ ] After A5: the front-door repo **actually exists** publicly and
-      `git clone …/platformkit && GOWORK=off go run .` works on a **truly clean
-      clone** (no workspace, default `GOPROXY`) — confirm A5's smoke from a
-      fresh machine/container.
+- [x] After A5: the front-door repo **actually exists** publicly (done
+      2026-07-22; now at v0.14.1).
+- [ ] Hero smoke from a fresh machine/container: `go run
+      github.com/septagon-oss/platformkit@latest` boots (no clone, no
+      workspace, default `GOPROXY`) — re-capture this in `VERIFIED_RUN.md`
+      before posting (its 2026-06-03 capture is stale).
 
-### A5. Release execution — run the gated runbook (LAST: irreversible push)
+### A5. Release execution — EXECUTED 2026-07-22 (historical)
 
-Execute the release via [`RELEASE_AND_RUN_MODEL.md`](./RELEASE_AND_RUN_MODEL.md)
-**§8 GATED PUSH STEPS** and clear the launch-mechanics blockers in
-[`FLIP_RUNBOOK.md`](./FLIP_RUNBOOK.md) **§A (A1–A6)**. Do not re-derive the
-sub-steps here — follow the runbook. The run-model branches are already merged
-to `main` locally with local `v0.1.0` tags cut; this step pushes them. Confirm
-these high-level gates landed:
+This step ran: the release went out via [`RELEASE_AND_RUN_MODEL.md`](./RELEASE_AND_RUN_MODEL.md)
+**§8 GATED PUSH STEPS**, the org went public on 2026-07-22, and releases have
+since iterated to `platformkit v0.14.1` (20 GitHub Releases). The v0.1.0-era
+gates are kept below for the record:
 
 - [ ] **§8.1** Tag messages normalized on the same `main` commits (real release
       message) immediately before push. **`v0.0.0` never reused or moved.**
+      (Executed with the push; not independently re-verified — TODO if it
+      matters for the announcement.)
 - [ ] **§8.2 / FLIP §A** Launch-mechanics blockers cleared: CI CODEOWNERS
-      baseline (A1), docs version labels (A4), README links (A3).
-- [ ] **§8.3** Pushed `main` + `v0.1.0` **leaf-first**, layer by layer, each
-      layer settling on the proxy before the next.
-- [ ] **§8.4** Front-door repo `github.com/septagon-oss/platformkit` created
-      from the §2.2/§2.3 layout (AFTER pk-apps), pushed, then tagged `v0.1.0`.
+      baseline (A1), docs version labels (A4), README links (A3). (See the
+      TODOs in FLIP_RUNBOOK's status table — not re-verified post-flip.)
+- [x] **§8.3** Pushed `main` + `v0.1.0` **leaf-first**, layer by layer — done;
+      public tags exist on all module repos.
+- [x] **§8.4** Front-door repo `github.com/septagon-oss/platformkit` created,
+      pushed, tagged — done; public and now at v0.14.1.
 
-**Release-blocking checks (must pass before you push — see runbook §5):**
+**Release-blocking checks (v0.1.0-era gates — superseded; the announcement-time
+equivalent is the `VERIFIED_RUN.md` re-capture against
+`go run github.com/septagon-oss/platformkit@latest`):**
 
 - [ ] `GOWORK=off go build ./...` and `GOWORK=off go test ./...` are green from
       a **clean clone** (no workspace rescue).
@@ -174,8 +188,8 @@ these high-level gates landed:
       jq` finds no `replace` of any `github.com/septagon-oss/*` module and no
       local-path (`./`, `../`, absolute) replace, in single-line **or**
       `replace ( … )` block form.
-- [ ] **Real clone smoke:** `git clone …/platformkit && cd platformkit &&
-      GOWORK=off go run .` boots, and:
+- [ ] **Real outsider smoke:** `go run github.com/septagon-oss/platformkit@latest`
+      boots from a fresh machine, and:
   - [ ] `GET /healthz` → **200**
   - [ ] `GET /api/v1/tenants` → **200**
   - [ ] `POST /api/v1/auth/sessions` with a `tenant_id` in the body → **201**

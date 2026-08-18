@@ -1,12 +1,25 @@
 # VERIFIED_RUN.md — Ground-Truth OSS Run Log
 
+> **⚠️ STALE — captured 2026-06-03 against the v0.1.0-era workspace. Re-capture
+> before launch.** The public front door is now **v0.14.1** and this log has
+> drifted from reality: the hero verb is now
+> `go run github.com/septagon-oss/platformkit@latest` (no clone needed); the
+> seeded login is **`operator@local.test` / `local-development-only`** (tenant
+> **`tenant_local`**), not `admin@local.test` / `changeme` / `tenant_acme`;
+> `/admin` **is auth-gated** (anonymous → 303 `/admin/login`; requires the
+> `admin` role + `console:access` scope), so §4 caveat 1 below is **no longer
+> true**; Postgres is a supported driver since v0.13.0 (SQLite default); the
+> SQLite driver is `modernc.org/sqlite v1.54.0`. **Do not quote any command or
+> value below in launch copy** until this file is re-captured against
+> `go run github.com/septagon-oss/platformkit@latest`.
+
 > **This file is the single source of truth for the OSS launch kit.**
 > No README, doc, blog post, or Show HN comment may show a command that is not
 > recorded here as actually run and verified. Every value below (versions,
 > ports, credentials, banners, HTTP codes, timings) was observed empirically on
 > the machine described in "Test Environment", not copied from prose.
 
-**Status: ✅ GREEN — the hero path works on a cold clone.** On a fresh database,
+**Status (historical capture, 2026-06-03): ✅ GREEN — the hero path worked on a cold clone.** On a fresh database,
 `go run .` boots the starter app, seeds a tenant + admin user, serves the admin
 UI, and the full data layer is healthy (`/healthz 200`, seven data/session health checks pass,
 `/api/v1/tenants 200`, login `201`). The original cold-DB failure was found,
@@ -17,7 +30,8 @@ fixed, and adversarially reviewed by Codex — see [§9 History & fixes](#9-hist
 ## 1. What "run it" means today (entry-point inventory)
 
 PlatformKit OSS publishes under the `github.com/septagon-oss` org (mirrored
-locally at `/home/jplr/gitrepos/septagon-dev/septagon-oss-workspace/`). The
+locally at `overlays/septagon-oss-workspace/` inside the septagon-dev
+checkout). The
 published module `go.mod` files carry **no `replace` directives** — modules
 resolve from the Go proxy by version. A `go.work` is used for **local multi-repo
 development only** (it points at the sibling repos on disk); it is not part of the
@@ -70,7 +84,7 @@ in-workspace equivalent (`cd pk-apps/apps/starter-saas && go run .`) runs the sa
 > caches remain content-addressed and reusable across repositories.
 
 ```bash
-cd septagon-oss-workspace/pk-apps/apps/starter-saas
+cd overlays/septagon-oss-workspace/pk-apps/apps/starter-saas
 
 export GOTMPDIR="$PWD/../../../.tmp-go-tmp"
 export TMPDIR="$PWD/../../../.tmp-go-tmp"
@@ -195,8 +209,8 @@ Safe to state in READMEs / Show HN, scoped as below:
 
 - Host OS: Linux (Arch, kernel 7.0.x), x86_64.
 - Go: `go version go1.26.3 linux/amd64` (satisfies `go 1.26` pin).
-- Workspace: `/home/jplr/gitrepos/septagon-dev/septagon-oss-workspace` (`go.work`
-  pins `go 1.26`; module `replace` directives point at sibling repos).
+- Workspace: `overlays/septagon-oss-workspace` inside the septagon-dev checkout
+  (`go.work` pins `go 1.26`; module `replace` directives point at sibling repos).
 - App: `pk-apps/apps/starter-saas`, `config.yaml` `http.addr: ":8080"`,
   DSN `file:./pk.db?_pragma=busy_timeout(5000)&cache=shared&mode=rwc`,
   driver `modernc.org/sqlite v1.50.1`, one shared `*sql.DB` with `SetMaxOpenConns(1)`.

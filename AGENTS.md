@@ -22,6 +22,7 @@ The public flagship repository for the platformkit product.
 ## Make Targets
 
 - `audit-oss`
+- `check-markdown`
 - `check-ui-stack-docs`
 - `check-workspace-layout`
 - `help`

@@ -4,7 +4,7 @@ One idea per post. Plain voice, no hype, no emoji-spam. Author = Septagon.
 
 > **Asset notes:**
 > - Post 1 should carry the **OG card** (repo social image / hero) so the link unfurls cleanly.
-> - Post 3 (the one-command demo) is where the **asciinema cast** (or a short screen capture of `go run .` → admin UI) goes.
+> - Post 3 (the one-command demo) is where the **asciinema cast** (or a short screen capture of `go run github.com/septagon-oss/platformkit@latest` → admin UI) goes.
 
 ---
 
@@ -18,26 +18,25 @@ https://github.com/septagon-oss/platformkit
 
 **2/ (what it is)**
 
-PlatformKit is an open-source Go backend for multi-tenant SaaS. Clone it and you get a seeded multi-tenant app — tenants, users, auth, admin UI, audit, API keys, content, notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, SQLite by default.
+PlatformKit is an open-source Go backend for multi-tenant SaaS. One `go run` and you get a seeded multi-tenant app — tenants, users, auth, admin UI, audit, API keys, content, notifications, tenant branding — composed from ten modules. Pure Go: no CGO, no npm, no Docker, SQLite by default (Postgres supported).
 
 ---
 
 **3/ (one command — attach the demo cast)**
 
 ```
-git clone https://github.com/septagon-oss/platformkit
-cd platformkit
-go run .
+go run github.com/septagon-oss/platformkit@latest
 # admin UI at http://localhost:8080/admin
+# login: operator@local.test / local-development-only (tenant tenant_local)
 ```
 
-That's the whole first run. Warm starts in about two seconds.
+That's the whole first run — no clone. When you outgrow it: `platformkit new app` and `platformkit new module` scaffold your own.
 
 ---
 
 **4/ (ports / DI — the actual idea)**
 
-The modules don't import each other. They depend on interfaces (ports), and dependency injection supplies the concrete type at startup. So you swap one module's implementation without it cascading — and you add your own module the same way the nine built-ins are added.
+The modules don't import each other. They depend on interfaces (ports), and dependency injection supplies the concrete type at startup. So you swap one module's implementation without it cascading — and you add your own module the same way the ten built-ins are added.
 
 ---
 
@@ -49,7 +48,7 @@ It's open core, and the line is drawn at the provider, never the contract: every
 
 **6/ (what it's NOT)**
 
-Honest scope: not a no-code tool (you write Go). Not a Rails/Django replacement. SQLite is the zero-setup local default — for production you put your own store behind the relevant module store interface (auth uses `WithSessionStore`). `/admin` is an open dashboard today, not a gated login — the seeded creds authenticate against the auth API (`POST /api/v1/auth/sessions`, with `tenant_id` in the body), so gate it before exposing the port. And it's early: v0.1.0, our first public release; expect APIs to move, verified on Linux + Go 1.26. Pin a commit if you need stability.
+Honest scope: not a no-code tool (you write Go). Not a Rails/Django replacement. SQLite is the zero-setup default, Postgres is supported — beyond that you put your own store behind the relevant module store interface (auth uses `WithSessionStore`). Known limits today: rate limiting and login lockout are in-memory and per-process, access control is coarse role-based, the audit log is unsigned, and the newest module (tenant branding) is SQLite-only — on Postgres you compose nine, and branding config fails loudly. It's early: public since July, now at v0.15 — this thread is the first announcement; expect APIs to move, verified on Linux + Go 1.26. Pin a version if you need stability.
 
 ---
 

@@ -1,6 +1,6 @@
 # PlatformKit OSS v0.1.0 — Public Flip Runbook
 
-> Status: **LANDED LOCALLY, STAGED FOR PUSH — do not execute until every Pre-flip blocker is cleared and the human gives an explicit go.** The run-model work is merged to `main` locally in all 11 module repos with local `v0.1.0` tags cut and the front-door module booting green; nothing has been pushed or made public.
+> Status: **EXECUTED — HISTORICAL.** The flip this runbook gated happened: the `septagon-oss` org has been **public since 2026-07-22** — 17 public repos, front door `github.com/septagon-oss/platformkit` now at **v0.14.1** with 20 published GitHub Releases, live docs at <https://septagon-oss.github.io/pk-docs>. What has **not** happened is the announcement: nothing has been posted anywhere (0 stars, 0 issues). The remaining work is the announcement track (`CHECKLIST.md` §B/§C). This file is kept as the record of how the flip was done; the commands and values below are v0.1.0-era history (seed credentials, tags, and the quickstart have since moved — see the stale-capture note in `VERIFIED_RUN.md`).
 
 Scope:
 
@@ -17,7 +17,8 @@ Scope:
 Throughout, define the workspace root once:
 
 ```bash
-OSS=/home/jplr/gitrepos/septagon-dev/septagon-oss-workspace
+# $SEPTAGON_DEV = root of your septagon-dev checkout
+OSS="$SEPTAGON_DEV/overlays/septagon-oss-workspace"
 ```
 
 Sources: local readiness gate (`.tmp-oss-gate/ledger.md`) + tri-model council (codex/grok; deepseek was down for the final run). The code gate is green; the items below are launch-mechanics the local gate could not see.
@@ -43,7 +44,7 @@ Sources: local readiness gate (`.tmp-oss-gate/ledger.md`) + tri-model council (c
 #   ahead of the tag (e.g. the CI baseline fix) — see the tag policy in
 #   RELEASE_AND_RUN_MODEL.md §1.4. We verify the *tag's* go.mod, not HEAD's.
 set -euo pipefail
-OSS=/home/jplr/gitrepos/septagon-dev/septagon-oss-workspace
+OSS="$SEPTAGON_DEV/overlays/septagon-oss-workspace"
 for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry \
          pk-testkit pk-modules pk-tools pk-apps pk-ui; do
   d="$OSS/$r"
@@ -166,31 +167,34 @@ Ensure: visibility public, default branch `main`, Actions enabled, release repos
 
 ---
 
-### Status (all LOCAL — nothing pushed; public-only items are "to verify post-push")
+### Status (flip EXECUTED 2026-07-22 — historical record + what was not re-verified)
 
-Honest state: the run-model work is **landed on `main` locally** in all 11
-module repos with local `v0.1.0` tags cut, and the front-door module builds +
-boots green locally. Anything that depends on the public proxy, sum.golang.org,
-or a public CI run **cannot** be verified until after the gated push.
+Honest state: the push, visibility flip, and front-door creation happened on
+2026-07-22. The org is public with 17 repos; releases have since iterated to
+`platformkit v0.14.1` (20 GitHub Releases), `pk-modules v0.17.0`,
+`pk-ui v0.6.3`; the docs site is live. Items marked TODO below were staged
+before the flip but have not been independently re-verified against the live
+public state.
 
 | Item | Status |
 |------|--------|
-| Code gate (build/test/vet/staticcheck/race, govulncheck, gitleaks, actionlint, neutrality, godoc, tidy/no-replace) | ✅ green locally (GOWORK=off + local proxy) |
-| Branches landed on `main` + local `v0.1.0` tags cut (11 module repos) | ✅ done locally |
-| Front-door module builds + boots (9 modules, 7 healthy stores, login 201) | ✅ verified locally |
-| go.sum "cascade" | ✅ was a stale-cache illusion; true `pk-modules@v0.1.0` = recorded go.sum |
-| A1 CI CODEOWNERS | staged — baseline workflow relaxed (accepts `.github/CODEOWNERS`) on `main`; first public CI run is **to verify post-push** |
-| A2 tag normalization | staged — local `v0.1.0` tags exist; re-annotate with the real release message immediately before push (see §8.1) |
-| A3 pk-apps broken link | staged — repointed to an existing docs path; resolves 404-free only once `pk-docs` is public |
-| A4 docs | ⚠️ PARTIAL — clone instruction + RELEASING order fixed; **full v0.0.0→v0.1.0 docs content pass still owed** (seed-release narrative, repo counts) |
-| A5 pk-tools scaffold | staged — marked experimental / de-scoped from the v0.1.0 surface |
-| A6 NOTICE | not required (no vendored NOTICE-bearing deps confirmed) |
-| pk-docs private refs (velora/apex, private org) | staged — scrubbed locally |
-| Cold-resolve + hero path via local proxy | ✅ verified locally; the **public** proxy/sumdb + clone-smoke are **to verify post-push** (Section E) |
-| Front-door repo `platformkit` created on remote | ⏳ not yet — created at push time (Layer 4, §C) |
+| Code gate (build/test/vet/staticcheck/race, govulncheck, gitleaks, actionlint, neutrality, godoc, tidy/no-replace) | ✅ green locally at flip time (historical) |
+| Branches landed on `main` + `v0.1.0` tags (11 module repos) | ✅ done — pushed 2026-07-22; tags have since iterated well past v0.1.0 |
+| Front-door module builds + boots (9 modules, 7 healthy stores, login 201) | ✅ verified at v0.1.0; re-capture against v0.14.1 for the announcement (`VERIFIED_RUN.md`) |
+| go.sum "cascade" | ✅ was a stale-cache illusion; true `pk-modules@v0.1.0` = recorded go.sum (historical) |
+| A1 CI CODEOWNERS | pushed with the flip; TODO: confirm the public CI baseline runs are green (not re-verified) |
+| A2 tag normalization | ✅ done — public tags exist and 20 GitHub Releases are published |
+| A3 pk-apps broken link | `pk-docs` is public and the docs site is live (5 pages); TODO: re-verify the pk-apps README link resolves |
+| A4 docs | superseded — docs now ship on the live site (<https://septagon-oss.github.io/pk-docs>); TODO: confirm no v0.0.0-era labels remain |
+| A5 pk-tools scaffold | superseded — scaffolding is now a supported front-door surface: `platformkit new app` / `platformkit new module` (since v0.13.0) |
+| A6 NOTICE | not required at flip time (no vendored NOTICE-bearing deps confirmed; historical) |
+| pk-docs private refs (velora/apex, private org) | scrubbed before the flip (historical) |
+| Cold-resolve + hero path | ✅ v0.1.0-era verification; the current hero path is `go run github.com/septagon-oss/platformkit@latest` — re-capture before the announcement |
+| Front-door repo `platformkit` created on remote | ✅ created + public (now v0.14.1) |
 
-**Important — dependency repos `main` is ahead of `v0.1.0` by one commit** (the A1 CI fix). This is intentional: the relaxed workflow lives on `main` (where baseline CI runs), and the `v0.1.0` *module* is deliberately left unchanged to avoid a go.sum cascade. When pushing, push `main` **and** the `v0.1.0` tag for each repo.
+(Historical push note: dependency repos' `main` was intentionally one commit ahead of `v0.1.0` — the A1 CI fix — to avoid a go.sum cascade; `main` and the tag were pushed together.)
 
-### Still TODO before/at flip (need a human + network)
-- **A4 full docs rewrite** — decide: rewrite `docs/v0.0.0` content to accurate v0.1.0 (12 repos, no "first seed release"/"ten repos"/"v0.0.1 expected"), or keep honest v0.0.0 labels. Currently links work but version labels say v0.0.0.
-- Everything in Sections C–F (layered push, visibility flip, proxy/sumdb post-publish checks, GitHub settings via `gh`) — these require the actual flip and are gated on your explicit go.
+### Remaining work (the announcement track)
+- **Re-capture `VERIFIED_RUN.md`** against `go run github.com/septagon-oss/platformkit@latest` (seed login is now `operator@local.test` / `local-development-only`, tenant `tenant_local`; `/admin` is auth-gated).
+- Clear the TODOs above (public CI green, pk-apps README link, docs version labels).
+- Work `CHECKLIST.md` §A open boxes, then §B launch hour and §C day-after. Nothing has been announced anywhere yet.

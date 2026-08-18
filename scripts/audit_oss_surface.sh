@@ -61,6 +61,22 @@ do
 	fi
 done
 
+# Developer-machine paths must not leak into the public surface: /home/<user>
+# and /Users/<user> absolute paths, plus $HOME / ${HOME}-shaped paths. These
+# get their own check (not the pattern loop above) because generic
+# documentation placeholders (/home/user, /home/USER, /home/username,
+# /home/you, /home/example and their /Users/ equivalents) are tolerated.
+# Caveat: the filter drops whole matching LINES, so keep placeholder examples
+# on their own lines. Legitimate $HOME usage in docs should be reworded (or
+# this placeholder filter extended) rather than shipped as a false positive.
+devpath_pattern='(/home|/Users)/[A-Za-z0-9._-]+|\$(HOME|\{HOME\})'
+devpath_placeholder='(/home|/Users)/(user|USER|username|you|example)([^A-Za-z0-9._-]|$)'
+devpath_matches="$(git grep -nE "$devpath_pattern" -- . ':(exclude)scripts/audit_oss_surface.sh' 2>/dev/null | grep -vE "$devpath_placeholder" || true)"
+if [[ -n "$devpath_matches" ]]; then
+	report_failure "developer-machine path leaked into public surface (pattern: $devpath_pattern)"
+	echo "$devpath_matches" >&2
+fi
+
 max_bytes=$((1024 * 1024))
 while IFS= read -r -d '' file; do
 	if [[ ! -f "$file" ]]; then

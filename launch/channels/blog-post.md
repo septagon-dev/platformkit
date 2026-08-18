@@ -16,45 +16,46 @@ We got tired of that, so we built the backend instead — and we're open-sourcin
 
 ## What PlatformKit is
 
-PlatformKit is an open-source Go backend for multi-tenant SaaS. You clone it, run one command, and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, and notifications — composed from nine modules. Pure Go: no CGO, no npm, no Docker, no external database. SQLite is the default store so the first run needs no setup. It's Apache-2.0.
+PlatformKit is an open-source Go backend for multi-tenant SaaS. You run one command and you get a seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys, content, notifications, and tenant branding — composed from ten modules. Pure Go: no CGO, no npm, no Docker, no external database required. SQLite is the default store so the first run needs no setup; Postgres is a supported driver when you want it. It's Apache-2.0.
 
 It is the part of a SaaS backend you would otherwise rebuild from scratch in every project, and it's the backend itself, not a demo of one.
 
 ## The one-command demo
 
 ```bash
-git clone https://github.com/septagon-oss/platformkit
-cd platformkit
-go run .
+go run github.com/septagon-oss/platformkit@latest
 ```
 
-That boots the starter app, seeds a tenant and an admin user, and serves the admin UI:
+No clone needed. That boots the starter app, seeds a tenant and an administrator, and serves the admin UI:
+
+<!-- Re-verify this banner verbatim via the VERIFIED_RUN.md re-capture before publishing. -->
 
 ```
 ============================================================
- starter-saas — PlatformKit OSS monolith
-  listening:    http://localhost:8080
-  admin UI:     http://localhost:8080/admin
-  health:       http://localhost:8080/healthz
-  metrics:      http://localhost:8080/metrics
-  default login: admin@local.test / changeme
+ PlatformKit OSS
+  listening:    http://127.0.0.1:8080
+  admin UI:     http://127.0.0.1:8080/admin
+  health:       http://127.0.0.1:8080/healthz
+  OpenAPI:      http://127.0.0.1:8080/openapi/extensions.json
+  local tenant: tenant_local
+  local login:  operator@local.test / local-development-only
   modules:      9 composed (admin_management, health_management, tenant_management, user_management, audit_management, auth_management, api_key_management, content_management, notification_management)
 ============================================================
 ```
 
-Open `http://localhost:8080/admin`. The first build downloads a handful of Go modules and takes tens of seconds; subsequent starts take about two seconds.
+Open `http://127.0.0.1:8080/admin`. The first build downloads the Go modules and takes tens of seconds; subsequent starts take a couple of seconds.
 
-PlatformKit is multi-tenant from the first line, so the seeded login is scoped to a tenant. The credentials — `admin@local.test` / `changeme`, tenant `tenant_acme` — authenticate against the auth API, and the request body must include `tenant_id`:
+PlatformKit is multi-tenant from the first line, so the seeded login is scoped to a tenant. The credentials — `operator@local.test` / `local-development-only`, tenant `tenant_local` — work on the admin login screen, and the same auth API sits underneath; its request body must include `tenant_id`:
 
 ```bash
-curl -s -X POST http://localhost:8080/api/v1/auth/sessions \
+curl -s -X POST http://127.0.0.1:8080/api/v1/auth/sessions \
   -H 'Content-Type: application/json' \
-  -d '{"tenant_id":"tenant_acme","email":"admin@local.test","password":"changeme"}'
+  -d '{"tenant_id":"tenant_local","email":"operator@local.test","password":"local-development-only"}'
 ```
 
-One thing to be precise about: `/admin` is an open dashboard today, not a gated login wall. The seeded credentials are for the auth API, not an admin login screen — that doesn't exist yet. We'd rather tell you that than let you discover it.
+One thing to be precise about: `/admin` is auth-gated. Anonymous requests are redirected to `/admin/login`, and the console requires the `admin` role plus the `console:access` scope — the seeded operator login above satisfies both. The seeded password is a development-mode convenience; production runs make you set your own.
 
-The front door listens on `:8080` and ships no config file. If 8080 is busy, run the full starter in pk-apps (`pk-apps/apps/starter-saas`, which reads `http.addr` from its `config.yaml`) or change the address in the wrapper's `main.go`.
+The front door listens on `127.0.0.1:8080` by default and ships no config file. If 8080 is busy, pass `--port` (or `--addr`), or generate a config with `platformkit config init`.
 
 ## The architecture: core → modules → clients
 
@@ -62,7 +63,7 @@ PlatformKit has three layers.
 
 The **core** defines the rules: the contracts, the kernel, and the wiring. It doesn't know about tenants or users — it knows how modules are composed.
 
-**Modules** add capabilities behind those rules: tenant, user, auth, api_key, audit, content, notification, health, and admin. Each is a self-contained vertical slice.
+**Modules** add capabilities behind those rules: tenant, user, auth, api_key, audit, content, notification, health, branding, and admin. Each is a self-contained vertical slice.
 
 **Clients** compose the modules they want into a running application. The starter app is one such client.
 
@@ -79,9 +80,9 @@ pkmodule.RequiresPort[user.UserBoundaryReader](pkmodule.PortSpec{
 })
 ```
 
-Two consequences follow, and they're the whole point. You can replace one module's implementation without the change cascading through the others — swap the store, swap the auth provider, and the modules that depend on those ports don't notice. And you add your own module the same way the nine built-ins are added — by declaring its ports and letting DI wire it in.
+Two consequences follow, and they're the whole point. You can replace one module's implementation without the change cascading through the others — swap the store, swap the auth provider, and the modules that depend on those ports don't notice. And you add your own module the same way the ten built-ins are added — by declaring its ports and letting DI wire it in.
 
-This is why "nine modules" isn't the claim. Nine CRUD modules wouldn't be a platform. The substrate is the tenant/auth/audit/admin boundary plus the compose-and-swap mechanism. The nine modules are the reference implementations that prove the mechanism works and give you a running app on the first command.
+This is why "ten modules" is not the claim. Ten CRUD modules would not be a platform. The substrate is the tenant/auth/audit/admin boundary plus the compose-and-swap mechanism. The ten modules are the reference implementations that prove the mechanism works and give you a running app on the first command.
 
 We compose modules through a small module catalog — plain Go constructor wiring, no DI framework. The contract types are container-agnostic, so a larger app could drop in uber/fx or another container, but the OSS core forces none. It's still a real tradeoff: composition adds indirection, and if you dislike that style this won't convert you. We think it's worth it because it's what makes compose-and-swap an actual property of the system rather than a slogan.
 
@@ -89,7 +90,7 @@ We compose modules through a small module catalog — plain Go constructor wirin
 
 PlatformKit is Apache-2.0, and the thing you clone and run is the whole substrate, not a trial slice.
 
-Free is everything you need to build and run a multi-tenant SaaS backend on your own infrastructure: all the public contracts and ports, the default providers that make it run with zero setup (SQLite, in-memory, stdlib, file-based), the security baseline (CSRF, CORS, security headers, password hashing, signed cookies, rate-limiting and signature primitives), the reference admin UI, the starter app, the `pk` CLI, and the nine-module essentials pack.
+Free is everything you need to build and run a multi-tenant SaaS backend on your own infrastructure: all the public contracts and ports, the default providers that make it run with zero setup (SQLite, in-memory, stdlib, file-based), the security baseline (CSRF, CORS, security headers, password hashing, signed cookies, rate-limiting and signature primitives), the reference admin UI, the starter app, the `pk` CLI, and the ten-module essentials pack.
 
 Pro adds the operational and at-scale concerns: hosted and cloud-scale providers (NATS/JetStream/Kafka event buses, Postgres-cluster and read-replica backends, cloud secrets managers), enterprise identity (SCIM, SAML, SSO), vertical business modules, hosted observability, and a hosted control plane.
 
@@ -101,22 +102,22 @@ We'd rather you read this from us than write it in a GitHub issue.
 
 It's not a no-code tool — it's a Go codebase, and you write Go to extend it. It's not a Rails or Django replacement — there's no ORM, no router opinion, no generator for everything; if you want batteries-included web MVC, this isn't that.
 
-It's not production-hardened at scale on the default store. SQLite is the zero-setup local default, and it's great for development and small deployments; for production at scale you swap in your own store behind the relevant module store interfaces (auth uses `WithSessionStore`). That's exactly what the port boundary is for.
+It's not production-hardened at scale on the default providers. SQLite is the zero-setup local default and Postgres is a supported driver; beyond that you swap in your own store behind the relevant module store interfaces (auth uses `WithSessionStore`). That's exactly what the port boundary is for. Four limits we know about today: rate limiting and login lockout are in-memory and per-process (they don't coordinate across replicas), access control is coarse role-based, the audit log is unsigned, and the newest module (tenant branding) has no Postgres adapter yet — a Postgres deployment composes the other nine and refuses branding configuration loudly rather than degrading silently.
 
-And it's early. This is v0.1.0 — our first public release; expect APIs to move — verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, on a fresh database. Things will move. Pin a commit if you need stability today.
+And it's early. The code has been public since July 2026 and is at v0.15 — this post is our first announcement, not our first release — verified on Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.54.0`, on a fresh database. APIs will keep moving. Pin a version if you need stability today.
 
 ## How to try it, and how to contribute
 
-Clone it and run it:
+Run it:
 
 ```bash
-git clone https://github.com/septagon-oss/platformkit
-cd platformkit
-go run .
+go run github.com/septagon-oss/platformkit@latest
 ```
+
+When you outgrow the demo, `platformkit new app` scaffolds your own application on the kit, and `platformkit new module` scaffolds a module of your own alongside the ten built-ins.
 
 Then poke at the boundary — that's the part we most want stress-tested. Add a module of your own. Swap the store. Try to make the port abstraction leak. If it holds, tell us; if it breaks, definitely tell us. Issues and discussions are open on the repo.
 
 We're Septagon. We build PlatformKit and use it ourselves to ship multi-tenant products, which is why the substrate looks the way it does — it's the stuff we got tired of rebuilding. The OSS substrate is the same one our own work composes from.
 
-Repo: https://github.com/septagon-oss/platformkit
+Repo: https://github.com/septagon-oss/platformkit — docs: https://septagon-oss.github.io/pk-docs

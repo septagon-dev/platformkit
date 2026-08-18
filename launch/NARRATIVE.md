@@ -11,10 +11,11 @@
 
 ## 1. One-line definition (the handshake)
 
-**PlatformKit is an open-source Go backend for multi-tenant SaaS. Clone it, run
-`go run .`, and you get a seeded multi-tenant app — tenants, users, auth, an
-admin UI, audit, API keys, content, and notifications — composed from nine
-modules. Pure Go: no CGO, no npm, no Docker, no external database.**
+**PlatformKit is an open-source Go backend for multi-tenant SaaS. Run one
+command — `go run github.com/septagon-oss/platformkit@latest` — and you get a
+seeded multi-tenant app — tenants, users, auth, an admin UI, audit, API keys,
+content, notifications, and tenant branding — composed from ten modules. Pure Go: no CGO, no
+npm, no Docker, no external database required.**
 
 It is the part of a SaaS backend you would otherwise rebuild from scratch in
 every project.
@@ -28,9 +29,9 @@ opinions and bolting on the things every product actually needs — tenant
 isolation, a login flow, an audit trail, an admin screen — and you wire all of it
 by hand, again.
 
-PlatformKit is the backend itself, not a demo of one. It ships nine modules that
+PlatformKit is the backend itself, not a demo of one. It ships ten modules that
 compose into a running multi-tenant app on the first `go run .`: tenant, user,
-auth, api_key, audit, content, notification, health, and admin. That is the
+auth, api_key, audit, content, notification, health, branding, and admin. That is the
 verified hero path — a fresh clone boots, seeds a tenant and an admin user, and
 serves the admin UI at `http://localhost:8080/admin` in about two seconds on a
 warm cache (about seventeen on the first cold build, while Go downloads modules).
@@ -40,7 +41,7 @@ interfaces — ports like `AdminRegistrar` and `HealthRegistrar`, or a provider'
 published contract such as `audit.AuditEmitter` — and dependency injection
 supplies the concrete type at startup. So you can replace one module's
 implementation without the change cascading through the others, and you can add
-your own module the same way the nine built-ins are added.
+your own module the same way the ten built-ins are added.
 
 Multi-tenancy is there from the first line, not retrofitted. Tenant identity is a
 first-class part of the data layer and the auth flow: the seeded login is scoped
@@ -58,7 +59,7 @@ not a trial slice.
 default providers that make it run with zero setup (SQLite, in-memory, stdlib,
 file-based), the security baseline (CSRF, CORS, security headers, password
 hashing, signed cookies, rate-limiting and signature-verification primitives),
-the reference admin UI, the starter app, the `pk` CLI, and the nine-module
+the reference admin UI, the starter app, the `pk` CLI, and the ten-module
 essentials pack. That is enough to build and run a multi-tenant SaaS backend on
 your own infrastructure.
 
@@ -102,16 +103,21 @@ advance.
   multi-tenant SaaS, not a full-stack web framework with an ORM, a router opinion,
   and a generator for everything. If you want batteries-included web MVC, this is
   not that.
-- **Not production-hardened at scale on the default store.** SQLite is the
-  zero-setup local default so the first run needs no database. It is great for
-  development and small deployments. For production at scale, swap in your own
-  store behind the relevant module store interfaces (auth uses `WithSessionStore`)
-  — that is exactly what the port boundary is for.
+- **Not production-hardened at scale on the default providers.** SQLite is the
+  zero-setup local default so the first run needs no database, and Postgres is a
+  supported driver (since v0.13.0). Both are great for development and small
+  deployments. Beyond that, swap in your own store behind the relevant module
+  store interfaces (auth uses `WithSessionStore`) — that is exactly what the
+  port boundary is for.
+- **Known current limits, stated plainly.** Rate limiting and login lockout are
+  in-memory and per-process (no cross-replica coordination), access control is
+  coarse role-based, and the audit log is unsigned.
 - **Not a framework you must adopt wholesale.** Modules compose; you can take the
   ones you want and ignore the rest, or add your own alongside them.
-- **Early. v0.1.0 — our first public release; expect APIs to move.** Verified on
-  Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.50.1`, fresh database. Things will
-  move. Pin a commit if you need stability today.
+- **Early. Public since July 2026, now v0.15 — the launch is the first
+  *announcement*, not the first release; expect APIs to move.** Verified on
+  Linux/x86_64, Go 1.26, `modernc.org/sqlite v1.54.0`, fresh database. Things
+  will move. Pin a version if you need stability today.
 
 ---
 
@@ -125,10 +131,10 @@ claim either for the OSS launch. The honest AI-introspection story is §4 above 
 `pk explain --json`, typed module metadata, and MCP descriptor hooks on entities.
 
 One scoping note on "no Docker": that describes the **starter app's runtime** —
-`go run .` needs nothing but Go. The scaffold generator library
+`go run` needs nothing but Go. The scaffold generator library
 (`pk-tools/pkg/scaffold`) does emit a `docker-compose.yml` (Postgres/Redis/NATS)
 for projects that want those backends, so don't phrase "no Docker" near
-scaffolding copy in a way a reader could call a contradiction. Also note the `pk`
-CLI itself has only `doctor`, `verify`, `explain` — there is no `pk scaffold`
-subcommand; scaffolding is the library above. The starter runs on SQLite with
-zero containers; that is the claim.
+scaffolding copy in a way a reader could call a contradiction. User-facing
+scaffolding lives on the front-door CLI since v0.13.0: `platformkit new app`
+and `platformkit new module` (there is still no `pk scaffold` subcommand). The
+starter runs on SQLite with zero containers; that is the claim.

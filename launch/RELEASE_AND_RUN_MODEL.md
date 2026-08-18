@@ -1,13 +1,14 @@
 # PlatformKit OSS — Release & Run Model
 
-> Status: **LANDED ON MAIN LOCALLY + RE-VERIFIED — NOT PUSHED.** The run-model
-> work is merged to `main` in every OSS repo locally; local `v0.1.0` tags are
-> cut; the front-door module builds + boots green (9 modules, 7 healthy stores,
-> login 201) and the workspace dev build (`go build ./pk-apps/...` via
-> `go.work`) is clean. **Nothing is pushed:** no remote was touched, no remote
-> tag created or moved, no GitHub repo created. The public push is gated. The
-> final outward actions are enumerated in the **Gated Push Steps** section and
-> await explicit human approval.
+> Status: **EXECUTED — the gated push this document stages happened on
+> 2026-07-22.** The `septagon-oss` org is public (17 repos); the front door
+> `github.com/septagon-oss/platformkit` is at **v0.14.1** with 20 published
+> GitHub Releases, and releases have iterated well past the `v0.1.0` staged
+> below. The **announcement has not happened** — that track lives in
+> `CHECKLIST.md`. The rest of this file is retained as the release/run-model
+> design record and the v0.1.0 evidence log; treat version numbers, tags, and
+> seed credentials below as v0.1.0-era history (current quickstart:
+> `go run github.com/septagon-oss/platformkit@latest` — see `VERIFIED_RUN.md`).
 
 This runbook defines how a PlatformKit OSS application resolves its
 dependencies (the "run model") and how the repo split is released so an
@@ -493,12 +494,13 @@ the internal-only repos are out of the Go-module v0.1.0 train.
 
 ---
 
-## 7. Landed on main + local tags (NOT pushed)
+## 7. Landed on main + local tags (historical — since pushed on 2026-07-22)
 
-The run-model branches below are **merged to `main` locally** in every repo, and
-local annotated `v0.1.0` tags are cut on those `main` commits. The remote is
-untouched (it still carries only the old broken `v0.0.0`). The commit column
-records the `main` commit the local `v0.1.0` tag points at.
+At the time of writing, the run-model branches below were **merged to `main`
+locally** in every repo, with local annotated `v0.1.0` tags cut on those `main`
+commits and the remote untouched (it then carried only the old broken
+`v0.0.0`). The commit column records the `main` commit the local `v0.1.0` tag
+pointed at.
 
 | Repo | Local `v0.1.0` → `main` commit (snapshot — regenerate before push) |
 |------|--------------------------------------------------------------------|
@@ -525,15 +527,16 @@ for r in pk-shared pk-core pk-runtime pk-design pk-client pk-registry pk-testkit
 done
 ```
 
-The remote still carries only the old broken `v0.0.0`.
+(Historical: the tags above have since been pushed; the remote no longer stops
+at `v0.0.0`.)
 
 ---
 
-## 8. GATED PUSH STEPS (await user approval)
+## 8. GATED PUSH STEPS (historical — approved and executed 2026-07-22)
 
-The branches are already merged to `main` and local `v0.1.0` tags are cut
-(§7). Nothing below has touched a remote. Each step is an outward,
-irreversible-on-the-proxy action.
+These steps ran; they are kept for the record. As written before the push: the
+branches are already merged to `main` and local `v0.1.0` tags are cut (§7).
+Each step is an outward, irreversible-on-the-proxy action.
 
 1. **Normalize the tag messages (optional, local).** If the current `v0.1.0`
    tags carry a "local verification" message, re-create them as annotated
@@ -573,5 +576,7 @@ irreversible-on-the-proxy action.
    go.mods, so it takes effect once `v0.1.0` is on the proxy. No action needed
    on the `v0.0.0` tag itself — leave it; never move it.
 
-> The runnable contract is proven locally. The only remaining variable is the
-> public proxy/CI transport, which steps 3–5 exercise once approved.
+> (Historical closing note.) The runnable contract was proven locally; the push
+> then exercised the public proxy/CI transport. Today's equivalent outsider
+> check is `go run github.com/septagon-oss/platformkit@latest` — re-capture it
+> in `VERIFIED_RUN.md` before the announcement.

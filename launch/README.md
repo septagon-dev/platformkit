@@ -1,22 +1,29 @@
 # PlatformKit OSS — Launch Kit Index
 
-This directory is the complete launch kit for the PlatformKit OSS v0.1.0
-public release. Everything you need to publish — positioning, READMEs, docs,
-channel posts, images, and the publish process — lives here.
+This directory is the complete launch kit for the PlatformKit OSS public
+launch. Everything you need to publish — positioning, READMEs, docs, channel
+posts, images, and the publish process — lives here.
+
+> **State (2026-07-29):** the code has been **public since 2026-07-22**
+> (17 repos; front door at v0.14.1, 20 GitHub Releases; docs live at
+> <https://septagon-oss.github.io/pk-docs>) but **nothing has been announced**.
+> The kit's remaining job is the announcement.
 
 > **Do not publish until [`CHECKLIST.md`](./CHECKLIST.md) §A pre-flight is fully
 > green.** §A is the gate; nothing goes public before every box is checked.
 
 **Repo set (canonical — use these terms everywhere):**
 
-- **11 module repos** (Go modules, each tagged `v0.1.0`): `pk-shared`,
-  `pk-core`, `pk-runtime`, `pk-design`, `pk-client`, `pk-registry`,
-  `pk-testkit`, `pk-modules`, `pk-tools`, `pk-apps`, `pk-ui`.
-- **1 front-door repo**: `platformkit` — a new repo created + tagged at release
-  time, the public entry point (`git clone … && go run .`).
+- **11 module repos** (Go modules, first tagged `v0.1.0`; versions have since
+  iterated): `pk-shared`, `pk-core`, `pk-runtime`, `pk-design`, `pk-client`,
+  `pk-registry`, `pk-testkit`, `pk-modules`, `pk-tools`, `pk-apps`, `pk-ui`.
+- **1 front-door repo**: `platformkit` — created + tagged at the 2026-07-22
+  flip, the public entry point
+  (`go run github.com/septagon-oss/platformkit@latest`), now at v0.14.1.
 - **1 docs repo**: `pk-docs` — published but **not** a Go module and not on the
   build train.
 - **Excluded** from the launch train: `pk-deploy` and the internal-only repos.
+  (The public org has since grown to 17 repos — see CHECKLIST §A3.)
 
 `pk-registry` and `pk-ui` are module repos and keep their own existing
 READMEs if no draft exists in `drafts/readmes/`.
